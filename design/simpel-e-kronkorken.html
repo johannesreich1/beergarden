@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Kronkorken</title>
+<style>
+/* ============================================================
+   KRONKORKEN
+   Signature: the crimped edge. Every choice on this page is a
+   bottle cap — enamel colour, 21 teeth, sitting flat. Nothing
+   else is round, so the caps carry all the interaction and the
+   text stays plain and large.
+   ============================================================ */
+:root{
+  --grund:#EDE4D4;
+  --flaeche:#FFFFFF;
+  --schrift:#1C1710;
+  --weich:#54493A;
+  --akzent:#1B3F8B;
+  --akzent-2:#A81E1E;
+  --kante:rgba(28,23,16,.28);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#16130E; --flaeche:#221D16; --schrift:#F1E8D8; --weich:#BDAF9A;
+  --akzent:#8FB4DF; --akzent-2:#E3706F; --kante:rgba(241,232,216,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text)}
+.wrap{max-width:1020px;margin:0 auto;padding:36px 20px 70px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(27px,5.6vw,40px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent-2)}
+.lead{margin:12px 0 30px;max-width:42ch;font-size:16.5px;color:var(--weich)}
+
+/* ---- the cap ---- */
+.korken{--farbe:var(--akzent);position:relative;width:112px;height:112px;flex:none;
+  border:0;cursor:pointer;background:transparent;padding:0;color:inherit}
+.korken .rand{position:absolute;inset:0;border-radius:50%;background:var(--farbe);
+  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%)}
+.korken .mitte{position:absolute;inset:11px;border-radius:50%;
+  background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--farbe);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.korken .zahl{font-family:var(--display);font-size:27px;font-weight:900;color:var(--farbe)}
+.korken .wort{font-size:14px;color:var(--weich)}
+.korken[aria-pressed=false] .rand{background:var(--kante)}
+.korken[aria-pressed=false] .zahl{color:var(--weich)}
+
+.reihe{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:12px}
+.reihe > .beschriftung{width:100%;font-size:16px;color:var(--weich)}
+.ort{flex:1 1 260px;font:19px/1.2 var(--display);font-weight:900;padding:16px;
+  background:var(--flaeche);color:var(--schrift);border:0;box-shadow:inset 0 0 0 2px var(--kante)}
+.los{border:0;cursor:pointer;background:var(--akzent-2);color:var(--flaeche);
+  font-family:var(--display);font-size:17px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;padding:17px 24px;margin-top:8px}
+
+h2{margin:38px 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+
+.tour{display:flex;gap:18px;align-items:center;width:100%;text-align:left;border:0;
+  background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);color:inherit;font:inherit;
+  padding:16px;margin-bottom:12px;cursor:pointer}
+.tour.an{box-shadow:inset 0 0 0 3px var(--akzent-2)}
+.tour .korken{width:74px;height:74px}
+.tour .korken .zahl{font-size:22px}
+.tour .korken .wort{font-size:14px}
+.tour .text strong{display:block;font-family:var(--display);font-size:19px;font-weight:900;line-height:1.2}
+.tour .text span{display:block;margin-top:3px;font-size:15.5px;color:var(--weich)}
+
+.halt{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent);width:62px;flex:none}
+.halt .name{flex:1;font-size:18px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:24px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="lead">Ein Korken je Stunde. Aufmachen, losgehen.</p>
+
+  <div class="reihe">
+    <span class="beschriftung">Wie lange hast du Zeit?</span>
+    <button class="korken" aria-pressed="false"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Stunden</span></span></button>
+    <button class="korken" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">4</span><span class="wort">Stunden</span></span></button>
+    <button class="korken" aria-pressed="false"><span class="rand"></span><span class="mitte"><span class="zahl">6</span><span class="wort">Stunden</span></span></button>
+    <button class="korken" aria-pressed="false" style="--farbe:var(--akzent-2)"><span class="rand"></span><span class="mitte"><span class="zahl">∞</span><span class="wort">ganzer Tag</span></span></button>
+  </div>
+
+  <div class="reihe">
+    <span class="beschriftung">Wo gehst du los?</span>
+    <input class="ort" value="Candidplatz" aria-label="Startpunkt">
+    <button class="los">Tour bauen</button>
+  </div>
+
+  <h2>Drei Abende</h2>
+  <button class="tour an">
+    <span class="korken"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+    <span class="text"><strong>Flaucher → Hinterbrühl</strong><span>3 Std 40 · zurück um 20:10 · Maß ab 10,40</span></span>
+  </button>
+  <button class="tour">
+    <span class="korken"><span class="rand"></span><span class="mitte"><span class="zahl">3</span><span class="wort">Halte</span></span></span>
+    <span class="text"><strong>Hirschgarten → Taxisgarten → Keller</strong><span>3 Std 55 · zurück um 20:25 · Maß ab 9,90</span></span>
+  </button>
+  <button class="tour">
+    <span class="korken"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+    <span class="text"><strong>Michaeligarten → Hofbräukeller</strong><span>3 Std 10 · zurück um 20:10 · Maß ab 9,80</span></span>
+  </button>
+
+  <h2>Dein Abend</h2>
+  <div class="halt">
+    <span class="wann">16:30</span>
+    <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,80</span>
+  </div>
+  <div class="halt">
+    <span class="wann">18:40</span>
+    <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,40</span>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

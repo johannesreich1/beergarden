@@ -30,7 +30,7 @@ export const BREWERY_STYLES: Record<string, BreweryStyle> = {
   spaten: { label: 'Spaten', short: ['SPATEN'], color: '#D19A16' },
   ayinger: { label: 'Ayinger', short: ['AYIN-', 'GER'], color: '#6E8FC4' },
   giesinger: { label: 'Giesinger', short: ['GIE-', 'SINGER'], color: '#9E3030' },
-  bio: { label: 'Bio / Lammsbräu', short: ['BIO'], color: '#6E8F3C' },
+  lammsbraeu: { label: 'Lammsbräu', short: ['LAMMS-', 'BRÄU'], color: '#6E8F3C' },
   wechselnd: { label: 'wechselnd', short: ['WECH-', 'SELND'], color: '#B08D50' },
   // The placeholder for the nine gardens without a verified brewery. "k. A."
   // is the honest label — not "wechselnd" and not nothing at all.
@@ -39,6 +39,25 @@ export const BREWERY_STYLES: Record<string, BreweryStyle> = {
 
 export const breweryStyle = (slug: string): BreweryStyle =>
   BREWERY_STYLES[slug] ?? BREWERY_STYLES[UNKNOWN_BREWERY]
+
+/**
+ * The brewery's name for running text — null when none is verified.
+ *
+ * A meta line is a list of facts, and "k. A." in the middle of one is a gap
+ * pretending to be a fact. The filter tiles still need something to print, so
+ * `BREWERY_STYLES` keeps its entry; this is only about sentences.
+ */
+export const breweryName = (slug: string): string | null =>
+  slug === UNKNOWN_BREWERY ? null : breweryStyle(slug).label
+
+/**
+ * The one separator for meta lines, with the empty parts dropped.
+ *
+ * Without it every caller reinvents where the dot goes when a fact is missing —
+ * and gets it wrong at the start of the line.
+ */
+export const metaLine = (...parts: Array<string | null | undefined>): string =>
+  parts.filter(Boolean).join(' · ')
 
 export const TAG_LABELS: Record<string, string> = {
   wasser: 'Am Wasser',

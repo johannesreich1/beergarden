@@ -1,10 +1,9 @@
 /**
- * Durchreiche zur Laravel-Anwendung.
+ * Pass-through to the Laravel application.
  *
- * Damit ist die API im Browser gleichursprünglich — kein CORS, keine
- * Preflights, keine zweite Domain in der CSP. Und beim Vorrendern erreicht
- * Nitro dieselbe Route über sich selbst, ohne dass irgendwo eine absolute
- * URL fest verdrahtet wäre.
+ * This makes the API same-origin in the browser — no CORS, no preflights, no
+ * second domain in the CSP. And while prerendering, Nitro reaches the same
+ * route through itself, without an absolute URL hard-wired anywhere.
  */
 export default defineEventHandler((event) => {
   const { apiBase } = useRuntimeConfig(event)

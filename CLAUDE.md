@@ -19,7 +19,14 @@ plus die Regeln fürs Arbeiten im Repo.
 `GET /api/gardens` und `GET /api/start-points`. Sonst nichts.
 
 `web/core/` ist der framework-freie Kern — Fahrzeitmodell, Generator, Scoring,
-Ablauf, Sonnenuntergang. Reine Funktionen, 33 Vitest-Fälle. `web/app/` ist Nuxt.
+Ablauf, Sonnenuntergang. Reine Funktionen, 41 Vitest-Fälle. `web/app/` ist Nuxt.
+
+**Karten laufen mit eigenen Kacheln.** `tools/fetch-tiles.sh` schneidet einmalig
+rund 32 MB Protomaps-Basiskarte für den Großraum München nach
+`web/public/tiles/`. Die Datei liegt nicht im Git — ohne sie bleiben die Karten
+leer, sonst passiert nichts. Der Stil steht in `web/app/utils/mapStyle.ts` und
+liest seine Farben aus `main.css`; bewusst ohne Beschriftung, weil jede
+Label-Schrift eine Datei von einem fremden Server wäre.
 
 `prototype/index.html` läuft weiter, holt seine Daten per `fetch` und stirbt, sobald
 sich v2 bewährt hat.

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Strichliste</title>
+<style>
+/* ============================================================
+   STRICHLISTE
+   Signature: the Wirt's tally. Everything countable on this page
+   is drawn as strokes — hours, stops, beers. Nothing is a number
+   in a box; you read the page the way you read a beer mat.
+   Readability: near-black on unbleached paper, secondary text at
+   14px rather than 10px capitals.
+   ============================================================ */
+:root{
+  --grund:#EFE6D2;         /* unbleached paper */
+  --flaeche:#E4D8BE;
+  --schrift:#1E1A12;
+  --weich:#5A4E36;
+  --akzent:#8E2F16;        /* the Wirt's red pencil */
+  --akzent-2:#1B3F8B;
+  --kante:rgba(30,26,18,.34);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+[data-theme="dark"]{
+  --grund:#181510; --flaeche:#221D15; --schrift:#F2E9D6; --weich:#BCAA8C;
+  --akzent:#E4795A; --akzent-2:#93B8E4; --kante:rgba(242,233,214,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.6 var(--text)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px 70px}
+
+header{padding:36px 0 20px}
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(28px,6vw,44px);
+  line-height:.95;letter-spacing:-.03em;text-transform:uppercase}
+h1 span{display:block;color:var(--akzent)}
+header p{margin:12px 0 0;max-width:40ch;color:var(--weich);font-size:16px}
+hr{border:0;height:3px;background:var(--kante);margin:20px 0 0}
+
+/* ---- the tally itself: the one interaction ---- */
+.frage{margin:30px 0 0}
+.frage > span{font-family:var(--display);font-size:15px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.05em}
+.striche{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.buendel{display:flex;gap:5px;padding:10px 12px;cursor:pointer;background:transparent;
+  border:0;box-shadow:inset 0 0 0 2px var(--kante);position:relative}
+.buendel i{display:block;width:3px;height:30px;background:var(--weich)}
+.buendel.voll i{background:var(--akzent)}
+.buendel.voll::after{content:'';position:absolute;left:6px;right:6px;top:50%;height:3px;
+  background:var(--akzent);transform:rotate(-14deg)}
+.ablesung{margin-top:12px;font-family:var(--display);font-size:22px;font-weight:900}
+.ablesung small{font-family:var(--text);font-weight:400;font-size:16px;color:var(--weich)}
+
+.zeile2{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px;align-items:center}
+.ort{flex:1 1 240px;font:17px/1 var(--text);padding:13px;background:var(--flaeche);
+  color:var(--schrift);border:0;box-shadow:inset 0 0 0 2px var(--kante)}
+.wahl{font-family:var(--display);font-size:14px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;padding:12px 15px;border:0;cursor:pointer;background:transparent;
+  color:var(--akzent-2);box-shadow:inset 0 0 0 2.5px var(--akzent-2)}
+.wahl[aria-pressed=true]{background:var(--akzent-2);color:var(--grund)}
+
+/* ---- suggestions ---- */
+.abschnitt{margin-top:38px}
+.abschnitt > h2{margin:0 0 14px;font-family:var(--display);font-size:15px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.05em}
+.liste{display:grid;gap:12px}
+@media(min-width:900px){.liste{grid-template-columns:repeat(3,1fr)}}
+.tour{background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);padding:17px;cursor:pointer;
+  text-align:left;border:0;color:inherit;font:inherit}
+.tour.an{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour h3{margin:0 0 9px;font-family:var(--display);font-size:18px;font-weight:900;line-height:1.15}
+.tour .zaehler{display:flex;gap:4px;margin-bottom:9px}
+.tour .zaehler i{width:4px;height:22px;background:var(--akzent)}
+.tour p{margin:0;font-size:15px;color:var(--weich)}
+
+/* ---- the chosen evening ---- */
+.halt{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding:15px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--mono);font-size:15px;color:var(--akzent);flex:none;width:58px}
+.halt .name{font-family:var(--display);font-size:18px;font-weight:900;flex:1}
+.halt .name small{display:block;font-family:var(--text);font-weight:400;font-size:14.5px;
+  color:var(--weich);letter-spacing:0;text-transform:none}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:30px;font-size:14.5px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Biergarten <span>Freunde</span></h1>
+    <p>Ein Strich pro Stunde. Mehr musst du nicht einstellen.</p>
+  </header>
+  <hr>
+
+  <div class="frage">
+    <span>Wie lange hast du Zeit?</span>
+    <div class="striche">
+      <button class="buendel voll"><i></i><i></i><i></i><i></i><i></i></button>
+      <button class="buendel"><i></i><i></i><i></i><i></i><i></i></button>
+    </div>
+    <div class="ablesung">5 Stunden <small>— bis 21:30, Sonnenuntergang 20:36</small></div>
+  </div>
+
+  <div class="zeile2">
+    <input class="ort" value="Candidplatz" aria-label="Wo gehst du los">
+    <button class="wahl" aria-pressed="true">Zu Fuß &amp; Radl</button>
+    <button class="wahl" aria-pressed="false">Mit allem</button>
+  </div>
+
+  <div class="abschnitt">
+    <h2>Drei Abende</h2>
+    <div class="liste">
+      <button class="tour an">
+        <h3>Flaucher →<br>Hinterbrühl</h3>
+        <div class="zaehler"><i></i><i></i></div>
+        <p>2 Stationen, 3 Std 40, ab 16:30</p>
+      </button>
+      <button class="tour">
+        <h3>Hirschgarten → Taxis → Keller</h3>
+        <div class="zaehler"><i></i><i></i><i></i></div>
+        <p>3 Stationen, 3 Std 55, ab 16:30</p>
+      </button>
+      <button class="tour">
+        <h3>Michaeligarten → Hofbräukeller</h3>
+        <div class="zaehler"><i></i><i></i></div>
+        <p>2 Stationen, 3 Std 10, ab 17:00</p>
+      </button>
+    </div>
+  </div>
+
+  <div class="abschnitt">
+    <h2>Dein Abend</h2>
+    <div class="halt">
+      <span class="wann">16:30</span>
+      <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+      <span class="mass">10,80</span>
+    </div>
+    <div class="halt">
+      <span class="wann">18:40</span>
+      <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+      <span class="mass">10,40</span>
+    </div>
+    <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  </div>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

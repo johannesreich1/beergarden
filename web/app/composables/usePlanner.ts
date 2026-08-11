@@ -28,6 +28,16 @@ export interface PlannerState {
   durations: Record<string, number>
   skipped: string[]
   lastStop: string | null
+
+  /**
+   * Whether the planner has been started once.
+   *
+   * The first screen asks the three questions and nothing else; the suggestions
+   * only appear once somebody has answered them. Afterwards the planner is live
+   * again — turning a dial and watching the tour change is the point of the wide
+   * view, and a confirm step on every change would take exactly that away.
+   */
+  started: boolean
 }
 
 function initialState(): PlannerState {
@@ -56,6 +66,7 @@ function initialState(): PlannerState {
     durations: {},
     skipped: [],
     lastStop: null,
+    started: false,
   }
 }
 
@@ -116,7 +127,7 @@ export function usePlanner() {
    * the notice would be without context.
    */
   const droppedTour = useState<{ plan: Plan } | null>(
-    'planner-verworfen',
+    'planner-dropped',
     () => null,
   )
 
@@ -195,9 +206,27 @@ export function usePlanner() {
       Object.keys(state.value.durations).length > 0,
   )
 
+  /**
+   * Whether the start screen is behind us.
+   *
+   * Derived rather than migrated: a state stored before the flag existed still
+   * carries a tour, and a tour is proof enough that its questions were answered.
+   * Reading it this way means no stored plan can ever end up hidden behind a
+   * screen its owner has never seen.
+   */
+  const started = computed(() => state.value.started || state.value.plan !== null)
+
+  /** Leave the start screen. One way only — nothing there is lost by leaving. */
+  function start(): void {
+    state.value.started = true
+    persist()
+  }
+
   return {
     state,
     hydrated,
+    started,
+    start,
     hydrate,
     persist,
     visitedSet,

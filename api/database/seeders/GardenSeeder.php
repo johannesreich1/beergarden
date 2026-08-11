@@ -50,6 +50,14 @@ class GardenSeeder extends Seeder
                 'zone' => $row['zone'],
                 'caveat' => $row['caveat'],
                 'description' => $row['description'],
+
+                // No fallback to null here: a garden without the keys is a
+                // broken data file, and it should fail loudly during seeding
+                // rather than silently lose its image.
+                'image_url' => $row['image_url'],
+                'image_credit' => $row['image_credit'],
+                'image_source_url' => $row['image_source_url'],
+
                 'source_url' => $row['source_url'],
                 'verified_at' => $row['verified_at'],
             ]);

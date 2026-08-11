@@ -26,7 +26,7 @@ const hoursLabel = computed(() =>
     : 'heute geschlossen',
 )
 
-const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
+const brewery = computed(() => breweryName(brewerySlug(props.garden)))
 </script>
 
 <template>
@@ -49,7 +49,7 @@ const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
       <p v-if="garden.description" class="desc">{{ garden.description }}</p>
 
       <div class="facts">
-        <span class="fact">{{ brewery.label }}</span>
+        <span v-if="brewery" class="fact">{{ brewery }}</span>
         <span class="fact">{{ formatSeats(garden.seats) }}</span>
         <span class="fact">{{ garden.selfService ? 'Selbstbedienung' : 'nur Bedienung' }}</span>
         <span class="fact">{{ hoursLabel }}</span>

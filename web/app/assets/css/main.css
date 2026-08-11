@@ -110,9 +110,9 @@
 html,body{margin:0;padding:0}
 body{
   background:var(--ground);
-  /* Board fibre: coarse, uneven grooves. Kraft board is not smooth. */
-  /* Board fibre. Half as strong as in the draft and further apart — it should
-     suggest the ground, not work against the text. */
+  /* Board fibre: coarse, uneven grooves, because kraft board is not smooth.
+     Half as strong as in the draft and further apart — it should suggest the
+     ground, not work against the text. */
   background-image:
     repeating-linear-gradient(94deg, rgba(0,0,0,.026) 0 1px, transparent 1px 7px),
     repeating-linear-gradient(2deg, rgba(255,255,255,.05) 0 1px, transparent 1px 6px);
@@ -143,12 +143,13 @@ body{
 /* -------------------------------------------------------------- Header */
 .head{padding:calc(24px + env(safe-area-inset-top)) 0 20px}
 /*
- * Siegel links, Schriftzug rechts.
+ * Seal on the left, wordmark on the right.
  *
- * Das Siegel ist genau so hoch wie der Schriftzug: zwei Zeilen mal
- * `line-height:.98` sind 1.96 × Schriftgrad, also dieselbe Kurve wie in
- * `h1 .l1` — nur mit 1.96 multipliziert. Eine feste Breite ginge auf schmalen
- * Geräten nicht auf; bei 320px braucht "BIERGARTEN" allein schon 209px.
+ * The seal is exactly as tall as the wordmark: two lines at `line-height:.98`
+ * make 1.96 × the font size, so it follows the same curve as `.wordmark-text
+ * .l1` — just
+ * multiplied by 1.96. A fixed width would not work on narrow devices; at 320px
+ * the word "BIERGARTEN" alone already needs 209px.
  */
 .wordmark{display:flex;align-items:center;gap:clamp(12px,3.5vw,18px)}
 .seal{--seal-size:clamp(59px,16.5vw,102px);
@@ -159,15 +160,27 @@ body{
 .seal .ort{font-family:var(--mono);font-weight:400;letter-spacing:.22em}
 .seal .raute{fill:currentColor}
 
-h1{margin:0;font-family:var(--display);font-weight:900;line-height:.98;
+/*
+ * The wordmark is not a heading.
+ *
+ * It used to be the `h1`, on every page — so the directory and every garden
+ * page announced "BiergartenFreunde" as their subject and their real title sat
+ * one level down as an `h2`. The name of the site is a name, not the topic of
+ * the page. It keeps its looks and loses its rank; `.page-title` is what a
+ * page's own `h1` wears now.
+ */
+.wordmark-text{margin:0;font-family:var(--display);font-weight:900;line-height:.98;
   letter-spacing:-.032em;text-transform:uppercase}
-h1 a{text-decoration:none;color:inherit}
-h1 .l1{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--blue);
+.wordmark-text a{text-decoration:none;color:inherit}
+.wordmark-text .l1{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--blue);
   transform:rotate(-1.4deg);transform-origin:left center}
-h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
+.wordmark-text .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
   transform:rotate(.9deg);transform-origin:left center}
-.head p{margin:18px 0 0;font-size:15.5px;color:var(--text-soft);max-width:44ch}
-.head p b{color:var(--text);font-weight:400}
+/* The tagline, and only it — the wordmark is a `p` inside `.head` too, and
+   `.head p` would otherwise beat `.wordmark-text` on specificity and hand it a
+   margin and a 44ch cap. */
+.head .wrap > p{margin:18px 0 0;font-size:15.5px;color:var(--text-soft);max-width:44ch}
+.head .wrap > p b{color:var(--text);font-weight:400}
 
 /* A torn board edge instead of a foam rim */
 .torn-edge{height:9px;margin:0;
@@ -192,9 +205,12 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
   .stage > * > .panel:first-child,
   .stage > * > .section-title:first-child{margin-top:0}
 }
-.section-title h2{margin:0;font-size:10px;font-family:var(--mono);letter-spacing:.3em;
-  text-transform:uppercase;color:var(--muted);font-weight:400}
-.section-title .rule{flex:1;height:1px;background:var(--edge-soft)}
+/* A section heading is a signpost, not a footnote: display face, full weight,
+   text colour. The mono whisper it used to be read as a caption for the block
+   above it rather than as the title of the block below. */
+.section-title h2{margin:0;font-size:12px;font-family:var(--display);letter-spacing:.16em;
+  text-transform:uppercase;color:var(--text);font-weight:900}
+.section-title .rule{flex:1;height:2px;background:var(--edge)}
 .note{margin:9px 0 0;color:var(--text-soft);font-size:14px}
 
 /* -------------------------------------------------------------- Buttons */
@@ -237,8 +253,8 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
 .chip[aria-pressed="true"]{background:var(--blue);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
 .chip:nth-child(2n)[aria-pressed="true"]{transform:rotate(-1.7deg)}
-.chip.g{color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
-.chip.g[aria-pressed="true"]{background:var(--gold);color:var(--on-accent);
+.chip.gold{color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
+.chip.gold[aria-pressed="true"]{background:var(--gold);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
 
 .frow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:3px 0}
@@ -280,7 +296,15 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 /* ------------------------------------------------------------ Suggestions */
 .plan{padding:15px;background:transparent;margin-bottom:10px;
   box-shadow:inset 0 0 0 1px var(--edge-soft)}
+/* Only the suggestions are clickable. The dropped tour below wears the same
+   class and keeps its own button, so the pointer is tied to the role rather
+   than to the look. */
+.plan[role="button"]{cursor:pointer}
+.plan[role="button"]:hover{box-shadow:inset 0 0 0 2px var(--edge);background:var(--surface)}
 .plan.active{box-shadow:inset 0 0 0 2.5px var(--gold);background:var(--surface)}
+/* The chosen card keeps its gold frame on hover — it is already taken, and
+   swapping the frame for the hover one reads as losing the selection. */
+.plan[role="button"].active:hover{box-shadow:inset 0 0 0 2.5px var(--gold)}
 .plan .ptop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .plan .rank{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--amber)}
@@ -342,12 +366,43 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 /* ------------------------------------------------------------------ Map */
 .map-shell{margin:16px 0 0;overflow:hidden;background:var(--map-ground);
   position:relative;box-shadow:inset 0 0 0 2px var(--edge)}
-svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
+.map-canvas{display:block;width:100%;aspect-ratio:1/1.02}
+.entity .map-canvas{aspect-ratio:16/9}
+
+/* The legend and MapLibre's attribution share the bottom edge, so the legend
+   sits left and the attribution stays where MapLibre puts it, on the right. */
 .map-legend{position:absolute;left:11px;bottom:10px;display:flex;flex-direction:column;
   gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);
-  text-transform:uppercase}
+  text-transform:uppercase;pointer-events:none;z-index:2}
 .map-legend i{display:inline-block;width:16px;height:0;border-top:2px solid;
   margin-right:6px;vertical-align:3px}
+
+/*
+ * Stops on the map: the same lozenge as everywhere else, with the name beside
+ * rather than inside it. A rotated square holds no text, and turning the label
+ * back upright inside a rotated box costs more than putting it next to one.
+ */
+.pin{display:flex;align-items:center;gap:6px;cursor:pointer}
+.pin i{width:13px;height:13px;flex:none;transform:rotate(45deg);
+  background:var(--gold);box-shadow:0 0 0 1.5px var(--map-ground)}
+.pin b{font-family:var(--display);font-size:10px;font-weight:900;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--text);background:var(--map-ground);
+  padding:2px 5px;white-space:nowrap;box-shadow:0 0 0 1px var(--edge-soft)}
+.pin.off i{background:var(--edge)}
+.pin.off b{color:var(--muted)}
+/* The start is a ring, not a lozenge: it is not a stop and should not read as
+   one, however tempting the symmetry is. */
+.pin.start{cursor:default}
+.pin.start i{transform:none;border-radius:50%;background:transparent;
+  box-shadow:inset 0 0 0 2.5px var(--foam), 0 0 0 1.5px var(--map-ground)}
+.pin.start b{color:var(--foam)}
+
+/* MapLibre's own chrome, brought into the palette. The attribution stays — the
+   OpenStreetMap licence asks for it and this is where it belongs. */
+.maplibregl-ctrl-attrib{font-family:var(--mono);font-size:8.5px;
+  background:color-mix(in srgb, var(--map-ground) 84%, transparent)}
+.maplibregl-ctrl-attrib a{color:var(--muted)}
+.maplibregl-ctrl-attrib-button{background-color:var(--map-ground)}
 
 /* -------------------------------------------------------------- Timeline */
 .tl{margin:18px 0 0;position:relative;padding-left:26px}
@@ -431,10 +486,12 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
   position:relative}
 .g.seenrow{background:var(--surface)}
 .g .gtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.g h4{margin:0;font-family:var(--display);font-size:16px;font-weight:900;
+/* h4 in the directory, h3 in the landing page's prose — same row, and the
+   heading level follows the page's outline rather than the look. */
+.g h4,.g h3{margin:0;font-family:var(--display);font-size:16px;font-weight:900;
   letter-spacing:-.024em;text-transform:uppercase;color:var(--text)}
-.g h4 a{color:inherit;text-decoration:none}
-.g h4 a:hover{text-decoration:underline;text-underline-offset:3px}
+.g h4 a,.g h3 a{color:inherit;text-decoration:none}
+.g h4 a:hover,.g h3 a:hover{text-decoration:underline;text-underline-offset:3px}
 .g .away{font-family:var(--mono);font-size:11.5px;color:var(--gold);white-space:nowrap;
   font-weight:700}
 .g .gmeta{margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
@@ -448,9 +505,43 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 /* ------------------------------------------------------- Practical notes */
 .tips{margin:16px 0 0;display:flex;flex-direction:column;gap:10px}
 .tip{padding:14px 15px;box-shadow:inset 0 0 0 1px var(--edge-soft)}
-.tip strong{display:block;font-family:var(--display);font-size:13px;font-weight:900;
+/* `strong` for the practical notes, `h3` for the FAQ — a question is part of
+   the outline, a note is not. */
+.tip strong,.tip h3{display:block;font-family:var(--display);font-size:13px;font-weight:900;
   letter-spacing:-.01em;text-transform:uppercase;color:var(--text);margin-bottom:5px}
 .tip span{font-size:14px;color:var(--text-soft)}
+
+/* ------------------------------------------------------------------ Prose */
+/*
+ * Running text: the landing page, and whatever else gets read rather than
+ * operated. Everything here is the page's own outline — title, lede,
+ * paragraph, list. The blocks inside it (`.section-title`, `.tips`, `.g`,
+ * `.actions`, `.btn`) are the ones the rest of the site already uses; a text
+ * page is not a reason for a second set of them.
+ */
+.page-title{margin:26px 0 0;font-family:var(--display);font-weight:900;
+  font-size:clamp(27px,6.4vw,40px);line-height:1.02;letter-spacing:-.028em;
+  text-transform:uppercase;color:var(--blue);
+  transform:rotate(-1deg);transform-origin:left center}
+/* One measure for the whole column, set here and nowhere else.
+   `.wrap` opens up past 1400px on a desktop, which is right for the planner's
+   three streams and far too wide for a line of prose. Capping each paragraph
+   instead would leave the headings and their rules hanging out to the right, so
+   the article itself is the column, centred in the available width. */
+.prose{max-width:74ch;margin-inline:auto}
+.prose .lede{margin:17px 0 0;font-size:17px;color:var(--text)}
+.prose p{margin:13px 0 0;color:var(--text-soft)}
+/* Emphasis is a colour, not a weight — as with `.head p b`. The body face has
+   no bold worth the name, and a heavier serif on kraft just looks smudged. */
+.prose strong{color:var(--text);font-weight:400}
+.prose ul{margin:13px 0 0;padding-left:0;list-style:none}
+.prose li{margin-top:9px;padding-left:18px;position:relative;color:var(--text-soft)}
+/* The Bavarian lozenge as the bullet — the shape the seal already carries. */
+.prose li::before{content:"";position:absolute;left:0;top:.8em;width:7px;height:7px;
+  background:var(--blue);transform:translateY(-50%) rotate(45deg)}
+.prose li strong{color:var(--text)}
+.prose a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;
+  text-decoration-thickness:1.5px}
 
 footer{margin:38px 0 0;padding:18px 0 0;border-top:1px solid var(--edge-soft);
   color:var(--muted);font-family:var(--mono);font-size:10.5px;line-height:1.9;
@@ -475,10 +566,30 @@ footer b{color:var(--text-soft);font-weight:400}
 .hero .photo{aspect-ratio:16/7}
 .hero-plate{position:absolute;left:0;right:0;bottom:-18px;pointer-events:none;
   display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
-.hero-plate h2{display:inline-block;margin:0;font-family:var(--display);font-weight:900;
+/*
+ * The name plate is the only stamp that sits on top of an image, and the shared
+ * `stamped` mask is wrong for it twice over: it cuts holes straight through to
+ * the photo, and it frays the lettering. So the break is painted rather than
+ * masked — a ground underneath, the blue field with the break above it, the name
+ * on top and intact. A stamp presses ink onto paper; it does not cut it.
+ *
+ * That ground is a muted blue rather than board colour, and this is where the
+ * strength of the break is set. Against bare board every gap reads as a slit;
+ * against a darker blue the same gap reads as ink that ran thin. The mask stays
+ * the one everything else uses — only what shows through it changes.
+ */
+.hero-plate h1{display:inline-block;margin:0;font-family:var(--display);font-weight:900;
   font-size:clamp(20px,5.2vw,38px);line-height:1;letter-spacing:-.032em;text-transform:uppercase;
-  background:var(--blue);color:var(--on-accent);padding:13px 17px;transform:rotate(-1.4deg);
-  max-width:calc(100% - 24px)}
+  background:color-mix(in srgb, var(--blue) 62%, var(--ground));
+  color:var(--on-accent);padding:13px 17px;transform:rotate(-1.4deg);
+  max-width:calc(100% - 24px);position:relative;isolation:isolate}
+/* z-index:-1 puts the blue field above the h1's own background but below its
+   text — that is the whole trick, and it needs the isolation above to hold.
+   The hard break, not the soft one: the soft variant exists to keep masked
+   lettering legible, and the lettering here is not masked at all. */
+.hero-plate h1::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--blue);
+  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
 
 /* Image slot. As long as no licensed photo exists, a stamp stands here — not
    a grey box pretending only the file is missing. */
@@ -519,7 +630,11 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   letter-spacing:.14em;text-transform:uppercase;font-size:9.5px}
 .hours td{padding:7px 0;color:var(--text-soft);border-top:1px solid var(--edge-soft)}
 .hours td.closed{color:var(--muted)}
-.hours tr.today td{color:var(--gold)}
+/* Today is the row people opened the page for. Gold, because gold carries the
+   times everywhere else too. A tint rather than a filled band: it has to be
+   findable at a glance, not win against the price beside it. */
+.hours tr.today td{background:color-mix(in srgb, var(--gold) 15%, transparent);
+  color:var(--gold);font-weight:700;border-top-color:var(--gold)}
 .unverified{margin-top:12px;font-size:13px;color:var(--muted)}
 
 /* ============================================================
@@ -542,6 +657,17 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
  */
 .stage{margin-top:22px}
 .stage > *{min-width:0}
+
+/*
+ * The start screen: the questions on their own.
+ *
+ * Reading width rather than the full 1400 px. "Full width" for a column of
+ * short inputs means a slider stretched across a metre of screen and a label
+ * that has left its field behind — the space belongs to the answers, and those
+ * come afterwards.
+ */
+.setup-go{margin:26px 0 0}
+.setup-go .note{margin-top:10px}
 
 @media (min-width:1000px){
   .wrap{max-width:1180px;padding:0 30px}
@@ -572,6 +698,11 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   .head p{grid-area:text;align-self:end;margin:0 0 8px}
   .stage{display:grid;grid-template-columns:minmax(290px,330px) minmax(0,1fr);
     gap:30px;align-items:start}
+
+  /* One column until the planner is started — and centred, because a lone
+     column pinned to the left edge of a wide screen reads as a broken layout
+     rather than as a deliberate one. */
+  .stage.setup{grid-template-columns:minmax(0,620px);justify-content:center}
   /* Body text stays narrow — nobody enjoys a line over 1400 px. */
   .head p,.note{max-width:52ch}
 }

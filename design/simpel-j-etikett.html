@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Etikett</title>
+<style>
+/* ============================================================
+   ETIKETT
+   Signature: the tour printed as a beer label — centred, framed,
+   with the stops set as an ingredient list. A label has no room
+   for filters and chips, which is precisely why it works as the
+   discipline: whatever does not fit on the bottle does not go on
+   the page.
+   ============================================================ */
+:root{
+  /* The glass behind the label. Nothing is ever set on it, so its contrast
+     against the text roles says nothing — read --flaeche instead. */
+  --grund:#1F2A22;
+  --flaeche:#F6EFDC;       /* the paper */
+  --schrift:#211A0E;
+  --weich:#5B4B2E;
+  --akzent:#8A1C1C;
+  --akzent-2:#12492C;
+  --kante:rgba(33,26,14,.34);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#0D120F; --flaeche:#241E12; --schrift:#F4EAD3; --weich:#C2AF88;
+  --akzent:#E4756F; --akzent-2:#7FC49B; --kante:rgba(244,234,211,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);font:17px/1.62 var(--text);
+  display:flex;justify-content:center;padding:34px 18px 70px}
+
+.etikett{width:100%;max-width:620px;background:var(--flaeche);color:var(--schrift);
+  padding:clamp(26px,5vw,46px);position:relative;
+  box-shadow:inset 0 0 0 3px var(--kante),inset 0 0 0 9px var(--flaeche),inset 0 0 0 11px var(--kante)}
+
+.medaille{width:78px;height:78px;margin:0 auto 16px;border-radius:50%;
+  box-shadow:inset 0 0 0 3px var(--akzent);display:flex;align-items:center;justify-content:center}
+.medaille i{display:block;width:28px;height:28px;background:var(--akzent);transform:rotate(45deg)}
+
+h1{margin:0;text-align:center;font-family:var(--display);font-weight:900;
+  font-size:clamp(25px,5.4vw,36px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
+h1 span{display:block;color:var(--akzent)}
+.claim{margin:12px 0 0;text-align:center;font-size:16.5px;color:var(--weich)}
+.zier{height:3px;background:var(--kante);margin:22px 0}
+
+/* ---- the three questions, set like a declaration ---- */
+.angabe{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding:11px 0;border-bottom:1px solid var(--kante)}
+.angabe span{font-size:15.5px;color:var(--weich)}
+.angabe b{font-family:var(--display);font-size:19px;font-weight:900;letter-spacing:-.01em;
+  cursor:pointer;text-align:right}
+.los{display:block;width:100%;margin-top:22px;border:0;cursor:pointer;
+  background:var(--akzent);color:var(--flaeche);font-family:var(--display);font-size:17px;
+  font-weight:900;text-transform:uppercase;letter-spacing:.05em;padding:16px}
+
+/* ---- suggestions as vintages ---- */
+h2{margin:28px 0 12px;text-align:center;font-family:var(--display);font-size:15.5px;
+  font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--weich)}
+.tour{display:block;width:100%;text-align:center;border:0;background:transparent;color:inherit;
+  font:inherit;padding:13px 0;border-top:1px solid var(--kante);cursor:pointer}
+.tour:last-of-type{border-bottom:1px solid var(--kante)}
+.tour strong{display:block;font-family:var(--display);font-size:19px;font-weight:900;line-height:1.2}
+.tour span{display:block;margin-top:3px;font-size:15.5px;color:var(--weich)}
+.tour.an strong{color:var(--akzent-2)}
+
+/* ---- the chosen tour as an ingredient list ---- */
+.zutaten{margin-top:8px}
+.zutat{display:flex;justify-content:space-between;gap:14px;align-items:baseline;
+  padding:12px 0;border-bottom:1px solid var(--kante)}
+.zutat .name{font-family:var(--display);font-size:18px;font-weight:900}
+.zutat .name small{display:block;font-family:var(--text);font-weight:400;font-size:15px;color:var(--weich)}
+.zutat .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent)}
+footer{margin-top:18px;text-align:center;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="etikett">
+  <div class="medaille"><i></i></div>
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="claim">Münchner Abendausschank · seit heute</p>
+  <div class="zier"></div>
+
+  <div class="angabe"><span>Ausschankort</span><b>Candidplatz</b></div>
+  <div class="angabe"><span>Ausschankdauer</span><b>4 Stunden</b></div>
+  <div class="angabe"><span>Anreise</span><b>Zu Fuß &amp; Radl</b></div>
+  <button class="los">Tour abfüllen</button>
+
+  <h2>Drei Abfüllungen</h2>
+  <button class="tour an">
+    <strong>Flaucher → Hinterbrühl</strong>
+    <span>2 Stationen · 3 Std 40 · zurück um 20:10</span>
+  </button>
+  <button class="tour">
+    <strong>Hirschgarten → Taxisgarten → Keller</strong>
+    <span>3 Stationen · 3 Std 55 · zurück um 20:25</span>
+  </button>
+  <button class="tour">
+    <strong>Michaeligarten → Hofbräukeller</strong>
+    <span>2 Stationen · 3 Std 10 · zurück um 20:10</span>
+  </button>
+
+  <h2>Zutaten</h2>
+  <div class="zutaten">
+    <div class="zutat">
+      <span class="name">16:30 Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+      <span class="mass">10,80</span>
+    </div>
+    <div class="zutat">
+      <span class="name">18:40 Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+      <span class="mass">10,40</span>
+    </div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

@@ -1,6 +1,16 @@
 <script setup lang="ts">
+import type { Map as MapLibreMap, Marker } from 'maplibre-gl'
 import type { Garden, ScheduleRow, StartPoint } from '#core'
 
+/**
+ * The tour on a real map.
+ *
+ * The legs are style layers, because they belong to the map and have to be
+ * redrawn whenever the palette changes. The stops are DOM markers, because they
+ * carry a name and a click — and a label inside a style layer would need a glyph
+ * file from somebody else's server, which is the one thing self-hosted tiles are
+ * there to avoid.
+ */
 const props = defineProps<{
   start: StartPoint
   /** Every stop of the plan, including the skipped ones. */
@@ -10,124 +20,116 @@ const props = defineProps<{
 
 const emit = defineEmits<{ select: [slug: string] }>()
 
-const viewBox = computed(() => viewBoxFor([props.start, ...props.planned]))
+const container = ref<HTMLElement>()
 
 const activeSlugs = computed(() => new Set(props.rows.map((row) => row.garden.slug)))
 
-/** The legs actually travelled, in order. */
-const arcs = computed(() => {
+/** The legs actually travelled, one line each, tagged with their mode. */
+const legs = computed<GeoJSON.FeatureCollection>(() => {
   let previous: StartPoint | Garden = props.start
 
-  return props.rows.map((row) => {
-    const arc = { d: arcBetween(previous, row.garden), mode: row.legMode, key: row.garden.slug }
-    previous = row.garden
+  return {
+    type: 'FeatureCollection',
+    features: props.rows.map((row) => {
+      const feature: GeoJSON.Feature = {
+        type: 'Feature',
+        properties: { mode: row.legMode },
+        geometry: { type: 'LineString', coordinates: [point(previous), point(row.garden)] },
+      }
+      previous = row.garden
 
-    return arc
-  })
+      return feature
+    }),
+  }
 })
 
-const startPoint = computed(() => project(props.start))
+function drawLegs(map: MapLibreMap): void {
+  ensureSource(map, 'legs', legs.value)
+
+  for (const [mode, paint] of Object.entries(legPaint())) {
+    ensureLayer(map, {
+      id: `leg-${mode}`,
+      type: 'line',
+      source: 'legs',
+      filter: ['==', ['get', 'mode'], mode],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': paint.color,
+        'line-width': 3,
+        'line-dasharray': paint.dash,
+      },
+    })
+  }
+}
+
+/** Everything the map has to show: the start and every stop drawn on it. */
+const framed = computed(() => [props.start, ...props.planned].map(point))
+
+const { map, fit } = useMap(
+  container,
+  {
+    center: point(props.start),
+    zoom: 11.6,
+    fit: framed.value,
+  },
+  drawLegs,
+)
+
+/*
+ * Reframe when the tour changes.
+ *
+ * The initial `fit` only knows the tour that existed at construction. Pick a
+ * different tour, drop a stop or move the start point, and the new shape can
+ * sit half outside the visible section — the lines redraw correctly and nobody
+ * sees them. Animated, so it stays obvious that this is the same map.
+ */
+watch(framed, (points) => fit(points))
+
+// An edit to the plan moves the legs, not their styling: updating the source
+// keeps the map from flickering on every turn of a dial.
+watch(legs, (value) => {
+  const source = map.value?.getSource('legs')
+  if (source && 'setData' in source) source.setData(value)
+})
+
+/** One marker per stop, rebuilt whenever the plan changes. */
+const markers: Marker[] = []
+
+async function placeMarkers(): Promise<void> {
+  if (!map.value) return
+
+  const { Marker } = await import('maplibre-gl')
+
+  for (const marker of markers.splice(0)) marker.remove()
+
+  markers.push(
+    new Marker(mapPin('start', props.start.name))
+      .setLngLat(point(props.start))
+      .addTo(map.value),
+  )
+
+  for (const garden of props.planned) {
+    const options = mapPin(activeSlugs.value.has(garden.slug) ? 'on' : 'off', shortName(garden.name))
+    options.element.addEventListener('click', () => emit('select', garden.slug))
+
+    markers.push(new Marker(options).setLngLat(point(garden)).addTo(map.value))
+  }
+}
+
+// Markers are DOM, not layers: they can go on the moment the map object
+// exists, without waiting for a style or a rendered frame.
+watch([map, () => props.planned, activeSlugs, () => props.start], () => {
+  if (map.value) placeMarkers()
+}, { immediate: true })
+
+onBeforeUnmount(() => {
+  for (const marker of markers.splice(0)) marker.remove()
+})
 </script>
 
 <template>
   <div class="map-shell">
-    <svg class="map" :viewBox="viewBox" role="img" aria-label="Karte der Tour">
-      <polygon
-        v-for="(park, index) in PARKS"
-        :key="`park-${index}`"
-        :points="polygonPoints(park)"
-        :style="{ fill: 'var(--map-park)' }"
-      />
-
-      <path
-        :d="smoothPath(ISAR)" fill="none" stroke-width="6" stroke-linecap="round"
-        :style="{ stroke: 'var(--map-water)', opacity: .28 }"
-      />
-      <path
-        :d="smoothPath(ISAR)" fill="none" stroke-width="1.6" stroke-linecap="round"
-        :style="{ stroke: 'var(--map-water)', opacity: .7 }"
-      />
-
-      <ellipse
-        v-for="(lake, index) in LAKES"
-        :key="`lake-${index}`"
-        :cx="project(lake)[0].toFixed(1)"
-        :cy="project(lake)[1].toFixed(1)"
-        :rx="projectRadius(lake)[0].toFixed(1)"
-        :ry="projectRadius(lake)[1].toFixed(1)"
-        stroke-width="1"
-        :style="{ fill: 'var(--map-water)', stroke: 'var(--map-water)', opacity: .4 }"
-      />
-
-      <text
-        v-for="hood in HOODS"
-        :key="hood.label"
-        :x="project(hood)[0].toFixed(1)"
-        :y="project(hood)[1].toFixed(1)"
-        :style="{ fill: 'var(--map-label)' }"
-        font-size="7.5"
-        letter-spacing="1.4"
-        font-family="ui-monospace,monospace"
-        text-anchor="middle"
-      >{{ hood.label.toUpperCase() }}</text>
-
-      <path
-        v-for="arc in arcs"
-        :key="arc.key"
-        :d="arc.d"
-        fill="none"
-        :style="{ stroke: LEG_COLOURS[arc.mode] }"
-        stroke-width="2.2"
-        stroke-linecap="round"
-        :stroke-dasharray="LEG_DASHES[arc.mode]"
-      />
-
-      <circle
-        :cx="startPoint[0].toFixed(1)" :cy="startPoint[1].toFixed(1)" r="5.5"
-        fill="none" stroke-width="2" :style="{ stroke: 'var(--foam)' }"
-      />
-      <circle
-        :cx="startPoint[0].toFixed(1)" :cy="startPoint[1].toFixed(1)" r="1.8"
-        :style="{ fill: 'var(--foam)' }"
-      />
-      <text
-        :x="startPoint[0].toFixed(1)"
-        :y="(startPoint[1] + 16).toFixed(1)"
-        :style="{ fill: 'var(--foam)' }"
-        font-size="8.5"
-        font-family="ui-monospace,monospace"
-        text-anchor="middle"
-      >{{ start.name.toUpperCase() }}</text>
-
-      <g
-        v-for="garden in planned"
-        :key="garden.slug"
-        style="cursor: pointer"
-        @click="emit('select', garden.slug)"
-      >
-        <rect
-          :x="(project(garden)[0] - 6).toFixed(1)"
-          :y="(project(garden)[1] - 6).toFixed(1)"
-          width="12"
-          height="12"
-          :transform="`rotate(45 ${project(garden)[0].toFixed(1)} ${project(garden)[1].toFixed(1)})`"
-          :style="{
-            fill: activeSlugs.has(garden.slug) ? 'var(--gold)' : 'var(--edge)',
-            stroke: 'var(--map-ground)',
-          }"
-          stroke-width="1.5"
-        />
-        <text
-          :x="project(garden)[0].toFixed(1)"
-          :y="(project(garden)[1] - 13).toFixed(1)"
-          :style="{ fill: activeSlugs.has(garden.slug) ? 'var(--foam)' : 'var(--muted)' }"
-          font-size="9"
-          font-weight="700"
-          font-family="-apple-system,sans-serif"
-          text-anchor="middle"
-        >{{ shortName(garden.name) }}</text>
-      </g>
-    </svg>
+    <div ref="container" class="map-canvas" />
 
     <div class="map-legend">
       <div><i style="border-color: var(--leg-walk); border-top-style: dotted" />zu Fuß</div>

@@ -105,12 +105,12 @@ function toggleExtra(key: BooleanFilter): void {
       <span class="eyebrow">Wo ich schon war</span>
       <div class="pair">
         <button
-          class="chip g"
+          class="chip gold"
           :aria-pressed="!state.filters.unvisitedOnly"
           @click="setVisitedFilter(false)"
         >Dabei</button>
         <button
-          class="chip g"
+          class="chip gold"
           :aria-pressed="state.filters.unvisitedOnly"
           @click="setVisitedFilter(true)"
         >Raus</button>

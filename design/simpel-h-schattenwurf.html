@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Schattenwurf</title>
+<style>
+/* ============================================================
+   SCHATTENWURF
+   Signature: the light under the chestnut trees. The page has a
+   sun that moves — the band across the top is the evening, and
+   the shadow creeping over it is how much of it is already gone.
+   That band replaces the clock, the slider and the sunset note
+   the current planner needs three separate controls for.
+   ============================================================ */
+:root{
+  --grund:#F0E7D2;         /* gravel in the sun */
+  --flaeche:#FFFFFF;
+  --schatten:#CBBB99;      /* gravel in the shade */
+  --schrift:#1F1A10;
+  --weich:#584C34;
+  --akzent:#2C6B3F;        /* chestnut green */
+  --akzent-2:#9A5A0A;
+  --kante:rgba(31,26,16,.28);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#181509; --flaeche:#232013; --schatten:#0F0D06; --schrift:#F2EAD5;
+  --weich:#BFB08C; --akzent:#7FBE92; --akzent-2:#E5A45B;
+  --kante:rgba(242,234,213,.26);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text)}
+.wrap{max-width:1000px;margin:0 auto;padding:34px 20px 70px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(27px,5.6vw,40px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent)}
+.lead{margin:12px 0 0;max-width:42ch;font-size:16.5px;color:var(--weich)}
+
+/* ---- the evening as a band of light ---- */
+.abend{margin:30px 0 0;position:relative;height:76px;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);overflow:hidden}
+.abend .schatten{position:absolute;left:0;top:0;bottom:0;width:38%;background:var(--schatten)}
+.abend .sonne{position:absolute;left:38%;top:0;bottom:0;width:3px;background:var(--akzent-2)}
+.abend .blatt{position:absolute;top:0;bottom:0;width:34px;
+  background:radial-gradient(closest-side,rgba(0,0,0,.11),transparent)}
+.abend .marke{position:absolute;bottom:8px;font-size:14.5px;color:var(--weich)}
+.abend .jetzt{position:absolute;top:9px;left:38%;transform:translateX(-50%);
+  font-family:var(--display);font-size:16px;font-weight:900;color:var(--akzent-2);white-space:nowrap}
+
+.fragen{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px;align-items:flex-end}
+.feld{flex:1 1 220px}
+.feld label{display:block;font-size:15px;color:var(--weich);margin-bottom:4px}
+.feld input,.feld select{width:100%;border:0;background:var(--flaeche);color:var(--schrift);
+  font:19px/1.2 var(--display);font-weight:900;padding:13px 14px;
+  box-shadow:inset 0 0 0 2px var(--kante)}
+.feld select{appearance:none;cursor:pointer}
+.los{border:0;cursor:pointer;background:var(--akzent);color:var(--flaeche);
+  font-family:var(--display);font-size:17px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;padding:16px 24px}
+
+h2{margin:38px 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+
+.tour{display:block;width:100%;text-align:left;border:0;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);color:inherit;font:inherit;padding:17px;
+  margin-bottom:12px;cursor:pointer;position:relative;overflow:hidden}
+.tour.an{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour .laub{position:absolute;right:-30px;top:-30px;width:120px;height:120px;
+  background:radial-gradient(closest-side,rgba(44,107,63,.16),transparent)}
+.tour strong{display:block;font-family:var(--display);font-size:19px;font-weight:900;line-height:1.2}
+.tour span{display:block;margin-top:4px;font-size:15.5px;color:var(--weich)}
+
+.halt{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2);width:62px;flex:none}
+.halt .name{flex:1;font-size:18px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent)}
+footer{margin-top:24px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="lead">Der Balken ist dein Abend. Was im Schatten liegt, ist vorbei.</p>
+
+  <div class="abend">
+    <div class="schatten"></div>
+    <div class="blatt" style="left:46%"></div>
+    <div class="blatt" style="left:58%"></div>
+    <div class="blatt" style="left:71%"></div>
+    <div class="sonne"></div>
+    <div class="jetzt">jetzt 16:30</div>
+    <div class="marke" style="left:10px">12:00</div>
+    <div class="marke" style="left:50%">18:00</div>
+    <div class="marke" style="right:10px">Sonnenuntergang 20:36</div>
+  </div>
+
+  <div class="fragen">
+    <div class="feld">
+      <label for="ort">Wo gehst du los</label>
+      <input id="ort" value="Candidplatz">
+    </div>
+    <div class="feld">
+      <label for="zeit">Wie lange hast du</label>
+      <select id="zeit"><option>4 Stunden</option><option>3 Stunden</option><option>bis zum Sonnenuntergang</option></select>
+    </div>
+    <button class="los">Tour bauen</button>
+  </div>
+
+  <h2>Drei Abende</h2>
+  <button class="tour an">
+    <span class="laub"></span>
+    <strong>Flaucher → Hinterbrühl</strong>
+    <span>2 Stationen · 3 Std 40 · zurück um 20:10 · beide im Schatten</span>
+  </button>
+  <button class="tour">
+    <span class="laub"></span>
+    <strong>Hirschgarten → Taxisgarten → Augustiner-Keller</strong>
+    <span>3 Stationen · 3 Std 55 · zurück um 20:25</span>
+  </button>
+  <button class="tour">
+    <span class="laub"></span>
+    <strong>Michaeligarten → Hofbräukeller</strong>
+    <span>2 Stationen · 3 Std 10 · zurück um 20:10</span>
+  </button>
+
+  <h2>Dein Abend</h2>
+  <div class="halt">
+    <span class="wann">16:30</span>
+    <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,80</span>
+  </div>
+  <div class="halt">
+    <span class="wann">18:40</span>
+    <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,40</span>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

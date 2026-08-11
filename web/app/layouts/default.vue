@@ -97,11 +97,15 @@ const eyebrow = computed(() => {
             <text class="ort" x="66" y="112" font-size="8" text-anchor="middle">MÜNCHEN</text>
           </svg>
 
-          <h1 class="stamped">
+          <!--
+            A `p`, not an `h1`: the site is called this on every page, but no
+            page is *about* being called this. Each page brings its own `h1`.
+          -->
+          <p class="wordmark-text stamped">
             <NuxtLink to="/">
               <span class="l1">Biergarten</span><span class="l2">Freunde</span>
             </NuxtLink>
-          </h1>
+          </p>
         </div>
 
         <p>
@@ -115,7 +119,7 @@ const eyebrow = computed(() => {
 
     <div class="wrap">
       <nav class="seg">
-        <NuxtLink to="/">Tour bauen</NuxtLink>
+        <NuxtLink to="/planer">Tour bauen</NuxtLink>
         <NuxtLink to="/verzeichnis">Alle Biergärten</NuxtLink>
       </nav>
 

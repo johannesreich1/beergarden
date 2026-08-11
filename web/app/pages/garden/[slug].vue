@@ -24,7 +24,7 @@ if (!garden.value) {
   })
 }
 
-const brewery = computed(() => breweryStyle(brewerySlug(garden.value!)))
+const brewery = computed(() => breweryName(brewerySlug(garden.value!)))
 
 /**
  * Whether this garden has been visited.
@@ -53,13 +53,13 @@ const leg = computed(() =>
     : null,
 )
 
-useHead({ title: `${garden.value.name} · Biergarten Freunde` })
-
-useSeoMeta({
-  description: () =>
-    garden.value?.description ??
-    `${garden.value?.name} in München — Öffnungszeiten, Ausschank und Anfahrt.`,
-})
+usePageSeo(() => ({
+  title: garden.value?.name,
+  description:
+    garden.value?.description
+    ?? `${garden.value?.name} in München — Öffnungszeiten, Ausschank und Anfahrt.`,
+  type: 'article',
+}))
 </script>
 
 <template>
@@ -76,7 +76,8 @@ useSeoMeta({
     <div class="hero">
       <GardenPhoto :garden="garden" />
       <div class="hero-plate">
-        <h2 class="stamped">{{ garden.name }}</h2>
+        <!-- The garden's name is what this page is about, so it is the h1. -->
+        <h1>{{ garden.name }}</h1>
         <span v-if="visited" class="seen">warst du</span>
       </div>
     </div>
@@ -84,8 +85,12 @@ useSeoMeta({
     <div class="entity-body">
       <div class="entity-main">
         <div class="gmeta">
-          {{ brewery.label }} · {{ garden.district }} · {{ formatSeats(garden.seats) }}
-          <template v-if="leg"> · ≈{{ leg.min }} min ab {{ state.startPoint.name }}</template>
+          {{ metaLine(
+            brewery,
+            garden.district,
+            formatSeats(garden.seats),
+            leg ? `≈${leg.min} min ab ${state.startPoint.name}` : null,
+          ) }}
         </div>
         <div v-if="isOnWater(garden)" class="water">Am Wasser</div>
 
@@ -108,7 +113,7 @@ useSeoMeta({
         </div>
 
         <div class="actions">
-          <NuxtLink class="btn on" to="/">Tour hierhin bauen</NuxtLink>
+          <NuxtLink class="btn on" to="/planer">Tour hierhin bauen</NuxtLink>
           <button
             class="btn"
             :class="{ warn: visited }"
@@ -126,6 +131,11 @@ useSeoMeta({
 
         <div class="section-title"><h2>Öffnungszeiten</h2><div class="rule" /></div>
         <OpeningHoursTable :garden="garden" :today="today" />
+
+        <div class="section-title"><h2>Wo es liegt</h2><div class="rule" /></div>
+        <ClientOnly>
+          <GardenMap :garden="garden" />
+        </ClientOnly>
       </aside>
     </div>
   </section>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Brotzeitbrettl</title>
+<style>
+/* ============================================================
+   BROTZEITBRETTL
+   Signature: the evening served on a wooden board. Stops are
+   laid out along the grain like slices, left to right, and the
+   board has a handle — the one place the primary action lives.
+   Reduction: no cards. A slice is a name, a time and a price,
+   separated by the grain and nothing else.
+   ============================================================ */
+:root{
+  --grund:#C8A778;         /* the board */
+  --flaeche:#E3CBA4;       /* the cut surface, lighter */
+  --schrift:#241706;
+  --weich:#452C0F;
+  --akzent:#7B2D12;
+  --akzent-2:#1B3F8B;
+  --kante:rgba(36,23,6,.34);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#241906; --flaeche:#33240D; --schrift:#F2E3C6; --weich:#C3AB80;
+  --akzent:#E08258; --akzent-2:#8FB4DF; --kante:rgba(242,227,198,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text);
+  background-image:repeating-linear-gradient(91deg,rgba(0,0,0,.05) 0 2px,transparent 2px 13px)}
+.wrap{max-width:1020px;margin:0 auto;padding:36px 20px 70px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(27px,5.6vw,40px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent)}
+.lead{margin:12px 0 34px;max-width:42ch;font-size:16.5px;color:var(--weich)}
+
+/* ---- the board with its handle ---- */
+.brettl{background:var(--flaeche);box-shadow:inset 0 0 0 3px var(--kante);
+  position:relative;padding:22px;margin-top:22px}
+.brettl::before{content:'';position:absolute;left:50%;top:-19px;width:88px;height:22px;
+  transform:translateX(-50%);background:var(--flaeche);
+  box-shadow:inset 0 3px 0 var(--kante),inset 3px 0 0 var(--kante),inset -3px 0 0 var(--kante);
+  border-radius:11px 11px 0 0}
+
+.fragen{display:grid;gap:16px}
+@media(min-width:760px){.fragen{grid-template-columns:1fr 1fr 1fr auto;align-items:end}}
+.feld label{display:block;font-size:15px;color:var(--weich);margin-bottom:4px}
+.feld input,.feld select{width:100%;border:0;background:transparent;color:var(--schrift);
+  font:20px/1.2 var(--display);font-weight:900;padding:8px 0;
+  box-shadow:inset 0 -3px 0 var(--kante)}
+.feld select{appearance:none;cursor:pointer}
+.los{border:0;cursor:pointer;background:var(--akzent);color:var(--flaeche);
+  font-family:var(--display);font-size:17px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;padding:15px 22px}
+
+h2{margin:40px 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+
+/* ---- slices along the grain ---- */
+.tour{display:block;width:100%;text-align:left;border:0;background:var(--flaeche);
+  box-shadow:inset 0 0 0 3px var(--kante);color:inherit;font:inherit;cursor:pointer;
+  margin-bottom:14px;padding:0}
+.tour.an{box-shadow:inset 0 0 0 4px var(--akzent)}
+.scheiben{display:flex;flex-wrap:wrap}
+.scheibe{flex:1 1 190px;padding:15px 17px;border-right:3px solid var(--kante)}
+.scheibe:last-child{border-right:0}
+.scheibe .name{display:block;font-family:var(--display);font-size:18px;font-weight:900;line-height:1.15}
+.scheibe .wann{display:block;margin-top:4px;font-size:15px;color:var(--weich)}
+.scheibe .mass{display:block;margin-top:6px;font-family:var(--display);font-size:17px;
+  font-weight:900;color:var(--akzent-2)}
+.tour .summe{display:block;padding:12px 17px;font-size:15.5px;color:var(--weich);
+  border-top:3px solid var(--kante)}
+
+footer{margin-top:26px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="lead">Der Abend aufs Brettl gelegt — eine Scheibe je Station.</p>
+
+  <div class="brettl">
+    <div class="fragen">
+      <div class="feld">
+        <label for="ort">Wo gehst du los</label>
+        <input id="ort" value="Candidplatz">
+      </div>
+      <div class="feld">
+        <label for="zeit">Wie lange hast du</label>
+        <select id="zeit"><option>4 Stunden</option><option>3 Stunden</option><option>6 Stunden</option></select>
+      </div>
+      <div class="feld">
+        <label for="wie">Wie unterwegs</label>
+        <select id="wie"><option>Zu Fuß und Radl</option><option>Mit allem</option></select>
+      </div>
+      <button class="los">Auftragen</button>
+    </div>
+  </div>
+
+  <h2>Drei Abende</h2>
+
+  <button class="tour an">
+    <span class="scheiben">
+      <span class="scheibe"><span class="name">Zum Flaucher</span><span class="wann">16:30 · 18 min mit dem Radl</span><span class="mass">10,80</span></span>
+      <span class="scheibe"><span class="name">Gasthof Hinterbrühl</span><span class="wann">18:40 · 12 min mit dem Radl</span><span class="mass">10,40</span></span>
+    </span>
+    <span class="summe">2 Stationen · 3 Std 40 · zurück um 20:10</span>
+  </button>
+
+  <button class="tour">
+    <span class="scheiben">
+      <span class="scheibe"><span class="name">Hirschgarten</span><span class="wann">16:30 · 22 min</span><span class="mass">10,20</span></span>
+      <span class="scheibe"><span class="name">Taxisgarten</span><span class="wann">18:10 · 9 min</span><span class="mass">9,90</span></span>
+      <span class="scheibe"><span class="name">Augustiner-Keller</span><span class="wann">19:30 · 14 min</span><span class="mass">10,60</span></span>
+    </span>
+    <span class="summe">3 Stationen · 3 Std 55 · zurück um 20:25</span>
+  </button>
+
+  <button class="tour">
+    <span class="scheiben">
+      <span class="scheibe"><span class="name">Michaeligarten</span><span class="wann">17:00 · 15 min</span><span class="mass">9,80</span></span>
+      <span class="scheibe"><span class="name">Hofbräukeller</span><span class="wann">18:50 · 11 min</span><span class="mass">11,20</span></span>
+    </span>
+    <span class="summe">2 Stationen · 3 Std 10 · zurück um 20:10</span>
+  </button>
+
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

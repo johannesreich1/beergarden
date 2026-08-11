@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · zehn einfachere Entwürfe</title>
+<style>
+:root{
+  --bg:#121212; --linie:#2E2E2E; --text:#E9E6DF; --mute:#8F8C85; --akzent:#D2A63F;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 30px 26px;border-bottom:1px solid var(--linie)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--akzent)}
+header p{margin:15px 0 0;max-width:76ch;color:var(--mute)}
+header b{color:var(--text);font-weight:500}
+header a{color:var(--text)}
+
+.regel{margin:22px 30px 0;padding:16px 18px;border:1px solid var(--linie);max-width:76ch}
+.regel h2{margin:0 0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--akzent);font-weight:500}
+.regel ul{margin:0;padding-left:18px;line-height:1.85;color:var(--mute)}
+.regel b{color:var(--text);font-weight:500}
+
+.row{padding:32px 30px;border-bottom:1px solid var(--linie)}
+.meta{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:5px}
+.num{font-family:var(--mono);font-size:12px;color:var(--akzent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--akzent)}
+.sig{color:var(--mute);max-width:80ch;margin:0 0 18px}
+.sig b{color:var(--text);font-weight:500}
+
+.frames{display:flex;gap:20px;overflow-x:auto;padding-bottom:6px;align-items:flex-start}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;display:flex;justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--linie)}
+.cap a:hover{color:var(--akzent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--linie)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+.d .shell{width:520px;height:430px} .d iframe{width:1440px;height:1190px;transform:scale(.3611)}
+.m .shell{width:212px;height:430px} .m iframe{width:390px;height:791px;transform:scale(.5436)}
+
+footer{padding:32px 30px 70px;color:var(--mute);max-width:82ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+@media(max-width:900px){header,.row,footer,.regel{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Zehn einfachere Entwürfe</h1>
+  <p>
+    Der Planer fragt heute <b>acht Dinge</b> — Start, Rahmen, Wochentag, Zeitfenster, Stationen,
+    Unterwegs, Etappenlänge, Tür zu Tür — dazu sieben Tags und fünf Schalter. Jede Zeile im
+    Verzeichnis trägt neun Angaben. Diese zehn Entwürfe fragen <b>höchstens drei Dinge</b> und
+    zeigen <b>vier Angaben je Garten</b>: Name, Zeit, Weg, Maßpreis.
+    <a href="index.html">Zurück zur Übersicht</a>
+  </p>
+</header>
+
+<div class="regel">
+  <h2>Was in allen zehn gilt</h2>
+  <ul>
+    <li><b>Drei Fragen.</b> Wo gehst du los, wie lange hast du, wie bist du unterwegs. Wochentag ist
+        heute, die Zahl der Stationen ergibt sich aus der Zeit.</li>
+    <li><b>Vier Angaben je Garten.</b> Alles Weitere steht auf der Detailseite.</li>
+    <li><b>Fließtext ab 16 px, Nebentext ab 14,5 px</b>, nichts unter 14 px, keine gesperrten
+        Kapitälchen als Informationsträger.</li>
+    <li><b>Kontrast nachgerechnet:</b> Text mindestens 7:1, Nebentext mindestens 4,5:1 — auf hell
+        wie auf dunkel.</li>
+  </ul>
+</div>
+
+<div id="rows"></div>
+
+<footer>
+  <p>
+    Nichts davon ist gebaut. Die Bierpreise sind Beispielwerte — die Tabelle in der Datenbank ist
+    leer, bis der Crawler sie füllt. Sag, welcher es wird, oder welche Teile aus welchem.
+  </p>
+</footer>
+
+<script>
+const ENTWUERFE = [
+  ['a','Maßstrich','simpel-a-massstrich.html',
+   'Das Zeitfenster <b>ist</b> der Füllstand einer Maß. Ein Regler, kein Formular — und die Vorschläge zeigen ihre Stationen als Pegel im selben Bild.'],
+  ['b','Strichliste','simpel-b-strichliste.html',
+   'Der Strich des Wirts. Alles Zählbare ist gestrichelt: Stunden, Stationen. <b>Kein Wert steht in einem Kasten</b>, man liest die Seite wie einen Bierdeckel.'],
+  ['c','Kreidetafel','simpel-c-kreidetafel.html',
+   'Die Tafel am Eingang. Der Plan ist <b>ein Satz mit Lücken</b>, nicht ein Formular — und Kreide auf Schiefer ist das lesbarste Paar im ganzen Satz.'],
+  ['d','Deckelstapel','simpel-d-deckelstapel.html',
+   'Eine Tour ist ein <b>Stapel Bierdeckel</b>, einer je Station, leicht aufgefächert. Ein Deckel trägt vier Dinge, weil ein echter auch nicht mehr trägt.'],
+  ['e','Kronkorken','simpel-e-kronkorken.html',
+   'Jede Wahl ist ein Kronkorken — Emailfarbe, 21 Zacken. <b>Nichts sonst auf der Seite ist rund</b>, also tragen die Korken die ganze Bedienung.'],
+  ['f','Zapfhahn','simpel-f-zapfhahn.html',
+   'Drei Hähne hinter der Theke, einer je Frage. Ein Hahn ist gezogen oder nicht — <b>genau so viel Zustand</b> braucht diese Seite.'],
+  ['g','Brotzeitbrettl','simpel-g-brotzeitbrettl.html',
+   'Der Abend aufs Brettl gelegt, Stationen als Scheiben entlang der Maserung. <b>Keine Karten</b> — die Trennung macht die Holzkante.'],
+  ['h','Schattenwurf','simpel-h-schattenwurf.html',
+   'Das Licht unter den Kastanien. Ein Balken ist der Abend, der Schatten darauf ist die vergangene Zeit — <b>ersetzt Uhr, Regler und Sonnenuntergangs-Hinweis</b> auf einmal.'],
+  ['i','Bierkeller','simpel-i-bierkeller.html',
+   'Ein Tonnengewölbe rahmt die Seite, die Tour hängt darin wie die Lampen im Keller. Der dunkle Grund ist keine Stimmung, sondern <b>macht die eine warme Farbe zum einzigen Ziel des Blicks</b>.'],
+  ['j','Etikett','simpel-j-etikett.html',
+   'Die Tour als Bieretikett, die Stationen als Zutatenliste. <b>Was nicht auf die Flasche passt, kommt nicht auf die Seite</b> — das Format ist die Disziplin.'],
+]
+
+const ANSICHTEN = [
+  ['d','Desktop hell','light','1440'],
+  ['d','Desktop dunkel','dark','1440'],
+  ['m','Mobil hell','light','390'],
+  ['m','Mobil dunkel','dark','390'],
+]
+
+document.getElementById('rows').innerHTML = ENTWUERFE.map(([num, name, datei, sig]) => `
+  <section class="row">
+    <div class="meta"><span class="num">${num}</span><span class="name"><a href="${datei}">${name}</a></span></div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${ANSICHTEN.map(([cls, label, theme, breite]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${breite} px</a></div>
+          <div class="shell">
+            <iframe src="${datei}?theme=${theme}" title="${name} — ${label}" loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

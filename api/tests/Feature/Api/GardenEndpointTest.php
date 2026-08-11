@@ -31,13 +31,38 @@ class GardenEndpointTest extends TestCase
         $this->assertSame(9, $gardens->whereNull('brewery')->count());
     }
 
-    public function test_nothing_claims_to_be_verified_yet(): void
+    public function test_a_verified_garden_names_its_source(): void
     {
         $this->seed();
 
         $gardens = collect($this->getJson('/api/gardens')->json('data'));
 
-        $this->assertSame(35, $gardens->whereNull('verified_at')->count());
+        // The rule, not the count: a date without a source is a claim nobody can
+        // check, and a source without a date says nothing about when. They only
+        // ever appear together. Twenty-six gardens are placed from OpenStreetMap,
+        // the remaining nine could not be matched and stay unverified.
+        foreach ($gardens as $garden) {
+            $this->assertSame(
+                $garden['verified_at'] === null,
+                $garden['source_url'] === null,
+                "{$garden['slug']} carries only half its provenance",
+            );
+        }
+
+        $this->assertSame(9, $gardens->whereNull('verified_at')->count());
+    }
+
+    public function test_no_opening_hours_claim_to_be_verified_yet(): void
+    {
+        $this->seed();
+
+        $hours = collect($this->getJson('/api/gardens')->json('data'))
+            ->flatMap(fn (array $garden) => $garden['opening_hours']);
+
+        // The detail page prints its "checked against nothing" notice off this,
+        // and the notice has to disappear by itself once a crawler fills the
+        // dates in — not because somebody remembered to delete it.
+        $this->assertSame($hours->count(), $hours->whereNull('verified_at')->count());
     }
 
     public function test_a_closed_weekday_carries_no_times(): void

@@ -10,7 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "nuxt": "^4.5.2"
+    "maplibre-gl": "^6.3.0",
+    "nuxt": "^4.5.2",
+    "pmtiles": "^4.5.0"
   },
   "devDependencies": {
     "typescript": "^5.9.0",

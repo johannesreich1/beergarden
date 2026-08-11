@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Kreidetafel</title>
+<style>
+/* ============================================================
+   KREIDETAFEL
+   Signature: the board at the entrance. The Wirt writes today's
+   answer in chalk, and so does the page — the plan is a sentence,
+   not a form. The blanks in the sentence are the only controls.
+   Contrast: chalk on slate is the most legible pairing in the
+   whole set, which is why the type can stay this large.
+   ============================================================ */
+:root{
+  --grund:#22282A;         /* slate */
+  --flaeche:#2C3336;
+  --schrift:#F4F1E6;       /* chalk */
+  --weich:#B9B7A6;
+  --akzent:#F0C24A;        /* the beer, written in yellow chalk */
+  --akzent-2:#8FC0A9;
+  --kante:rgba(244,241,230,.3);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="light"]{
+  --grund:#F2EFE4; --flaeche:#E6E2D2; --schrift:#20262A; --weich:#4E5559;
+  --akzent:#8A5A00; --akzent-2:#2C6B4E; --kante:rgba(32,38,42,.3);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:18px/1.65 var(--text)}
+.wrap{max-width:900px;margin:0 auto;padding:38px 22px 70px}
+.tafel{box-shadow:inset 0 0 0 3px var(--kante);padding:clamp(22px,4vw,40px)}
+
+h1{margin:0 0 6px;font-family:var(--display);font-weight:900;
+  font-size:clamp(26px,5.4vw,38px);line-height:1;letter-spacing:-.02em;text-transform:uppercase}
+h1 span{color:var(--akzent)}
+.datum{font-size:16px;color:var(--weich);margin:0 0 26px}
+
+/* ---- the sentence ---- */
+.satz{font-size:clamp(21px,3.4vw,29px);line-height:1.55;margin:0}
+.satz .luecke{display:inline-block;position:relative;color:var(--akzent);
+  font-family:var(--display);font-weight:900;cursor:pointer;padding:0 2px}
+.satz .luecke::after{content:'';position:absolute;left:0;right:0;bottom:-3px;height:3px;
+  background:var(--akzent);opacity:.55}
+.satz .luecke:hover::after{opacity:1}
+
+.knopf{margin-top:30px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;padding:15px 22px;border:0;cursor:pointer;
+  background:var(--akzent);color:var(--grund)}
+
+/* ---- what the board says back ---- */
+.antwort{margin-top:38px;border-top:3px solid var(--kante);padding-top:24px}
+.antwort h2{margin:0 0 16px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+.tour{display:block;width:100%;text-align:left;border:0;background:transparent;color:inherit;
+  font:inherit;padding:15px 0;border-bottom:1px solid var(--kante);cursor:pointer}
+.tour:first-of-type{border-top:1px solid var(--kante)}
+.tour strong{display:block;font-family:var(--display);font-size:21px;font-weight:900;line-height:1.2}
+.tour span{display:block;margin-top:4px;font-size:16px;color:var(--weich)}
+.tour.an strong{color:var(--akzent)}
+
+.halt{display:flex;gap:18px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:19px;font-weight:900;color:var(--akzent);width:66px;flex:none}
+.halt .name{flex:1;font-size:19px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:19px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:22px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tafel">
+    <h1>Biergarten <span>Freunde</span></h1>
+    <p class="datum">Dienstag, 11. August · Sonnenuntergang 20:36</p>
+
+    <p class="satz">
+      Ich gehe um <span class="luecke">16:30</span> in
+      <span class="luecke">Candidplatz</span> los, habe
+      <span class="luecke">4 Stunden</span> Zeit und bin
+      <span class="luecke">zu Fuß und mit dem Radl</span> unterwegs.
+    </p>
+
+    <button class="knopf">Tour aufschreiben</button>
+
+    <div class="antwort">
+      <h2>Drei Abende</h2>
+      <button class="tour an">
+        <strong>Flaucher → Hinterbrühl</strong>
+        <span>2 Stationen · 3 Std 40 · zurück um 20:10</span>
+      </button>
+      <button class="tour">
+        <strong>Hirschgarten → Taxisgarten → Augustiner-Keller</strong>
+        <span>3 Stationen · 3 Std 55 · zurück um 20:25</span>
+      </button>
+      <button class="tour">
+        <strong>Michaeligarten → Hofbräukeller</strong>
+        <span>2 Stationen · 3 Std 10 · zurück um 20:10</span>
+      </button>
+    </div>
+
+    <div class="antwort">
+      <h2>Dein Abend</h2>
+      <div class="halt">
+        <span class="wann">16:30</span>
+        <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+        <span class="mass">10,80</span>
+      </div>
+      <div class="halt">
+        <span class="wann">18:40</span>
+        <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+        <span class="mass">10,40</span>
+      </div>
+      <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+    </div>
+  </div>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

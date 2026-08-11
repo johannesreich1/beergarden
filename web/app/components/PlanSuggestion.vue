@@ -64,12 +64,27 @@ const tags = computed(() => {
 })
 
 const breweries = computed(() =>
-  [...new Set(stops.value.map((garden) => breweryStyle(brewerySlug(garden)).label))].join(' · '),
+  metaLine(...new Set(stops.value.map((garden) => breweryName(brewerySlug(garden))))),
 )
 </script>
 
 <template>
-  <div class="plan" :class="{ active }">
+  <!--
+    The whole card takes the tour — it was the only thing on it worth clicking,
+    so a button underneath just asked twice. `role`/`tabindex`/`keydown` are
+    what a div owes anyone who does not use a mouse; `aria-pressed` says which
+    of the suggestions is the current one.
+  -->
+  <div
+    class="plan"
+    :class="{ active }"
+    role="button"
+    tabindex="0"
+    :aria-pressed="active"
+    @click="$emit('take')"
+    @keydown.enter.prevent="$emit('take')"
+    @keydown.space.prevent="$emit('take')"
+  >
     <div class="ptop">
       <span class="rank">{{ rank === 0 ? 'Bester Treffer' : `Alternative ${rank}` }}</span>
       <span class="tot">
@@ -103,10 +118,10 @@ const breweries = computed(() =>
       <span class="ptag">{{ breweries }}</span>
     </div>
 
-    <div class="pact">
-      <button class="btn big" :class="{ on: active }" @click="$emit('take')">
-        {{ active ? 'Ausgewählt' : 'Diese Tour nehmen' }}
-      </button>
+    <!-- Only the chosen one still says so. On the others the card is the
+         button, and a second "take this tour" would be the same offer twice. -->
+    <div v-if="active" class="pact">
+      <span class="btn big on">Ausgewählt</span>
     </div>
   </div>
 </template>

@@ -6,9 +6,14 @@ import { brewerySlug, matchesDirectoryFilters, planLeg } from '#core'
 // searches for it in English.
 definePageMeta({ path: '/verzeichnis' })
 
-useHead({ title: 'Alle Biergärten · Biergarten Freunde' })
-
 const { data: gardens } = await useGardens()
+
+usePageSeo(() => ({
+  title: 'Alle Biergärten',
+  description:
+    `Alle ${gardens.value.length} Biergärten in München und Umgebung im Überblick — mit `
+    + 'Öffnungszeiten, Ausschank, Selbstbedienung und Fahrzeit ab deinem Startpunkt.',
+}))
 
 const planner = usePlanner()
 const { state, visitedSet, hydrated } = planner
@@ -82,6 +87,8 @@ const TIPS = [
 </script>
 
 <template>
+  <h1 class="page-title stamped">Alle Biergärten in München</h1>
+
   <section class="stage">
     <div class="controls">
     <input

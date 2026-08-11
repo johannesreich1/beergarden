@@ -13,3 +13,7 @@
 
 .idea/workspace.xml
 .idea/shelf
+
+# Map tiles: ~32 MB, cut from an external daily build. Rebuild with
+# tools/fetch-tiles.sh instead of committing them.
+/web/public/tiles/*.pmtiles

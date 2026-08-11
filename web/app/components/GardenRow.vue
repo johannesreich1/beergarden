@@ -14,6 +14,7 @@ const props = defineProps<{
 }>()
 
 const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
+const name = computed(() => breweryName(brewerySlug(props.garden)))
 const window = computed(() => openingWindow(props.garden, props.weekday))
 const closedToday = computed(() => !isOpenOn(props.garden, props.weekday))
 </script>
@@ -29,7 +30,7 @@ const closedToday = computed(() => !isOpenOn(props.garden, props.weekday))
     </div>
 
     <div class="gmeta">
-      <b>{{ brewery.label }}</b> · {{ garden.district }} · {{ formatSeats(garden.seats) }}
+      <b v-if="name">{{ name }} · </b>{{ metaLine(garden.district, formatSeats(garden.seats)) }}
     </div>
 
     <ModeLinks

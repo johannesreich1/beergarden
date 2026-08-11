@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Zapfhahn</title>
+<style>
+/* ============================================================
+   ZAPFHAHN
+   Signature: three tap handles behind the bar, one per question.
+   A handle is either pulled or it is not — which is exactly the
+   amount of state this page should have. The brass rail ties
+   them together and is the only ornament in the design.
+   ============================================================ */
+:root{
+  --grund:#E7DFCD;
+  --flaeche:#F7F1E2;
+  --schrift:#1D1811;
+  --weich:#554A38;
+  --akzent:#8A6212;        /* brass */
+  --akzent-2:#1B3F8B;
+  --kante:rgba(29,24,17,.3);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#151209; --flaeche:#221C11; --schrift:#F1E7D2; --weich:#BFAF92;
+  --akzent:#E5B44B; --akzent-2:#8FB4DF; --kante:rgba(241,231,210,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text)}
+.wrap{max-width:1060px;margin:0 auto;padding:36px 20px 70px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(27px,5.6vw,40px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent)}
+.lead{margin:12px 0 34px;max-width:42ch;font-size:16.5px;color:var(--weich)}
+
+/* ---- the bar ---- */
+.theke{position:relative;padding-top:22px}
+.schiene{position:absolute;left:0;right:0;top:0;height:9px;background:var(--akzent)}
+.haehne{display:grid;gap:16px}
+@media(min-width:760px){.haehne{grid-template-columns:repeat(3,1fr)}}
+
+.hahn{border:0;background:transparent;padding:0;cursor:pointer;color:inherit;font:inherit;
+  text-align:center;display:flex;flex-direction:column;align-items:center}
+.hahn .stange{width:9px;height:26px;background:var(--akzent)}
+.hahn .griff{width:100%;background:var(--flaeche);box-shadow:inset 0 0 0 3px var(--akzent);
+  padding:18px 14px;transform-origin:top center;transition:transform .18s}
+.hahn[aria-pressed=true] .griff{transform:rotate(-4deg)}
+.hahn .was{display:block;font-size:15px;color:var(--weich)}
+.hahn .wert{display:block;margin-top:4px;font-family:var(--display);font-size:23px;
+  font-weight:900;line-height:1.1;letter-spacing:-.01em}
+.hahn[aria-pressed=true] .wert{color:var(--akzent-2)}
+.hahn .tropfen{width:11px;height:11px;border-radius:0 50% 50% 50%;transform:rotate(45deg);
+  background:var(--akzent);margin-top:9px;opacity:0}
+.hahn[aria-pressed=true] .tropfen{opacity:1}
+
+.los{display:block;width:100%;margin:30px 0 0;border:0;cursor:pointer;
+  background:var(--akzent-2);color:var(--flaeche);font-family:var(--display);font-size:18px;
+  font-weight:900;text-transform:uppercase;letter-spacing:.05em;padding:18px}
+
+h2{margin:40px 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+
+.tour{display:block;width:100%;text-align:left;border:0;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);color:inherit;font:inherit;padding:17px;
+  margin-bottom:12px;cursor:pointer;border-left:9px solid var(--kante)}
+.tour.an{border-left-color:var(--akzent)}
+.tour strong{display:block;font-family:var(--display);font-size:19px;font-weight:900;line-height:1.2}
+.tour span{display:block;margin-top:4px;font-size:15.5px;color:var(--weich)}
+
+.halt{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent);width:62px;flex:none}
+.halt .name{flex:1;font-size:18px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:24px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="lead">Drei Hähne, drei Antworten. Ziehen und der Abend läuft.</p>
+
+  <div class="theke">
+    <div class="schiene"></div>
+    <div class="haehne">
+      <button class="hahn" aria-pressed="true">
+        <span class="stange"></span>
+        <span class="griff"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></span>
+        <span class="tropfen"></span>
+      </button>
+      <button class="hahn" aria-pressed="true">
+        <span class="stange"></span>
+        <span class="griff"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></span>
+        <span class="tropfen"></span>
+      </button>
+      <button class="hahn" aria-pressed="false">
+        <span class="stange"></span>
+        <span class="griff"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></span>
+        <span class="tropfen"></span>
+      </button>
+    </div>
+    <button class="los">Anzapfen</button>
+  </div>
+
+  <h2>Drei Abende</h2>
+  <button class="tour an">
+    <strong>Flaucher → Hinterbrühl</strong>
+    <span>2 Stationen · 3 Std 40 · zurück um 20:10 · Maß ab 10,40</span>
+  </button>
+  <button class="tour">
+    <strong>Hirschgarten → Taxisgarten → Augustiner-Keller</strong>
+    <span>3 Stationen · 3 Std 55 · zurück um 20:25 · Maß ab 9,90</span>
+  </button>
+  <button class="tour">
+    <strong>Michaeligarten → Hofbräukeller</strong>
+    <span>2 Stationen · 3 Std 10 · zurück um 20:10 · Maß ab 9,80</span>
+  </button>
+
+  <h2>Dein Abend</h2>
+  <div class="halt">
+    <span class="wann">16:30</span>
+    <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,80</span>
+  </div>
+  <div class="halt">
+    <span class="wann">18:40</span>
+    <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+    <span class="mass">10,40</span>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

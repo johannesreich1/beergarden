@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Maßstrich</title>
+<style>
+/* ============================================================
+   MASSSTRICH
+   Signature: the time budget is the fill level of a Maß. The
+   glass is the only control on the page — pull the beer up and
+   the evening gets longer. Everything else follows from it,
+   including how many stops fit.
+   Readability: the roles are plain hex so the contrast can be
+   computed, and nothing is smaller than 14px — the litre marks
+   on a real glass are readable at arm's length too.
+   ============================================================ */
+:root{
+  --grund:#C9A263;         /* board */
+  --flaeche:#EBDCBE;       /* lighter, so text on it has room */
+  --schrift:#20160A;
+  --weich:#4C3612;
+  --akzent:#B87A05;        /* the beer */
+  --akzent-2:#12336E;
+  --kante:rgba(32,22,10,.34);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --grund:#1D1508; --flaeche:#2C2110; --schrift:#F3E7CD; --weich:#C4B08A;
+  --akzent:#F0BE43; --akzent-2:#8FB4DF; --kante:rgba(243,231,205,.28);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text);
+  background-image:repeating-linear-gradient(93deg,rgba(0,0,0,.03) 0 1px,transparent 1px 8px)}
+.wrap{max-width:1120px;margin:0 auto;padding:34px 20px 70px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(27px,5.6vw,40px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent-2)}
+.lead{margin:12px 0 0;max-width:40ch;font-size:16.5px;color:var(--weich)}
+
+.buehne{display:grid;gap:36px;margin-top:30px}
+@media(min-width:940px){.buehne{grid-template-columns:290px 1fr;align-items:start}}
+
+/* ---- the glass ---- */
+.glas{position:relative;width:100%;max-width:270px;margin:0 auto;aspect-ratio:1/1.5;
+  background:var(--flaeche);box-shadow:inset 0 0 0 3px var(--kante);overflow:hidden}
+.bier{position:absolute;left:0;right:0;bottom:0;height:62%;background:var(--akzent)}
+.krone{position:absolute;left:0;right:0;top:-8px;height:13px;background:#FBF3E0;
+  clip-path:polygon(0 40%,8% 10%,17% 46%,26% 8%,35% 44%,44% 12%,53% 48%,62% 8%,71% 42%,80% 14%,89% 46%,97% 10%,100% 40%,100% 100%,0 100%)}
+.strich{position:absolute;left:0;right:0;height:2px;background:var(--kante)}
+.strich span{position:absolute;right:10px;top:-21px;font-size:14px;color:var(--schrift)}
+.ablesung{text-align:center;margin-top:16px;font-family:var(--display);font-weight:900;font-size:30px}
+.ablesung small{display:block;font-family:var(--text);font-weight:400;font-size:15.5px;
+  color:var(--weich);margin-top:4px}
+input[type=range]{width:100%;margin-top:14px;accent-color:var(--akzent)}
+
+/* ---- the two remaining questions ---- */
+.frage{display:block;font-size:15.5px;color:var(--weich);margin:20px 0 5px}
+.ort{width:100%;font:19px/1.2 var(--display);font-weight:900;padding:13px 14px;
+  background:var(--flaeche);color:var(--schrift);border:0;box-shadow:inset 0 0 0 2px var(--kante)}
+.wahlen{display:flex;gap:10px;flex-wrap:wrap}
+.wahl{flex:1 1 130px;font-family:var(--display);font-size:15px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.03em;padding:13px;border:0;cursor:pointer;
+  background:transparent;color:var(--akzent-2);box-shadow:inset 0 0 0 2.5px var(--akzent-2)}
+.wahl[aria-pressed=true]{background:var(--akzent-2);color:var(--flaeche)}
+
+h2{margin:0 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+h2.spaeter{margin-top:34px}
+
+/* ---- suggestions: the fill of each stop ---- */
+.tour{display:block;width:100%;text-align:left;border:0;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);color:inherit;font:inherit;padding:17px;
+  margin-bottom:12px;cursor:pointer}
+.tour.an{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour strong{display:block;font-family:var(--display);font-size:19px;font-weight:900;line-height:1.2}
+.pegel{display:flex;height:13px;margin:11px 0 8px;background:rgba(0,0,0,.12)}
+.pegel i{display:block;background:var(--akzent);box-shadow:inset -3px 0 0 var(--flaeche)}
+.pegel i:last-child{box-shadow:none}
+.tour span{display:block;font-size:15.5px;color:var(--weich)}
+
+.halt{display:flex;gap:16px;align-items:baseline;padding:14px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent);width:62px;flex:none}
+.halt .name{flex:1;font-size:18px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:22px;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biergarten <span>Freunde</span></h1>
+  <p class="lead">Zieh das Bier hoch — so lange hast du Zeit. Den Rest rechnen wir.</p>
+
+  <div class="buehne">
+    <div>
+      <div class="glas">
+        <div class="strich" style="bottom:25%"><span>2 Std</span></div>
+        <div class="strich" style="bottom:50%"><span>4 Std</span></div>
+        <div class="strich" style="bottom:75%"><span>6 Std</span></div>
+        <div class="bier"><div class="krone"></div></div>
+      </div>
+      <div class="ablesung">4 Std 45<small>bis Sonnenuntergang 20:36</small></div>
+      <input type="range" min="1" max="8" value="5" aria-label="Zeitfenster">
+
+      <label class="frage" for="ort">Wo gehst du los</label>
+      <input class="ort" id="ort" value="Candidplatz">
+
+      <span class="frage">Wie unterwegs</span>
+      <div class="wahlen">
+        <button class="wahl" aria-pressed="true">Zu Fuß &amp; Radl</button>
+        <button class="wahl" aria-pressed="false">Mit allem</button>
+      </div>
+    </div>
+
+    <div>
+      <h2>Drei Abende</h2>
+
+      <button class="tour an">
+        <strong>Flaucher → Hinterbrühl</strong>
+        <span class="pegel"><i style="flex:1.6"></i><i style="flex:1"></i></span>
+        <span>2 Stationen · 3 Std 40 · zurück um 20:10 · Maß ab 10,40</span>
+      </button>
+
+      <button class="tour">
+        <strong>Hirschgarten → Taxisgarten → Augustiner-Keller</strong>
+        <span class="pegel"><i style="flex:1.3"></i><i style="flex:1"></i><i style="flex:1.1"></i></span>
+        <span>3 Stationen · 3 Std 55 · zurück um 20:25 · Maß ab 9,90</span>
+      </button>
+
+      <button class="tour">
+        <strong>Michaeligarten → Hofbräukeller</strong>
+        <span class="pegel"><i style="flex:1"></i><i style="flex:1.4"></i></span>
+        <span>2 Stationen · 3 Std 10 · zurück um 20:10 · Maß ab 9,80</span>
+      </button>
+
+      <h2 class="spaeter">Dein Abend</h2>
+      <div class="halt">
+        <span class="wann">16:30</span>
+        <span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span>
+        <span class="mass">10,80</span>
+      </div>
+      <div class="halt">
+        <span class="wann">18:40</span>
+        <span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span>
+        <span class="mass">10,40</span>
+      </div>
+      <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+    </div>
+  </div>
+</div>
+<script>
+  const p = new URLSearchParams(location.search).get('theme')
+  if (p) document.documentElement.dataset.theme = p
+</script>
+</body>
+</html>

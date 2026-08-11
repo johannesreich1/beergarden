@@ -1,0 +1,234 @@
+/* ============================================================
+   KOMBI — shared ground for the ten drafts
+   The beer mat and the bottle cap, in the palette the site
+   already uses, plus foam as a third material.
+
+   Everything in this file is the part that must not differ
+   between the ten: the palette, the type scale, and above all
+   the interaction model — chip opens a panel, switch reveals
+   the dense planner. Ten copies of that would be ten places to
+   fix the same keyboard bug.
+
+   Readability is a condition, not a taste: body from 16px,
+   secondary from 14.5px, nothing below 14px, text at 7:1 and
+   secondary text at 4.5:1 against whatever it sits on.
+   ============================================================ */
+:root{
+  /* ---- the site's own colours ---- */
+  --kraft:#C9A263;
+  --kraft-tief:#B78E4C;
+  --schaum:#FBF5E6;
+  --gold:#6F4C05;
+  --maerzen:#8F4709;
+  --enzian:#12336E;
+  --malz:#20160A;
+
+  /* ---- roles ---- */
+  --grund:var(--kraft);
+  --flaeche:#E8D8B7;        /* a mat is lighter than the table */
+  --schrift:var(--malz);
+  --weich:#4C3612;
+  --akzent:var(--enzian);
+  --akzent-2:var(--maerzen);
+  --kante:rgba(32,22,10,.34);
+  --kante-satt:rgba(32,22,10,.6);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --text:"American Typewriter","Courier New",serif;
+}
+[data-theme="dark"]{
+  --kraft:#1D1508; --kraft-tief:#2A1F0E; --schaum:#F2E7CE;
+  --gold:#E8B647; --maerzen:#E5945A; --enzian:#8FB4DF; --malz:#F3E7CD;
+  --grund:var(--kraft); --flaeche:#2C2110;
+  --schrift:var(--malz); --weich:#C4B08A;
+  --akzent:var(--enzian); --akzent-2:var(--maerzen);
+  --kante:rgba(243,231,205,.28); --kante-satt:rgba(243,231,205,.5);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--grund);color:var(--schrift);font:17px/1.62 var(--text);
+  background-image:repeating-linear-gradient(93deg,rgba(0,0,0,.03) 0 1px,transparent 1px 8px)}
+.wrap{max-width:1080px;margin:0 auto;padding:30px 20px 80px}
+
+h1{margin:0;font-family:var(--display);font-weight:900;font-size:clamp(26px,5.4vw,38px);
+  line-height:.98;letter-spacing:-.025em;text-transform:uppercase}
+h1 span{color:var(--akzent)}
+.lead{margin:11px 0 0;max-width:44ch;font-size:16.5px;color:var(--weich)}
+h2{margin:34px 0 14px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--weich)}
+
+/* ------------------------------------------------------------------ Foam
+   Foam is a material, not a gradient: an irregular crown along one edge.
+   One shape, used by every draft that wants it, so ten mats froth alike. */
+.schaumkrone{position:absolute;left:0;right:0;height:13px;background:var(--schaum);
+  clip-path:polygon(0 44%,7% 8%,15% 50%,23% 6%,31% 46%,39% 12%,47% 52%,55% 6%,63% 44%,
+    71% 14%,79% 48%,87% 8%,95% 46%,100% 20%,100% 100%,0 100%)}
+.schaumkrone.oben{top:-11px}
+.schaumkrone.unten{bottom:-11px;transform:scaleY(-1)}
+
+/* ------------------------------------------------------- The bottle cap */
+.korken{--farbe:var(--akzent);display:inline-block;position:relative;
+  width:var(--gr,86px);height:var(--gr,86px);
+  flex:none;border:0;padding:0;background:transparent;color:inherit;cursor:pointer;
+  vertical-align:middle}
+.korken .rand{position:absolute;inset:0;border-radius:50%;background:var(--farbe);
+  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%)}
+.korken .mitte{position:absolute;inset:9px;border-radius:50%;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--farbe);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1.05}
+.korken .zahl{font-family:var(--display);font-size:calc(var(--gr,86px) * .3);font-weight:900;
+  color:var(--farbe)}
+.korken .wort{font-size:14px;color:var(--weich)}
+.korken[aria-pressed=false] .rand{background:var(--kante-satt)}
+.korken[aria-pressed=false] .zahl{color:var(--weich)}
+
+/* ------------------------------------------------------------- The mat */
+/* display:block is not cosmetic here. A mat is a <span> inside a <button>,
+   and an inline box drops its width and its vertical padding — the mat then
+   collapses into a hairline with the text spilling past it. */
+.deckel{display:block;background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);
+  padding:15px 16px;position:relative}
+.stapel{display:block}
+.deckel .name{display:block;font-family:var(--display);font-size:18px;font-weight:900;line-height:1.15}
+.deckel .dazu{display:block;margin-top:4px;font-size:15px;color:var(--weich)}
+.deckel .mass{font-family:var(--display);font-size:17px;font-weight:900;color:var(--akzent-2)}
+
+/* ==========================================================================
+   THE INTERACTION — a chip carries the answer, a panel carries the choice
+
+   Progressive disclosure rather than a wall of controls: the page shows what
+   you decided, and asks only when you want to change it. Three rules make it
+   work instead of merely look tidy:
+
+     1. A chip states its question and its current answer. A chip that shows
+        only "Zeit" makes you open it to find out what it says.
+     2. Exactly one panel at a time, dismissed by Escape, by clicking away,
+        and by choosing — and the focus goes back to the chip afterwards.
+     3. Nothing hides behind a chip that you need in order to understand the
+        result. The detail is optional; the answer is not.
+
+   Built on the native popover API, so light dismiss, the top layer and
+   Escape come from the browser and not from a hand-written listener.
+   ========================================================================== */
+.chip{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;
+  background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);border:0;cursor:pointer;
+  padding:9px 14px;color:inherit;font:inherit;text-align:left;min-height:56px;justify-content:center}
+.chip .was{font-size:14.5px;color:var(--weich)}
+.chip .wert{font-family:var(--display);font-size:18px;font-weight:900;letter-spacing:-.01em;
+  display:flex;align-items:center;gap:7px}
+.chip .wert::after{content:'';width:0;height:0;border:5px solid transparent;
+  border-top-color:currentColor;margin-top:3px}
+.chip[aria-expanded="true"]{box-shadow:inset 0 0 0 3px var(--akzent)}
+.chip:focus-visible{outline:3px solid var(--akzent);outline-offset:2px}
+
+.chipreihe{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+
+/* Positioned from JS, because a popover without a position lands in the
+   corner of the screen. Below 640px it is a sheet on the bottom edge. */
+[popover]{margin:0;border:0;padding:0;background:transparent;overflow:visible;
+  position:fixed;inset:auto}
+[popover].als-blatt{inset:auto 0 0 0;width:100%}
+[popover].als-blatt .panel{max-width:none;min-width:0;
+  box-shadow:inset 0 3px 0 var(--kante-satt),0 -14px 34px rgba(0,0,0,.34);
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+[popover]::backdrop{background:rgba(0,0,0,.28)}
+.panel{background:var(--flaeche);box-shadow:inset 0 0 0 3px var(--kante-satt),0 14px 34px rgba(0,0,0,.3);
+  padding:16px;min-width:min(320px,92vw);max-width:min(420px,94vw);color:var(--schrift)}
+.panel h3{margin:0 0 4px;font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.03em}
+.panel p{margin:0 0 12px;font-size:15px;color:var(--weich)}
+.panel .liste{display:flex;flex-wrap:wrap;gap:8px}
+.panel .liste button{font-family:var(--text);font-size:16px;padding:10px 13px;border:0;cursor:pointer;
+  background:transparent;color:var(--schrift);box-shadow:inset 0 0 0 2px var(--kante)}
+.panel .liste button[aria-pressed="true"]{background:var(--akzent);color:var(--schaum);
+  box-shadow:inset 0 0 0 2px var(--akzent)}
+.panel .fertig{margin-top:14px;width:100%;border:0;cursor:pointer;background:var(--akzent-2);
+  color:var(--schaum);font-family:var(--display);font-size:16px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;padding:13px}
+
+/* ------------------------------------------------- The advanced switch */
+.profi-schalter{display:flex;align-items:center;gap:10px;margin-left:auto;
+  background:transparent;border:0;cursor:pointer;color:var(--weich);font:inherit;font-size:15px}
+.profi-schalter .gleis{width:46px;height:24px;background:var(--kante);position:relative;flex:none}
+.profi-schalter .gleis i{position:absolute;top:3px;left:3px;width:18px;height:18px;
+  background:var(--flaeche);transition:left .16s}
+.profi-schalter[aria-pressed="true"] .gleis{background:var(--akzent)}
+.profi-schalter[aria-pressed="true"] .gleis i{left:25px}
+.profi-schalter:focus-visible{outline:3px solid var(--akzent);outline-offset:3px}
+
+/* The dense planner, exactly as the site has it today. Hidden until asked
+   for — and it is the same state underneath, not a second planner. */
+.profi{display:none;margin-top:20px;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);padding:18px}
+body.profi-an .profi{display:block}
+body.profi-an .einfach{opacity:.42}
+.profi .gruppe{padding:13px 0;border-top:1px solid var(--kante)}
+.profi .gruppe:first-child{border-top:0;padding-top:0}
+.profi .gruppe > span{display:block;font-size:14.5px;color:var(--weich);margin-bottom:7px}
+.profi .reihe{display:flex;flex-wrap:wrap;gap:7px}
+.profi .reihe button,.profi .reihe input{font:15px/1 var(--text);padding:9px 12px;border:0;
+  cursor:pointer;background:transparent;color:var(--schrift);box-shadow:inset 0 0 0 2px var(--kante)}
+.profi .reihe button[aria-pressed="true"]{background:var(--gold);color:var(--schaum);
+  box-shadow:inset 0 0 0 2px var(--gold)}
+
+/* --------------------------------------------------------------- Result */
+.halt{display:flex;gap:15px;align-items:baseline;padding:14px 0;border-top:2px solid var(--kante)}
+.halt .wann{font-family:var(--display);font-size:18px;font-weight:900;color:var(--gold);width:62px;flex:none}
+.halt .name{flex:1;font-size:18px}
+.halt .name small{display:block;font-size:15px;color:var(--weich)}
+.halt .mass{font-family:var(--display);font-size:18px;font-weight:900;color:var(--akzent-2)}
+footer{margin-top:24px;font-size:15px;color:var(--weich)}
+.tour{border:0;background:transparent;padding:0;color:inherit;font:inherit;cursor:pointer;
+  text-align:left;display:block;width:100%}
+.tour:focus-visible{outline:3px solid var(--akzent);outline-offset:3px}
+
+/* ==========================================================================
+   THE MARK — seal and wordmark, kept from the site as it stands
+
+   The seal is exactly as tall as the two lines of the wordmark, and both are
+   turned a little against each other, because a stamp pressed by hand does
+   not land square. Kept identical across all ten drafts: what varies below
+   is the layout, not who the site is.
+   ========================================================================== */
+.kopf{display:flex;align-items:flex-start;gap:clamp(12px,3vw,20px);flex-wrap:wrap;
+  padding:6px 0 18px}
+.wortmarke{display:flex;align-items:center;gap:clamp(11px,3vw,17px)}
+.siegel{--gr:clamp(56px,15vw,92px);width:var(--gr);height:var(--gr);flex:none;
+  transform:rotate(-6.5deg);color:var(--akzent)}
+.siegel .ring{fill:none;stroke:currentColor}
+.siegel text{font-family:var(--display);font-weight:900;fill:currentColor;letter-spacing:.14em}
+.siegel .ort{font-family:var(--text);font-weight:400;letter-spacing:.2em}
+.siegel .raute{fill:currentColor}
+.wortmarke h1{line-height:.98}
+.wortmarke .z1{display:block;font-size:clamp(26px,7vw,44px);color:var(--akzent);
+  transform:rotate(-1.4deg);transform-origin:left center}
+.wortmarke .z2{display:block;font-size:clamp(26px,7vw,44px);color:var(--akzent-2);
+  transform:rotate(.9deg);transform-origin:left center}
+
+/* ------------------------------------------------------ The broken ink
+   One mask, shared by everything that is stamped rather than printed. Two
+   crossed stripe grids that intersect — without the composite they add up
+   and each fills the other's gaps, which is a whole afternoon of debugging
+   saved by this comment. */
+:root{
+  --riss:
+    repeating-linear-gradient(81deg,#000 0 9px,rgba(0,0,0,.46) 9px 10px,#000 10px 21px),
+    repeating-linear-gradient(9deg,#000 0 13px,rgba(0,0,0,.42) 13px 14px,#000 14px 28px);
+}
+.gestempelt{
+  -webkit-mask-image:var(--riss);-webkit-mask-composite:source-in;
+  mask-image:var(--riss);mask-composite:intersect}
+
+/* A stamp on a filled surface keeps its lettering: the break is painted
+   underneath instead of cut through, so the letters stay whole. */
+.gestempelt-voll{position:relative;isolation:isolate;
+  background:color-mix(in srgb,var(--akzent) 62%,var(--flaeche));color:var(--schaum)}
+.gestempelt-voll::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--akzent);
+  -webkit-mask-image:var(--riss);-webkit-mask-composite:source-in;
+  mask-image:var(--riss);mask-composite:intersect}
+
+.riss-kante{height:8px;background:repeating-linear-gradient(93deg,var(--kante) 0 3px,transparent 3px 9px)}

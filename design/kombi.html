@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Deckel &amp; Korken, elf Layouts</title>
+<style>
+:root{--bg:#121212;--linie:#2E2E2E;--text:#E9E6DF;--mute:#8F8C85;--akzent:#D2A63F;
+  --mono:ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 30px 26px;border-bottom:1px solid var(--linie)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--akzent)}
+header p{margin:15px 0 0;max-width:78ch;color:var(--mute)}
+header b{color:var(--text);font-weight:500}
+header a{color:var(--text)}
+.regel{margin:22px 30px 0;padding:17px 19px;border:1px solid var(--linie);max-width:78ch}
+.regel h2{margin:0 0 9px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--akzent);font-weight:500}
+.regel ol{margin:0;padding-left:20px;line-height:1.85;color:var(--mute)}
+.regel b{color:var(--text);font-weight:500}
+.row{padding:32px 30px;border-bottom:1px solid var(--linie)}
+.meta{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:5px}
+.num{font-family:var(--mono);font-size:12px;color:var(--akzent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--akzent)}
+.sig{color:var(--mute);max-width:80ch;margin:0 0 18px}
+.sig b{color:var(--text);font-weight:500}
+.frames{display:flex;gap:20px;overflow-x:auto;padding-bottom:6px;align-items:flex-start}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;display:flex;justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--linie)}
+.cap a:hover{color:var(--akzent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--linie)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+.d .shell{width:520px;height:440px}.d iframe{width:1440px;height:1218px;transform:scale(.3611)}
+.m .shell{width:212px;height:440px}.m iframe{width:390px;height:809px;transform:scale(.5436)}
+footer{padding:32px 30px 70px;color:var(--mute);max-width:82ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+@media(max-width:900px){header,.row,footer,.regel{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Deckel &amp; Korken · elf Layouts</h1>
+  <p>
+    Bierdeckel und Kronkorken aus den beiden Favoriten, in der <b>Palette der Seite</b> —
+    Kraftpappe, Enzian, Märzen, Gold — mit <b>Schaum als drittem Material</b>. Siegel, Schriftzug
+    und der aufgerissene Stempeldruck bleiben, wie sie sind.
+    <a href="simpel.html">Die zehn davor</a> · <a href="index.html">Übersicht</a>
+  </p>
+</header>
+
+<div class="regel">
+  <h2>Die Bedienung — in a bis j dieselbe</h2>
+  <ol>
+    <li><b>Ein Chip nennt seine Frage und seine Antwort.</b> Ein Chip, auf dem nur „Zeit" steht,
+        zwingt zum Öffnen, um zu erfahren, was drinsteht.</li>
+    <li><b>Klick öffnet die Auswahl</b> — Zeiten, Tags, Ausstattung. Genau ein Panel gleichzeitig,
+        Escape und Klick daneben schließen, der Fokus geht auf den Chip zurück.</li>
+    <li><b>Einfachwahl schließt sofort</b>, Mehrfachwahl bleibt offen und hat einen eigenen Knopf:
+        dort ist die Entscheidung noch nicht fertig.</li>
+    <li><b>Der Schalter „Alle Regler"</b> klappt den heutigen Planer in voller Dichte auf — derselbe
+        Zustand darunter, nur mehr Oberfläche. Nichts, was man zum Verstehen des Ergebnisses
+        braucht, versteckt sich hinter einem Chip.</li>
+  </ol>
+  <p style="margin:12px 0 0;color:var(--mute)">
+    Gebaut auf der nativen Popover-API: Escape, Klick-daneben und die oberste Ebene kommen vom
+    Browser statt von handgeschriebenen Zuhörern. Alles Geteilte liegt in
+    <code>kombi/basis.css</code> und <code>kombi/basis.js</code> — die Layoutdateien enthalten nur ihr Layout. Der elfte,
+    <b>Bestand</b>, zeigt alle Regler von vornherein und braucht den Schalter deshalb nicht.
+  </p>
+</div>
+
+<div id="rows"></div>
+
+<footer>
+  <p>Nichts davon ist gebaut. Die Bierpreise sind Beispielwerte. Sag, welches Layout es wird —
+     oder welche Teile aus welchem.</p>
+</footer>
+
+<script>
+const L = [
+  ['a','Untersetzer','kombi/a-untersetzer.html',
+   'Der Korken liegt <b>auf</b> dem Deckel und ragt über die Kante, wie ein echter auf dem Tisch. Fünf Chips: die drei Fragen plus Ausstattung und Tags.'],
+  ['b','Schaumkrone','kombi/b-schaumkrone.html',
+   'Jeder Deckel ist frisch gezapft. <b>Nur bei der gewählten Tour läuft der Schaum über die Seiten</b> — „gewählt" ist ein Zustand des Biers, kein farbiger Rahmen.'],
+  ['c','Kronenreihe','kombi/c-kronenreihe.html',
+   'Die drei Fragen sind drei große Korken, daumengerecht. <b>Nichts sonst auf der Seite ist rund</b>, also ist nie fraglich, wo man drückt.'],
+  ['d','Deckelfächer','kombi/d-deckelfaecher.html',
+   'Aufgefächert wie ein Blatt Karten. Der Winkel sagt „mehrere", also braucht es keine Zahl — <b>und die gewählte Tour legt sich gerade</b>.'],
+  ['e','Schaumband','kombi/e-schaumband.html',
+   'Der Abend als Bierbalken quer über die Seite, die Stationen hängen an ihrer Uhrzeit. <b>Ein Bild beantwortet „wann", „wie lange" und „schaffe ich es vor Sonnenuntergang"</b>.'],
+  ['f','Nasser Ring','kombi/f-nasserring.html',
+   'Der Abdruck, den ein kaltes Glas hinterlässt. <b>Das leiseste mögliche „dieses hier"</b> — und der einzige Zierrat, den die Seite sich erlaubt.'],
+  ['g','Raster','kombi/g-raster.html',
+   'Quadratische Deckel im strengen Raster, wie aus der Schachtel. Die Ordnung leistet, was anderswo Farbe leistet; <b>die gewählte bekommt einen Korken aufgedrückt</b>.'],
+  ['h','Überschäumt','kombi/h-ueberschaeumt.html',
+   'Die gewählte Tour läuft über — Schaum an beiden Kanten. <b>Der einzige Moment von Übermaß</b>, den die Seite zulässt, und deshalb sofort lesbar.'],
+  ['i','Schankbrett','kombi/i-schankbrett.html',
+   'Die Korken hängen an einer Messingschiene wie Zapfhähne. <b>Die Schiene trägt sie</b>, also brauchen sie keine eigenen Kästen, und die Deckel darunter bleiben ganz schlicht.'],
+  ['j','Filzdeckel','kombi/j-filzdeckel.html',
+   'Filzpappe mit gerissener Kante. Die Chipreihe ist selbst ein Deckel — <b>Bedienung und Ergebnis aus demselben Material</b>, nichts schwebt über etwas.'],
+  ['k','Bestand, optimiert','kombi/k-bestand.html',
+   'Der heutige Planer, Struktur unverändert: drei Spalten, jeder Regler in Reichweite. Behoben ist, was die Messung fand — <b>48 Schriftgrößen unter 14 px</b>, 19 Regeln mit gesperrten Kapitälchen, und die drei Farben, die Bedeutung tragen, unter der Kontrastgrenze. <b>Gold und Märzen erreichen auf Kraftpappe nie 4,5:1</b>, auch abgedunkelt nicht — deshalb sitzt hier alles Farbige auf einem Deckel und nichts mehr auf der blanken Pappe.'],
+]
+const V = [['d','Desktop hell','light','1440'],['d','Desktop dunkel','dark','1440'],
+           ['m','Mobil hell','light','390'],['m','Mobil dunkel','dark','390']]
+
+document.getElementById('rows').innerHTML = L.map(([n, name, datei, sig]) => `
+  <section class="row">
+    <div class="meta"><span class="num">${n}</span><span class="name"><a href="${datei}">${name}</a></span></div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${V.map(([cls, label, theme, br]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${br} px</a></div>
+          <div class="shell"><iframe src="${datei}?theme=${theme}" title="${name} — ${label}" loading="lazy" scrolling="no"></iframe></div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

@@ -523,12 +523,11 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   font-size:clamp(27px,6.4vw,40px);line-height:1.02;letter-spacing:-.028em;
   text-transform:uppercase;color:var(--blue);
   transform:rotate(-1deg);transform-origin:left center}
-/* One measure for the whole column, set here and nowhere else.
-   `.wrap` opens up past 1400px on a desktop, which is right for the planner's
-   three streams and far too wide for a line of prose. Capping each paragraph
-   instead would leave the headings and their rules hanging out to the right, so
-   the article itself is the column, centred in the available width. */
-.prose{max-width:74ch;margin-inline:auto}
+/* The text uses the full content width — the same span the planner's three
+   columns occupy together — and starts at the left edge the seal and the
+   navigation start at. No element inside sets a measure of its own: the page
+   has one left edge and one right edge, and the prose uses both. */
+.prose{max-width:none}
 .prose .lede{margin:17px 0 0;font-size:17px;color:var(--text)}
 .prose p{margin:13px 0 0;color:var(--text-soft)}
 /* Emphasis is a colour, not a weight — as with `.head p b`. The body face has

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Kronenreihe</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+
+/* KRONENREIHE — the three questions are three caps, big enough to hit
+   with a thumb. Nothing else on the page is round, so where you press
+   is never in doubt. */
+.kronen{display:flex;flex-wrap:wrap;gap:clamp(14px,4vw,30px);justify-content:center;
+  margin:26px 0 8px}
+.krone-frage{display:flex;flex-direction:column;align-items:center;gap:9px;
+  background:transparent;border:0;cursor:pointer;color:inherit;font:inherit;padding:0}
+.krone-frage .korken{--gr:clamp(96px,22vw,132px)}
+.krone-frage .korken .zahl{font-size:clamp(15px,3.4vw,19px);letter-spacing:-.01em;
+  padding:0 8px;text-align:center;line-height:1.05}
+.krone-frage .beschriftung{font-size:15.5px;color:var(--weich)}
+.krone-frage:focus-visible{outline:3px solid var(--akzent);outline-offset:4px}
+.tour{margin-bottom:12px}
+.tour.an .deckel{box-shadow:inset 0 0 0 3px var(--akzent)}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <p class="lead">Drei Korken, drei Antworten.</p>
+  <div class="einfach">
+    <div class="kronen">
+      <button class="krone-frage" popovertarget="p-ort"><span class="korken" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">Candid-<br>platz</span></span></span><span class="beschriftung">Wo gehst du los</span></button>
+      <button class="krone-frage" popovertarget="p-zeit"><span class="korken" aria-pressed="true" style="--farbe:var(--akzent-2)"><span class="rand"></span><span class="mitte"><span class="zahl">4 Std</span></span></span><span class="beschriftung">Wie lange hast du</span></button>
+      <button class="krone-frage" popovertarget="p-weg"><span class="korken" aria-pressed="true" style="--farbe:var(--gold)"><span class="rand"></span><span class="mitte"><span class="zahl">Fuß &amp;<br>Radl</span></span></span><span class="beschriftung">Wie unterwegs</span></button>
+    </div>
+
+    <h2>Drei Abende</h2>
+    
+    <button class="tour an"><span class="deckel">
+      <span class="name">Flaucher → Hinterbrühl</span>
+      <span class="dazu">2 Stationen · 3 Std 40 · zurück um 20:10</span></span></button>
+    <button class="tour "><span class="deckel">
+      <span class="name">Hirschgarten → Taxisgarten → Keller</span>
+      <span class="dazu">3 Stationen · 3 Std 55 · zurück um 20:25</span></span></button>
+    <button class="tour "><span class="deckel">
+      <span class="name">Michaeligarten → Hofbräukeller</span>
+      <span class="dazu">2 Stationen · 3 Std 10 · zurück um 20:10</span></span></button>
+
+    <h2>Dein Abend</h2>
+    <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+    <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Deckelfächer</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+
+/* DECKELFÄCHER — the mats are fanned like a hand of cards. The angle
+   is the only thing that says "several", so no count badge is needed
+   and the chosen hand simply straightens up. */
+.faecher{display:flex;flex-wrap:wrap;gap:20px;margin-top:8px}
+.tour{flex:1 1 280px;width:auto}
+.tour .stapel{position:relative;padding-bottom:10px}
+.tour .deckel{margin-top:-14px}
+.tour .deckel:first-of-type{margin-top:0}
+.tour .deckel:nth-of-type(1){transform:rotate(-2.2deg)}
+.tour .deckel:nth-of-type(2){transform:rotate(1.6deg)}
+.tour .deckel:nth-of-type(3){transform:rotate(-1deg)}
+.tour.an .deckel{transform:none;box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour .summe{display:block;margin-top:14px;font-size:15.5px;color:var(--weich)}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <p class="lead">Aufgefächert wie ein Blatt. Die gewählte Tour legt sich gerade.</p>
+  <div class="einfach">
+    <div class="chipreihe"><button class="chip" popovertarget="p-ort"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></button>
+      <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></button>
+      <button class="chip" popovertarget="p-weg"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></button></div>
+    <h2>Drei Abende</h2>
+    <div class="faecher">
+    
+      <button class="tour an"><span class="stapel">
+        <span class="deckel"><span class="name">Zum Flaucher</span><span class="dazu">16:30 · 18 min mit dem Radl</span><span class="mass">10,80</span></span><span class="deckel"><span class="name">Gasthof Hinterbrühl</span><span class="dazu">18:40 · 12 min mit dem Radl</span><span class="mass">10,40</span></span>
+        <span class="summe">2 Stationen · 3 Std 40 · zurück um 20:10</span></span></button>
+      <button class="tour "><span class="stapel">
+        <span class="deckel"><span class="name">Hirschgarten</span><span class="dazu">16:30 · 22 min</span><span class="mass">10,20</span></span><span class="deckel"><span class="name">Taxisgarten</span><span class="dazu">18:10 · 9 min</span><span class="mass">9,90</span></span><span class="deckel"><span class="name">Augustiner-Keller</span><span class="dazu">19:30 · 14 min</span><span class="mass">10,60</span></span>
+        <span class="summe">3 Stationen · 3 Std 55 · zurück um 20:25</span></span></button>
+      <button class="tour "><span class="stapel">
+        <span class="deckel"><span class="name">Michaeligarten</span><span class="dazu">17:00 · 15 min</span><span class="mass">9,80</span></span><span class="deckel"><span class="name">Hofbräukeller</span><span class="dazu">18:50 · 11 min</span><span class="mass">11,20</span></span>
+        <span class="summe">2 Stationen · 3 Std 10 · zurück um 20:10</span></span></button>
+    </div>
+    <h2>Dein Abend</h2>
+    <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+    <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

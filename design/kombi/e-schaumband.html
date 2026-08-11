@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Schaumband</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+
+/* SCHAUMBAND — the evening runs across the page as a band of beer with
+   a foam head, and the stops hang from it at their hour. One picture
+   answers "when", "how long" and "before sunset?" at once. */
+.band{position:relative;height:78px;margin:26px 0 34px;background:var(--gold)}
+.band .schaumkrone{top:-11px}
+.band .marke{position:absolute;bottom:8px;font-size:14.5px;color:var(--schaum)}
+.band .jetzt{position:absolute;top:0;bottom:0;width:3px;background:var(--akzent-2)}
+.band .stop{position:absolute;top:-6px;transform:translateX(-50%)}
+.tour{margin-bottom:12px}
+.tour.an .deckel{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour .zeile{display:flex;justify-content:space-between;gap:14px;margin-top:6px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <p class="lead">Der Balken ist dein Abend, die Krone der Sonnenuntergang.</p>
+  <div class="einfach">
+    <div class="chipreihe"><button class="chip" popovertarget="p-ort"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></button>
+      <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></button>
+      <button class="chip" popovertarget="p-weg"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></button></div>
+
+    <div class="band">
+      <span class="schaumkrone oben"></span>
+      <span class="jetzt" style="left:14%"></span>
+      <span class="stop" style="left:14%"><span class="korken" style="--gr:58px" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">1</span><span class="wort">16:30</span></span></span></span>
+      <span class="stop" style="left:56%"><span class="korken" style="--gr:58px" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">18:40</span></span></span></span>
+      <span class="marke" style="left:10px">jetzt</span>
+      <span class="marke" style="right:10px">Sonnenuntergang 20:36</span>
+    </div>
+
+    <h2>Drei Abende</h2>
+    
+    <button class="tour an"><span class="deckel"><span class="name">Flaucher → Hinterbrühl</span>
+      <span class="zeile"><span class="dazu">2 Stationen · 3 Std 40 · zurück um 20:10</span></span></span></button>
+    <button class="tour "><span class="deckel"><span class="name">Hirschgarten → Taxisgarten → Keller</span>
+      <span class="zeile"><span class="dazu">3 Stationen · 3 Std 55 · zurück um 20:25</span></span></span></button>
+    <button class="tour "><span class="deckel"><span class="name">Michaeligarten → Hofbräukeller</span>
+      <span class="zeile"><span class="dazu">2 Stationen · 3 Std 10 · zurück um 20:10</span></span></span></button>
+
+    <h2>Dein Abend</h2>
+    <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+    <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

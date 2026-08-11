@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Filzdeckel</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+
+/* FILZDECKEL — pulpboard with a deckle edge. The mats are the page:
+   full width, stacked, nothing floating on top of anything. The chip
+   row is a mat too, so the controls and the results are one material. */
+.chipreihe{gap:0;flex-direction:column;background:var(--flaeche);
+  box-shadow:inset 0 0 0 2px var(--kante);margin-top:22px}
+@media(min-width:720px){.chipreihe{flex-direction:row}}
+.chipreihe .chip{flex:1 1 auto;box-shadow:none;border-bottom:2px solid var(--kante)}
+@media(min-width:720px){.chipreihe .chip{border-bottom:0;border-right:2px solid var(--kante)}
+  .chipreihe .chip:last-child{border-right:0}}
+.chipreihe .chip[aria-expanded="true"]{background:color-mix(in srgb,var(--akzent) 12%,var(--flaeche))}
+.tour .deckel{border-radius:3px;
+  -webkit-mask-image:radial-gradient(circle at 3px 3px,#000 96%,transparent 100%);
+  padding:19px 21px}
+.tour{margin-bottom:11px}
+.tour.an .deckel{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour .zeile{display:flex;justify-content:space-between;gap:16px;align-items:baseline;margin-top:6px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <p class="lead">Filzpappe, gerissene Kante. Bedienung und Ergebnis aus demselben Material.</p>
+  <div class="einfach">
+    <div class="chipreihe"><button class="chip" popovertarget="p-ort"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></button>
+      <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></button>
+      <button class="chip" popovertarget="p-weg"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></button>
+      <button class="chip" popovertarget="p-was"><span class="was">Was soll dabei sein</span><span class="wert">egal</span></button>
+      <button class="chip" popovertarget="p-extra"><span class="was">Was brauchst du</span><span class="wert">egal</span></button></div>
+    <h2>Drei Abende</h2>
+    
+    <button class="tour an"><span class="deckel"><span class="name">Flaucher → Hinterbrühl</span>
+      <span class="zeile"><span class="dazu">2 Stationen · 3 Std 40 · zurück um 20:10</span>
+      <span class="mass">Maß ab 10,40</span></span></span></button>
+    <button class="tour "><span class="deckel"><span class="name">Hirschgarten → Taxisgarten → Keller</span>
+      <span class="zeile"><span class="dazu">3 Stationen · 3 Std 55 · zurück um 20:25</span>
+      <span class="mass">Maß ab 9,90</span></span></span></button>
+    <button class="tour "><span class="deckel"><span class="name">Michaeligarten → Hofbräukeller</span>
+      <span class="zeile"><span class="dazu">2 Stationen · 3 Std 10 · zurück um 20:10</span>
+      <span class="mass">Maß ab 9,80</span></span></span></button>
+    <h2>Dein Abend</h2>
+    <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+    <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

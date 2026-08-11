@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Bestand, optimiert</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+/* ============================================================
+   BESTAND, OPTIMIERT
+   The planner the site has today — three columns, every dial in
+   reach, cause and effect side by side. Nothing about that is
+   wrong, and this draft keeps it. What it fixes is what the
+   measurements found:
+
+     48 type sizes below 14px, the smallest 7.5px
+     19 rules setting information in letterspaced capitals
+     gold  2.7:1   amber 2.2:1   blue 4.2:1   on the board
+
+   Gold carries the times and amber the caveats — the two colours
+   the page relies on to mean something were the two least
+   readable things on it.
+
+   The fix is not simply darker paint. Gold and amber cannot
+   reach 4.5:1 against kraft board at all: darkened to #5E4004
+   and #7A3B06 they still only manage 3.99 and 3.60. Against the
+   lighter mat they reach 6.76 and 6.08.
+
+   So the rule this draft follows is a placement rule, not a
+   colour one: ANYTHING THAT MEANS SOMETHING IN COLOUR SITS ON A
+   MAT, NEVER ON THE BARE BOARD. The board carries structure —
+   headings, rules, the torn edge — and nothing that has to be
+   read in colour.
+   ============================================================ */
+:root{
+  /* Darkened as far as the hue survives; they are only ever used on a mat. */
+  --gold:#5E4004;
+  --maerzen:#7A3B06;
+  --enzian:#12336E;
+}
+[data-theme="dark"]{--gold:#E8B647;--maerzen:#E5945A;--enzian:#8FB4DF}
+
+/* Two states in one column, not two pages.
+
+   Simple first: five chips, one per question. "Alle Regler" replaces them in
+   place with every dial the planner has today — replaces, not adds, because
+   the two are the same answers at two levels of detail, and showing both at
+   once would ask which one counts. The suggestions beside them never move. */
+.spalte-links .chipreihe{flex-direction:column;gap:9px}
+.spalte-links .chip{width:100%}
+.einfach-k h2{margin-top:0}
+body.profi-an .einfach-k{display:none}
+.buehne .profi{margin-top:0}
+.hinweis-k{margin:12px 0 0;font-size:15.5px;color:var(--weich)}
+/* The switch sits with the filters it opens, not in the far corner of the
+   head — the control and its effect belong within one glance of each other. */
+.schalterplatz{margin:14px 0 0;padding-top:13px;
+  border-top:3px solid transparent;
+  border-image:repeating-linear-gradient(93deg,var(--kante) 0 3px,transparent 3px 8px) 3}
+.schalterplatz .profi-schalter{margin-left:0;font-size:15.5px}
+
+/* The crunch: the ink breaks on frames and fills, never through lettering.
+   A masked element loses its text as well, and that is exactly the readability
+   we just bought back. So the break lives on a pseudo-element underneath and
+   the words stay whole. */
+.aufriss{position:relative;isolation:isolate;background:var(--flaeche);box-shadow:none}
+/* Only the frame breaks. Masking the fill as well turns a stamp into a torn
+   banner, and masking the element itself takes the lettering with it. */
+.aufriss::before{content:'';position:absolute;inset:0;z-index:-1;
+  box-shadow:inset 0 0 0 2.5px var(--farbe,var(--enzian));
+  -webkit-mask-image:var(--riss);-webkit-mask-composite:source-in;
+  mask-image:var(--riss);mask-composite:intersect}
+/* A filled stamp keeps a muted version of its own colour underneath, so the
+   break reads as ink run thin rather than as a hole in the page. */
+.aufriss.satt{background:color-mix(in srgb,var(--farbe,var(--enzian)) 62%,var(--flaeche));
+  color:var(--schaum)}
+.aufriss.satt::before{background:var(--farbe,var(--enzian));box-shadow:none}
+
+.seg{display:flex;gap:10px;margin:22px 0 0}
+.seg a{flex:1;padding:13px 8px;text-align:center;text-decoration:none;
+  font-family:var(--display);font-size:15px;font-weight:900;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--enzian);transform:rotate(-1deg)}
+.seg a:nth-child(2){transform:rotate(.8deg)}
+
+/* A broken rule under every heading — the crunch where it costs nothing. */
+h2{display:flex;align-items:center;gap:11px}
+h2::after{content:'';flex:1;height:6px;
+  background:repeating-linear-gradient(93deg,var(--kante) 0 3px,transparent 3px 8px)}
+
+.buehne{display:grid;gap:26px;margin-top:24px;align-items:start}
+@media(min-width:1000px){.buehne{grid-template-columns:320px minmax(0,1fr)}}
+@media(min-width:1320px){.buehne.drei{grid-template-columns:320px minmax(0,.9fr) minmax(0,1.1fr)}}
+
+/* Every dial, exactly as today — only the labels are readable now. */
+.profi .gruppe > span{font-size:15px}
+.profi .reihe button,.profi .reihe input{font-size:15.5px}
+
+/* Suggestions. The meta line used to be 10px mono at .12em; it is the line
+   people actually read to choose, so it is 15.5px and unspaced now. */
+/* The cap lies on the mat and hangs over its left edge — so the mat keeps
+   enough padding on that side for the text to clear it. */
+.tour{margin-bottom:16px;padding-left:30px}
+.tour .deckel{padding:16px 17px 16px 48px}
+.tour .korken{position:absolute;left:-28px;top:50%;transform:translateY(-50%)}
+.tour:not(.an) .korken{--farbe:var(--kante-satt)}
+.tour.an .deckel{box-shadow:inset 0 0 0 3px var(--enzian)}
+.tour .kette{display:block;font-family:var(--display);font-size:18.5px;font-weight:900;
+  line-height:1.2}
+.tour .zahlen{display:flex;flex-wrap:wrap;gap:5px 16px;margin-top:7px;font-size:15.5px;
+  color:var(--weich)}
+.tour .zahlen b{color:var(--gold);font-weight:400}
+
+/* The tour: a timeline, but with times you can read across a table. */
+.strahl{position:relative;padding-left:30px}
+.strahl::before{content:'';position:absolute;left:14px;top:14px;bottom:14px;width:3px;
+  background:repeating-linear-gradient(var(--kante) 0 6px,transparent 6px 11px)}
+.knoten{position:relative;margin-bottom:12px}
+.strahl{padding-left:44px}
+.knoten .korken{position:absolute;left:-42px;top:15px;--farbe:var(--gold)}
+.knoten .zeit{font-family:var(--display);font-size:17px;font-weight:900;color:var(--gold)}
+.knoten .name{display:block;font-family:var(--display);font-size:19px;font-weight:900;
+  line-height:1.15;margin-top:1px}
+.knoten .dazu{display:block;margin-top:4px;font-size:15.5px;color:var(--weich)}
+.knoten .mass{float:right;font-family:var(--display);font-size:17px;font-weight:900;
+  color:var(--maerzen)}
+.etappe{margin:0 0 12px;font-size:15.5px;color:var(--weich)}
+
+/* Caveats used to be amber text on the board — 2.2:1. Now they are a mat. */
+.warnung{--farbe:var(--maerzen);padding:14px 16px;margin:0 0 14px;font-size:16px;
+  color:var(--schrift)}
+.warnung b{color:var(--maerzen);font-weight:400}
+
+.summe{background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);padding:15px 16px;
+  font-size:16px}
+.summe b{color:var(--gold);font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <p class="lead">Sag, wo du losgehst, wie lange du Zeit hast und was du willst — die Tour baut
+    sich selbst, samt Alternativen.</p>
+  <nav class="seg">
+    <a href="#" class="aufriss satt" aria-current="page">Tour bauen</a>
+    <a href="#" class="aufriss">Alle Biergärten</a>
+  </nav>
+  <div class="riss-kante" style="margin-top:20px"></div>
+
+  <div class="buehne drei">
+    <div class="spalte-links">
+      <div class="einfach-k">
+        <h2>Deine Angaben</h2>
+        <div class="chipreihe">
+          <button class="chip" popovertarget="p-ort"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></button>
+          <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></button>
+          <button class="chip" popovertarget="p-weg"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></button>
+          <button class="chip" popovertarget="p-was"><span class="was">Was soll dabei sein</span><span class="wert">egal</span></button>
+          <button class="chip" popovertarget="p-extra"><span class="was">Was brauchst du</span><span class="wert">egal</span></button>
+        </div>
+        <p class="hinweis-k">Wochentag ist heute, die Zahl der Stationen ergibt sich aus der Zeit.</p>
+      </div>
+      <div data-schalter class="schalterplatz"></div>
+      <div data-profi></div>
+    </div>
+
+    <div>
+      <h2>Vorschläge</h2>
+      <p class="etappe">Aus 33 Biergärten, Dienstag geöffnet, Öffnungszeiten berücksichtigt.</p>
+
+      <button class="tour an"><span class="deckel">
+        <span class="korken" style="--gr:62px"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+        <span class="kette">Flaucher → Hinterbrühl</span>
+        <span class="zahlen"><span>2 Stationen</span><span><b>3 Std 40</b></span>
+          <span>zurück um 20:10</span><span>Maß ab 10,40</span></span>
+      </span></button>
+
+      <button class="tour"><span class="deckel">
+        <span class="korken" style="--gr:62px"><span class="rand"></span><span class="mitte"><span class="zahl">3</span><span class="wort">Halte</span></span></span>
+        <span class="kette">Hirschgarten → Taxisgarten → Augustiner-Keller</span>
+        <span class="zahlen"><span>3 Stationen</span><span><b>3 Std 55</b></span>
+          <span>zurück um 20:25</span><span>Maß ab 9,90</span></span>
+      </span></button>
+
+      <button class="tour"><span class="deckel">
+        <span class="korken" style="--gr:62px"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+        <span class="kette">Michaeligarten → Hofbräukeller</span>
+        <span class="zahlen"><span>2 Stationen</span><span><b>3 Std 10</b></span>
+          <span>zurück um 20:10</span><span>Maß ab 9,80</span></span>
+      </span></button>
+    </div>
+
+    <div>
+      <h2>Deine Tour</h2>
+      <div class="warnung aufriss">Der Flaucher hat <b>Di–Fr erst ab 16:00</b> offen — passt gerade so.</div>
+
+      <div class="strahl">
+        <div class="knoten"><span class="deckel">
+          <span class="mass">10,80</span>
+          <span class="korken" style="--gr:38px"><span class="rand"></span><span class="mitte"><span class="zahl">1</span><span class="wort"></span></span></span><span class="zeit">16:30 – 18:20</span>
+          <span class="name">Zum Flaucher</span>
+          <span class="dazu">18 min mit dem Radl ab Candidplatz · offen bis 23:00</span>
+        </span></div>
+        <div class="knoten"><span class="deckel">
+          <span class="mass">10,40</span>
+          <span class="korken" style="--gr:38px"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort"></span></span></span><span class="zeit">18:40 – 20:10</span>
+          <span class="name">Gasthof Hinterbrühl</span>
+          <span class="dazu">12 min mit dem Radl · offen bis 23:00</span>
+        </span></div>
+      </div>
+
+      <div class="summe">Zurück um <b>20:10</b>, 26 Minuten vor Sonnenuntergang.
+        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor.</div>
+    </div>
+  </div>
+
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

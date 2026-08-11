@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Untersetzer</title>
+<link rel="stylesheet" href="basis.css">
+<style>
+
+/* UNTERSETZER — the cap sits on the mat, the way it does on a table.
+   The count is not a badge in a corner: it is a real object lying on
+   the paper, and it overhangs the edge because objects do. */
+.einfach{margin-top:22px}
+.tour{margin-bottom:26px}
+.tour .deckel{padding:20px 22px 18px 76px;min-height:96px}
+.tour .korken{position:absolute;left:-22px;top:50%;transform:translateY(-50%)}
+.tour.an .deckel{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour .summe{display:block;margin-top:7px;font-size:15.5px;color:var(--weich)}
+.stapel{position:relative;margin-left:24px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <p class="lead">Drei Fragen. Klick eine an, wenn sie nicht stimmt.</p>
+  <div class="einfach">
+    <div class="chipreihe">
+      <button class="chip" popovertarget="p-ort"><span class="was">Wo gehst du los</span><span class="wert">Candidplatz</span></button>
+      <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange hast du</span><span class="wert">4 Stunden</span></button>
+      <button class="chip" popovertarget="p-weg"><span class="was">Wie unterwegs</span><span class="wert">Zu Fuß &amp; Radl</span></button>
+      <button class="chip" popovertarget="p-was"><span class="was">Was soll dabei sein</span><span class="wert">egal</span></button>
+      <button class="chip" popovertarget="p-extra"><span class="was">Was brauchst du</span><span class="wert">egal</span></button>
+    </div>
+
+    <h2>Drei Abende</h2>
+    
+    <button class="tour an">
+      <span class="stapel"><span class="deckel"><span class="korken" style="--gr:76px" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+        <span class="name">Flaucher → Hinterbrühl</span>
+        <span class="summe">2 Stationen · 3 Std 40 · zurück um 20:10</span></span></span>
+    </button>
+    <button class="tour ">
+      <span class="stapel"><span class="deckel"><span class="korken" style="--gr:76px" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">3</span><span class="wort">Halte</span></span></span>
+        <span class="name">Hirschgarten → Taxisgarten → Keller</span>
+        <span class="summe">3 Stationen · 3 Std 55 · zurück um 20:25</span></span></span>
+    </button>
+    <button class="tour ">
+      <span class="stapel"><span class="deckel"><span class="korken" style="--gr:76px" aria-pressed="true"><span class="rand"></span><span class="mitte"><span class="zahl">2</span><span class="wort">Halte</span></span></span>
+        <span class="name">Michaeligarten → Hofbräukeller</span>
+        <span class="summe">2 Stationen · 3 Std 10 · zurück um 20:10</span></span></span>
+    </button>
+
+    <h2>Dein Abend</h2>
+    <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+    <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+  </div>
+  <footer>Preise sind Beispielwerte — der Crawler füllt sie.</footer>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="basis.js"></script>
+</body>
+</html>

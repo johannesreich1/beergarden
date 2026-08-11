@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Bierdeckel im Vergleich</title>
+<style>
+/* Die Vergleichsseite hält sich zurück — sie zeigt, sie gestaltet nicht. */
+:root{
+  --bg:#141414; --panel:#1C1C1C; --line:#2E2E2E;
+  --text:#E6E4DF; --mute:#8A8781; --accent:#C8A24A;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 32px 26px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+header p{margin:14px 0 0;max-width:64ch;color:var(--mute)}
+header a{color:var(--text)}
+
+.row{padding:34px 32px;border-bottom:1px solid var(--line)}
+.meta{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.fassung{font-size:19px;font-weight:600;letter-spacing:-.01em}
+.fassung a{color:inherit;text-decoration:none}
+.fassung a:hover{color:var(--accent)}
+.sig{color:var(--mute);font-size:13.5px;max-width:74ch;margin:0 0 20px}
+.sig b{color:var(--text);font-weight:500}
+
+.frames{display:flex;gap:22px;align-items:flex-start;overflow-x:auto;padding-bottom:6px}
+.device{flex:0 0 auto}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:7px;display:flex;
+  justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}
+.cap a:hover{color:var(--accent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--line)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+
+.m .shell{width:213px;height:460px}
+.m iframe{width:390px;height:844px;transform:scale(.545)}
+.t .shell{width:345px;height:460px}
+.t iframe{width:834px;height:1112px;transform:scale(.4137)}
+.d .shell{width:736px;height:460px}
+.d iframe{width:1440px;height:900px;transform:scale(.5111)}
+
+footer{padding:32px 32px 60px;color:var(--mute);max-width:78ch}
+footer code{font-family:var(--mono);color:var(--text)}
+footer ul{padding-left:18px;line-height:1.8}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){ .row,header,footer{padding-left:18px;padding-right:18px} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Biergarten Freunde · Bierdeckel</h1>
+  <p>
+    Hell und dunkel sind <b>eine Datei</b>: Struktur, Raster und Typografie sind
+    identisch, es tauschen ausschließlich die Farbtokens. Ohne Parameter folgt die Seite
+    der Systemeinstellung; hier sind beide über <code>?theme=</code> erzwungen, damit sie
+    nebeneinanderstehen. Ganz unten steht zum Vergleich die <b>strengere Fassung von
+    vorher</b> — daran lässt sich ablesen, was das Wärmerdrehen gebracht hat.
+    <a href="index.html">Zurück zur Übersicht</a>
+  </p>
+</header>
+
+<div id="rows"></div>
+
+<footer>
+  <p><b>Was sich zwischen den Fassungen ändert — und warum:</b></p>
+  <ul>
+    <li><b>Figur und Grund drehen sich mit.</b> Hell ist der Deckel dunkler als der Tisch,
+        dunkel ist er heller. Sonst läge er nicht mehr obenauf.</li>
+    <li><b>Die Papierfaser kehrt sich um.</b> Hell sind die Rillen dunkel, dunkel sind sie
+        hell — dieselbe Struktur, anderes Streiflicht.</li>
+    <li><b>Rot und Blau werden aufgehellt.</b> Ein Kobalt, das auf Naturpappe sitzt, wird
+        auf schwarzer Pappe unlesbar. Der Passerversatz bleibt, nur leiser.</li>
+    <li><b>Der Ringabdruck wechselt die Farbe.</b> Hell ist er ein dunkler Fleck im Papier,
+        dunkel ein Rest, der das Licht fängt.</li>
+  </ul>
+  <p>
+    Nichts davon ist gebaut. Sag, welche Fassung die Vorgabe sein soll — oder ob beide
+    bleiben und die Systemeinstellung entscheidet.
+  </p>
+</footer>
+
+<script>
+const FASSUNGEN = [
+  ['Hell', '01-bierdeckel.html', 'hell',
+   'Stroh statt Grau-Beige, warmes Braun statt Fast-Schwarz, Gold als dritte Druckfarbe. <b>Am Tag draußen die verlässlichere Fassung</b> — im Biergarten steht man in der Sonne, und dunkle Flächen spiegeln.'],
+  ['Dunkel', '01-bierdeckel.html', 'dunkel',
+   'Schwarz durchgefärbte Pappe, cremefarbene Druckfarbe. <b>Für den Abend</b>, wenn die Tour ohnehin in den Sonnenuntergang läuft.'],
+  ['Vorher — die strenge Fassung', '01-bierdeckel-vorher.html', 'hell',
+   'Eingefroren zum Vergleich. Kühlere Pappe, rote Uhrzeiten, Stempel als geschlossenes Kastenraster, keine Schaumkante. <b>Fliegt raus, sobald die Entscheidung steht.</b>'],
+]
+
+const SIZES = [['m','Mobil','390'], ['t','Tablet','834'], ['d','Desktop','1440']]
+
+document.getElementById('rows').innerHTML = FASSUNGEN.map(([name, datei, theme, sig]) => `
+  <section class="row">
+    <div class="meta">
+      <span class="fassung"><a href="${datei}?theme=${theme}">${name}</a></span>
+    </div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${SIZES.map(([cls, label, width]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${width} px</a></div>
+          <div class="shell">
+            <iframe src="${datei}?theme=${theme}" title="Bierdeckel ${name} — ${label}"
+                    loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>04 Kastanienschatten · Biergärten München</title>
+<style>
+/* ============================================================
+   04 · KASTANIENSCHATTEN
+   Ein Biergarten ist per Definition Schatten unter Kastanien —
+   die Bäume waren zur Kühlung der Bierkeller gepflanzt, der Garten
+   kam später. Also ist Licht das Ordnungsprinzip: die Seite liegt
+   im Halbschatten, Lichtflecken wandern beim Scrollen.
+   ============================================================ */
+:root{
+  --sonne:#F2EAD6;
+  --halbschatten:#DFD4B8;
+  --schatten:#5C5A46;
+  --tiefschatten:#2E2E24;
+  --laub:#6E8140;
+  --laub-tief:#3F4C24;
+  --bier:#D6A32B;
+  --display:Didot,"Bodoni 72","Playfair Display",Georgia,serif;
+  --body:Optima,"Segoe UI",Candara,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--sonne);
+  color:var(--tiefschatten);
+  font:16.5px/1.62 var(--body);
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+}
+/* Die Signatur: Blattschatten. Weiche, unregelmäßige Flecken, die beim
+   Scrollen leicht verschoben werden — wie Licht, das durch Laub fällt. */
+.laubwerk{
+  position:fixed;inset:-10% -10% -10% -10%;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(ellipse 240px 170px at 12% 8%,  rgba(46,46,36,.30), transparent 62%),
+    radial-gradient(ellipse 180px 300px at 78% 14%, rgba(46,46,36,.24), transparent 64%),
+    radial-gradient(ellipse 320px 210px at 42% 46%, rgba(46,46,36,.20), transparent 66%),
+    radial-gradient(ellipse 200px 150px at 88% 62%, rgba(46,46,36,.26), transparent 60%),
+    radial-gradient(ellipse 260px 190px at 22% 78%, rgba(46,46,36,.22), transparent 64%),
+    radial-gradient(ellipse 150px 240px at 62% 92%, rgba(46,46,36,.18), transparent 62%);
+  transition:transform .18s linear;
+}
+@media (prefers-reduced-motion:reduce){ .laubwerk{transition:none} }
+
+.lichtung{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 20px 90px}
+
+/* ---------- Kopf ---------- */
+.kopf{padding:64px 0 46px}
+.jahreszeit{font-family:var(--mono);font-size:10px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--schatten)}
+h1{
+  margin:20px 0 0;font-family:var(--display);font-weight:400;
+  font-size:clamp(46px,11vw,112px);line-height:.9;letter-spacing:-.02em;
+}
+h1 i{font-style:italic;color:var(--laub-tief)}
+.kopf p{margin:24px 0 0;font-size:18px;max-width:42ch;color:var(--schatten);line-height:1.6}
+
+/* ---------- Tour ---------- */
+h2{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--schatten);margin:0 0 4px}
+.regel{height:1px;background:var(--schatten);opacity:.35;margin-bottom:26px}
+
+.etappe{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--laub-tief);padding:16px 0}
+.etappe b{font-size:14px;color:var(--tiefschatten)}
+.etappe a{margin-left:auto;text-transform:none;letter-spacing:.03em;color:var(--schatten);
+  text-decoration:none;border-bottom:1px solid rgba(92,90,70,.4)}
+
+.halt{padding:6px 0 26px}
+.halt .zeile{display:flex;justify-content:space-between;gap:20px;align-items:baseline;flex-wrap:wrap}
+.halt h3{margin:0;font-family:var(--display);font-weight:400;font-size:clamp(26px,5.6vw,40px);
+  line-height:1.06;letter-spacing:-.015em}
+.halt .uhr{font-family:var(--mono);font-size:14px;letter-spacing:.06em;color:var(--laub-tief);
+  white-space:nowrap}
+.halt p{margin:14px 0 0;max-width:58ch;color:var(--schatten)}
+.zeugs{margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--schatten);display:flex;flex-wrap:wrap;gap:22px}
+.zeugs .wasser{color:var(--laub-tief)}
+.einschraenkung{margin-top:16px;padding-left:18px;border-left:0;
+  background:linear-gradient(90deg, rgba(214,163,43,.5) 0 3px, transparent 3px);
+  font-size:15px;color:var(--schatten);font-style:italic}
+
+/* ---------- Bilanz: die eine große Zahl ---------- */
+.bilanz{margin-top:14px;padding-top:26px;border-top:1px solid rgba(92,90,70,.35);
+  display:flex;gap:44px;flex-wrap:wrap;align-items:flex-end}
+.bilanz .zahl{font-family:var(--display);font-size:clamp(44px,10vw,78px);line-height:.86;
+  letter-spacing:-.03em}
+.bilanz .was{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--schatten);margin-bottom:9px}
+.bilanz .neben{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--schatten);
+  line-height:2}
+
+/* ---------- Verzeichnis ---------- */
+.liste{list-style:none;margin:0;padding:0}
+.liste li{padding:16px 0;border-top:1px solid rgba(92,90,70,.3);display:flex;gap:18px;
+  align-items:baseline}
+.liste .min{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--laub-tief);
+  width:54px;flex:0 0 auto}
+.liste .name{font-family:var(--display);font-size:19px;line-height:1.2;flex:1 1 auto;min-width:0}
+.liste .viertel{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--schatten);white-space:nowrap}
+
+.filter{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px}
+.filter button{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  padding:9px 0;border:0;border-bottom:1px solid rgba(92,90,70,.4);background:transparent;
+  color:var(--schatten);cursor:pointer;margin-right:16px}
+.filter button[aria-pressed="true"]{color:var(--laub-tief);border-bottom:2px solid var(--laub-tief)}
+
+.fussnote{margin-top:42px;padding-top:20px;border-top:1px solid rgba(92,90,70,.3);
+  font-family:var(--mono);font-size:10.5px;line-height:1.9;letter-spacing:.05em;
+  color:var(--schatten);max-width:70ch}
+:focus-visible{outline:2px solid var(--laub-tief);outline-offset:3px}
+
+@media (min-width:760px){
+  .lichtung{padding:0 34px 100px}
+  .kopf{padding:80px 0 56px}
+  .zwei{display:grid;grid-template-columns:1.4fr 1fr;gap:56px;align-items:start}
+}
+@media (min-width:1120px){
+  .lichtung{padding:0 52px 120px}
+  .kopf{display:grid;grid-template-columns:1.4fr 1fr;gap:60px;align-items:end;padding:96px 0 64px}
+  .kopf p{margin:0 0 12px}
+  .zwei{grid-template-columns:1.5fr 1fr;gap:72px}
+  .halt h3{font-size:42px}
+}
+</style>
+</head>
+<body>
+<div class="laubwerk" aria-hidden="true"></div>
+
+<div class="lichtung">
+
+  <header class="kopf">
+    <div>
+      <div class="jahreszeit">August · Dienstagnachmittag · München</div>
+      <h1>Im <i>Schatten</i><br>der Kastanien</h1>
+    </div>
+    <p>
+      Die Bäume standen zuerst — gepflanzt, um die Bierkeller zu kühlen. Der Garten kam
+      später. Sag, wo du losgehst und wie lange du Zeit hast.
+    </p>
+  </header>
+
+  <div class="zwei">
+    <section>
+      <h2>Deine Tour · ab Candidplatz, 15:00</h2>
+      <div class="regel"></div>
+
+      <div class="etappe"><span>ÖPNV</span><b>≈28 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="halt">
+        <div class="zeile">
+          <h3>Augustiner Schützengarten</h3>
+          <span class="uhr">15:28 – 16:53</span>
+        </div>
+        <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter großen
+           Kastanien. Kaum jemand kennt ihn.</p>
+        <div class="zeugs"><span>Augustiner</span><span>2.500 Plätze</span><span>Selbstbedienung</span><span>11:30–23:00</span></div>
+      </article>
+
+      <div class="etappe"><span>zu Fuß</span><b>≈20 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="halt">
+        <div class="zeile">
+          <h3>Gasthof Hinterbrühl</h3>
+          <span class="uhr">17:13 – 18:38</span>
+        </div>
+        <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach zum
+           schönsten Biergarten Oberbayerns gewählt.</p>
+        <div class="zeugs"><span>Augustiner</span><span>1.000 Plätze</span><span class="wasser">Am Wasser</span></div>
+        <p class="einschraenkung">Selbstbedienungs-Biergarten läuft derzeit vor allem
+           Samstag und Sonntag.</p>
+      </article>
+
+      <div class="etappe"><span>zu Fuß</span><b>≈23 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="halt">
+        <div class="zeile">
+          <h3>Gutshof Menterschwaige</h3>
+          <span class="uhr">19:01 – 20:26</span>
+        </div>
+        <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass, Isarsteig in drei
+           Minuten, neue Wirtsleute seit dieser Saison.</p>
+        <div class="zeugs"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+      </article>
+
+      <div class="bilanz">
+        <div>
+          <div class="was">Von Tür zu Tür</div>
+          <div class="zahl">5 h 46</div>
+        </div>
+        <div class="neben">
+          zurück um 20:46<br>
+          43 Minuten zu Fuß<br>
+          Sonnenuntergang 20:38
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Alle Biergärten · ab Candidplatz</h2>
+      <div class="regel"></div>
+      <ul class="liste">
+        <li><span class="min">17 min</span><span class="name">Giesinger Bräustüberl</span><span class="viertel">Obergiesing</span></li>
+        <li><span class="min">20 min</span><span class="name">Gutshof Menterschwaige</span><span class="viertel">Harlaching</span></li>
+        <li><span class="min">20 min</span><span class="name">Paulaner am Nockherberg</span><span class="viertel">Au</span></li>
+        <li><span class="min">21 min</span><span class="name">Am Viktualienmarkt</span><span class="viertel">Altstadt</span></li>
+        <li><span class="min">23 min</span><span class="name">Hofbräukeller</span><span class="viertel">Haidhausen</span></li>
+        <li><span class="min">24 min</span><span class="name">Zum Flaucher</span><span class="viertel">Isarauen</span></li>
+      </ul>
+
+      <div class="filter">
+        <button aria-pressed="true">Am Wasser</button>
+        <button aria-pressed="false">Wald &amp; Grün</button>
+        <button aria-pressed="false">Stadtfeeling</button>
+        <button aria-pressed="false">Selbstbedienung</button>
+      </div>
+
+      <p class="fussnote">
+        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor, nicht aus dem Fahrplan.
+        „Bei schönem Wetter“ heißt: der Wirt entscheidet morgens um neun.
+      </p>
+    </section>
+  </div>
+</div>
+
+<script>
+// Lichtflecken wandern gegenläufig zum Scrollen — langsamer als die Seite,
+// damit es sich anfühlt, als läge das Laub über allem.
+const laub = document.querySelector('.laubwerk')
+const ruhe = matchMedia('(prefers-reduced-motion: reduce)')
+if (!ruhe.matches) {
+  addEventListener('scroll', () => {
+    const y = scrollY * 0.14
+    laub.style.transform = `translate3d(${Math.sin(scrollY / 420) * 14}px, ${-y}px, 0)`
+  }, { passive: true })
+}
+</script>
+</body>
+</html>

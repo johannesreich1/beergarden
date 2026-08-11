@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Münchner Secession</title>
+<style>
+/* ============================================================
+   01d · MÜNCHNER SECESSION
+   Der Jugendstil ist in München erfunden worden, nicht importiert.
+   Also: gedehnte Versalien, eine gedeckte Palette aus Salbei,
+   Ocker und Ochsenblut, und ein haarfeiner Rahmen mit Eckmarken
+   statt einer Kastenlinie. Kein einziges Ornament ohne Kante.
+   ============================================================ */
+:root{
+  --papier:#EFE7D2; --flaeche:#E8DFC6;
+  --akzent:#B8892C; --zweitfarbe:#7E8C68;
+  --tinte:#2E2C24; --tinte-weich:#4E4B3D; --grau:#877F68;
+  --kante:rgba(46,44,36,.20); --kante-stark:rgba(46,44,36,.42);
+  --ring:rgba(122,46,42,.18);
+  --warnfeld:rgba(122,46,42,.10); --warnlinie:#7A2E2A; --warntext:#6B241F;
+  --display:Optima,"Segoe UI",Candara,sans-serif;
+  --body:Baskerville,"Times New Roman",Georgia,serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="hell"]){
+  --papier:#191C17; --flaeche:#20241D;
+  --akzent:#D8A845; --zweitfarbe:#9EAE85;
+  --tinte:#E5E0CE; --tinte-weich:#C0BBA6; --grau:#8E8974;
+  --kante:rgba(229,224,206,.18); --kante-stark:rgba(229,224,206,.38);
+  --ring:rgba(200,106,96,.20);
+  --warnfeld:rgba(200,106,96,.14); --warnlinie:#C86A60; --warntext:#EBB0A6;
+}}
+:root[data-theme="dunkel"]{
+  --papier:#191C17; --flaeche:#20241D;
+  --akzent:#D8A845; --zweitfarbe:#9EAE85;
+  --tinte:#E5E0CE; --tinte-weich:#C0BBA6; --grau:#8E8974;
+  --kante:rgba(229,224,206,.18); --kante-stark:rgba(229,224,206,.38);
+  --ring:rgba(200,106,96,.20);
+  --warnfeld:rgba(200,106,96,.14); --warnlinie:#C86A60; --warntext:#EBB0A6;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--papier);color:var(--tinte);font:16px/1.64 var(--body);
+  -webkit-font-smoothing:antialiased}
+.sheet{max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+
+.licht{position:fixed;top:12px;right:12px;z-index:10;display:flex;gap:6px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
+.licht button{font:inherit;padding:7px 11px;border:1px solid var(--kante-stark);
+  background:var(--papier);color:var(--tinte-weich);cursor:pointer}
+.licht button[aria-pressed="true"]{background:var(--akzent);border-color:var(--akzent);color:var(--papier)}
+
+.kopf{padding:30px 0 24px}
+.marke{font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--grau)}
+.kopf p{margin:20px 0 0;max-width:44ch;font-size:15.5px;color:var(--tinte-weich)}
+
+.deckel{background:var(--flaeche);padding:22px 20px 20px;position:relative}
+.deckel > .kennung{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--grau);display:block;margin-bottom:16px}
+.ring{position:absolute;width:132px;height:132px;border-radius:50%;
+  border:10px solid var(--ring);right:-26px;top:-32px;pointer-events:none}
+
+.tour{margin-top:26px}
+.etappe{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--zweitfarbe);padding:13px 0;border-bottom:1px solid var(--kante);
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.etappe .dauer{color:var(--tinte);font-weight:700}
+.etappe .prueft{margin-left:auto;color:var(--grau);text-transform:none;letter-spacing:.04em;
+  border-bottom:1px solid currentColor;text-decoration:none}
+
+.station{padding:20px 0 22px;border-bottom:1px solid var(--kante)}
+.station:last-child{border-bottom:0}
+.zeile{display:flex;justify-content:space-between;gap:18px;align-items:baseline;flex-wrap:wrap}
+.station p{margin:11px 0 0;font-size:15.5px;max-width:60ch;color:var(--tinte-weich)}
+.uhr{font-family:var(--mono);font-size:15px;white-space:nowrap;color:var(--akzent);font-weight:700}
+.stempel{margin-top:15px;display:flex;flex-wrap:wrap;gap:6px}
+.stempel span{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tinte-weich);padding:5px 11px;box-shadow:inset 0 0 0 1px var(--kante-stark)}
+.wasser{color:var(--zweitfarbe)!important;box-shadow:inset 0 0 0 1px var(--zweitfarbe)!important}
+.hinweis{margin-top:15px;padding:11px 13px;background:var(--warnfeld);
+  border-top:2px solid var(--warnlinie);font-size:14.5px;color:var(--warntext)}
+
+.summe{margin-top:20px;padding-top:16px;border-top:2px solid var(--kante-stark);
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.summe .klein{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--grau);line-height:1.9}
+
+.abschnitt{margin-top:34px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--grau);border-bottom:1px solid var(--kante-stark);padding-bottom:9px}
+.liste{width:100%;border-collapse:collapse;margin-top:2px}
+.liste tr{border-bottom:1px solid var(--kante)}
+.liste td{padding:13px 8px 13px 0;vertical-align:baseline}
+.liste .min{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--akzent);width:64px;
+  white-space:nowrap}
+.liste .wo{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+
+.filter{margin-top:26px;display:flex;flex-wrap:wrap;gap:7px}
+.filter button{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:10px 14px;border:1px solid var(--kante-stark);background:transparent;
+  color:var(--tinte-weich);cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--akzent);border-color:var(--akzent);color:var(--papier)}
+
+.fuss{margin-top:40px;padding-top:18px;border-top:1px solid var(--kante);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;line-height:1.9;color:var(--grau);
+  max-width:70ch}
+:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+
+@media (min-width:760px){
+  .sheet{padding:34px 30px 80px}
+  .spalten{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin-top:26px}
+  .tour{margin-top:0}
+  .abschnitt{margin-top:0}
+}
+@media (min-width:1100px){
+  .sheet{display:grid;grid-template-columns:minmax(300px,1fr) 2fr;gap:44px;
+    padding:52px 40px 90px;align-items:start}
+  .kopf{padding:0;position:sticky;top:52px}
+  .spalten{grid-template-columns:1.15fr 1fr;margin-top:0}
+  .rechts{min-width:0}
+}
+
+h1{margin:16px 0 0;font-family:var(--display);font-weight:400;
+  font-size:clamp(26px,6.8vw,50px);line-height:1.18;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--tinte)}
+h1 em{font-style:normal;display:block;color:var(--akzent);letter-spacing:.26em}
+/* Haarfeiner Rahmen mit abgesetzten Eckmarken statt einer Kastenlinie */
+.deckel{box-shadow:inset 0 0 0 1px var(--kante-stark)}
+.deckel::before,.deckel::after{content:"";position:absolute;width:16px;height:16px;
+  border:1px solid var(--akzent);pointer-events:none}
+.deckel::before{left:6px;top:6px;border-right:0;border-bottom:0}
+.deckel::after{right:6px;bottom:6px;border-left:0;border-top:0}
+.station h3{margin:0;font-family:var(--display);font-weight:400;font-size:19px;
+  letter-spacing:.12em;text-transform:uppercase;line-height:1.28;color:var(--tinte)}
+.liste .ort{font-family:var(--display);font-size:14.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tinte)}
+.summe .gross{font-family:var(--display);font-size:27px;letter-spacing:.1em;color:var(--akzent)}
+/* Ornamentleiste: fünf gedehnte Rauten auf einer Haarlinie */
+.schaumkante{margin:26px 0 0;height:13px;position:relative;
+  border-top:1px solid var(--kante-stark);display:flex;justify-content:center;gap:22px}
+.schaumkante span{width:9px;height:9px;margin-top:-5px;transform:rotate(45deg);
+  background:var(--papier);box-shadow:inset 0 0 0 1px var(--akzent)}
+.schaumkante span:nth-child(3){background:var(--akzent)}
+@media (min-width:1100px){ h1{font-size:clamp(30px,2.8vw,42px)} }
+</style>
+</head>
+<body>
+
+<div class="licht" role="group" aria-label="Lichtstimmung">
+  <button data-theme="hell" aria-pressed="false">Hell</button>
+  <button data-theme="dunkel" aria-pressed="false">Dunkel</button>
+</div>
+
+<div class="sheet">
+  <header class="kopf">
+    <div class="marke">Tourenplaner · München</div>
+    <h1>Biergarten<em>Freunde</em></h1>
+    <p>Sag, wo du losgehst und wie lange du Zeit hast. Die Tour baut sich selbst,
+       samt Alternativen.</p>
+    <div class="schaumkante" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+  </header>
+
+  <div class="rechts">
+    <div class="spalten">
+      <section class="deckel tour">
+        <span class="kennung">Dienstag · ab Candidplatz · 15:00</span>
+        <div class="ring" aria-hidden="true"></div>
+
+        <div class="etappe"><span>ÖPNV</span><span class="dauer">≈28 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Augustiner Schützengarten</h3><span class="uhr">15:28–16:53</span></div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="stempel"><span>Augustiner</span><span>2.500 Plätze</span>
+            <span>Selbstbedienung</span><span>11:30–23:00</span></div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈20 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Gasthof Hinterbrühl</h3><span class="uhr">17:13–18:38</span></div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei.
+             Mehrfach zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.000 Plätze</span>
+            <span class="wasser">Am Wasser</span></div>
+          <div class="hinweis">Selbstbedienungs-Biergarten läuft derzeit vor allem
+            Samstag und Sonntag.</div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈23 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Gutshof Menterschwaige</h3><span class="uhr">19:01–20:26</span></div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass,
+             Isarsteig in drei Minuten.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+        </article>
+
+        <div class="summe">
+          <div><div class="klein">Von Tür zu Tür</div><div class="gross">5 h 46 min</div></div>
+          <div class="klein">zurück 20:46 · 43 min zu Fuß<br>Sonnenuntergang 20:38</div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="abschnitt">Alle Biergärten · Fahrzeit ab Candidplatz</h2>
+        <table class="liste"><tbody>
+          <tr><td class="min">17 min</td><td class="ort">Giesinger Bräustüberl</td><td class="wo">Obergiesing</td></tr>
+          <tr><td class="min">20 min</td><td class="ort">Gutshof Menterschwaige</td><td class="wo">Harlaching</td></tr>
+          <tr><td class="min">20 min</td><td class="ort">Paulaner am Nockherberg</td><td class="wo">Au</td></tr>
+          <tr><td class="min">21 min</td><td class="ort">Am Viktualienmarkt</td><td class="wo">Altstadt</td></tr>
+          <tr><td class="min">23 min</td><td class="ort">Hofbräukeller</td><td class="wo">Haidhausen</td></tr>
+          <tr><td class="min">24 min</td><td class="ort">Zum Flaucher</td><td class="wo">Isarauen</td></tr>
+        </tbody></table>
+
+        <div class="filter">
+          <button aria-pressed="true">Am Wasser</button>
+          <button aria-pressed="false">Wald &amp; Grün</button>
+          <button aria-pressed="false">Stadtfeeling</button>
+          <button aria-pressed="false">Bierkeller</button>
+          <button aria-pressed="false">Selbstbedienung</button>
+          <button aria-pressed="false">Eigene Brotzeit</button>
+        </div>
+
+        <p class="fuss">Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor.
+          Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const knoepfe = document.querySelectorAll('.licht button')
+const erzwungen = new URLSearchParams(location.search).get('theme')
+function setzen(wert){
+  if (wert) document.documentElement.dataset.theme = wert
+  else delete document.documentElement.dataset.theme
+  knoepfe.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === wert)))
+}
+if (erzwungen === 'hell' || erzwungen === 'dunkel') setzen(erzwungen)
+knoepfe.forEach(b => b.addEventListener('click', () => setzen(b.dataset.theme)))
+</script>
+</body>
+</html>

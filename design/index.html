@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design-Entwürfe · Biergärten München</title>
+<style>
+/* Die Galerie selbst hält sich zurück. Sie soll die Entwürfe zeigen,
+   nicht mit ihnen konkurrieren. */
+:root{
+  --bg:#141414; --panel:#1C1C1C; --line:#2E2E2E;
+  --text:#E6E4DF; --mute:#8A8781; --accent:#C8A24A;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 32px 28px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+header p{margin:14px 0 0;max-width:62ch;color:var(--mute);font-size:14px}
+
+.row{padding:36px 32px;border-bottom:1px solid var(--line)}
+.meta{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.num{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--accent)}
+.sig{color:var(--mute);font-size:13.5px;max-width:70ch;margin:0 0 22px}
+.sig b{color:var(--text);font-weight:500}
+
+.frames{display:flex;gap:22px;align-items:flex-start;overflow-x:auto;padding-bottom:6px}
+.device{flex:0 0 auto}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:7px;display:flex;
+  justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}
+.cap a:hover{color:var(--accent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--line)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+
+/* 390 / 834 / 1440 CSS-Pixel, auf gleiche Höhe herunterskaliert */
+.m .shell{width:213px;height:460px}
+.m iframe{width:390px;height:844px;transform:scale(.545)}
+.t .shell{width:345px;height:460px}
+.t iframe{width:834px;height:1112px;transform:scale(.4137)}
+.d .shell{width:736px;height:460px}
+.d iframe{width:1440px;height:900px;transform:scale(.5111)}
+
+footer{padding:34px 32px 60px;color:var(--mute);max-width:76ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){
+  .row,header,footer{padding-left:18px;padding-right:18px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Design-Entwürfe · Biergärten München</h1>
+  <p>
+    Zehn Richtungen, gleicher Inhalt, echte Daten. Jede Zeile zeigt dieselbe Richtung
+    als Mobil, Tablet und Desktop — die Layouts sind pro Breite eigenständig, kein
+    zusammengestauchter Desktop. Auf den Namen klicken öffnet den Entwurf in voller Größe.
+  </p>
+</header>
+
+<div id="rows"></div>
+
+<footer>
+  <p style="margin:0 0 14px">
+    <a href="palette.html" style="color:var(--accent)">Palette</a> — Bier liefert die warmen
+    Töne, die bayerische Raute die kalten. Keine Farbe ohne Herkunft.<br>
+    <a href="01-varianten.html" style="color:var(--accent)">Sieben Ausprägungen</a> — dieselbe
+    Positionierung, sieben Materialien.<br>
+    <a href="buttons.html" style="color:var(--accent)">Zehn Schalter</a> — Bierdeckel,
+    Kronkorken, Krugdeckel, Brezn, Raute, Zapfhahn, Schaum. Anklickbar.
+  </p>
+  Nichts davon ist gebaut. <code>web/app/assets/css/main.css</code> ist unverändert
+  der Prototyp.
+</footer>
+
+<script>
+const DIRECTIONS = [
+  ['01','Bierdeckel — gewählt','01-bierdeckel.html',
+   'Pappe, Zweifarbendruck, sichtbarer Passerversatz. <b>Signatur:</b> der Ringabdruck des Glases — das einzige runde Element auf der Seite, und zwar aus gutem Grund. → <a href="01-varianten.html" style="color:#C8A24A">sieben Ausprägungen bei gleicher Positionierung</a> · <a href="01-vergleich.html" style="color:#C8A24A">hell/dunkel</a>'],
+  ['02','Fahrplan','02-fahrplan.html',
+   'Der MVV-Aushang als Ordnungsprinzip. <b>Signatur:</b> die Tour als Liniendiagramm mit Stationspunkten, Linienfarben nach Verkehrsmittel.'],
+  ['03','Emailleschild','03-emailleschild.html',
+   'Alte Brauereischilder an Hauswänden. <b>Signatur:</b> dicke Keillinie und abgeplatzte Emailkanten, gesättigtes Kobalt auf Creme.'],
+  ['04','Kastanienschatten','04-kastanienschatten.html',
+   'Das, was einen Biergarten überhaupt ausmacht: Schatten unter Kastanien. <b>Signatur:</b> Lichtflecken, die sich beim Scrollen verschieben.'],
+  ['05','Zinn','05-zinn.html',
+   'Krugdeckel, graviert. <b>Signatur:</b> gravierte Lettern in einem einzigen Metall, Farbe kommt nur vom Bier selbst.'],
+  ['06','Isar-Topografie','06-topografie.html',
+   'Höhenlinien und Vermessung. <b>Signatur:</b> die Tour als Vermessungszug mit Peilung und Distanz an jeder Etappe.'],
+  ['07','Abfahrtstafel','07-abfahrtstafel.html',
+   'Fallblattanzeige. <b>Signatur:</b> die Blattfuge quer durch jede Zeile, Bernstein auf Schwarz, ein einziger Umschlag beim Laden.'],
+  ['08','Raute','08-raute.html',
+   'Die bayerische Raute, streng geometrisch statt folkloristisch. <b>Signatur:</b> diagonale Schnitte als echtes Layoutmittel, nicht als Tapete.'],
+  ['09','Wirtshaustafel','09-wirtshaustafel.html',
+   'Die Kreidetafel am Eingang. <b>Signatur:</b> handgezogene Linien und echte Kreidekörnung — Kreide nur für die Auszeichnung, Daten bleiben scharf.'],
+  ['10','Sachlichkeit','10-sachlichkeit.html',
+   'Strenges Raster, kein Ornament. <b>Signatur:</b> die Brauereifarben als Ordnungssystem statt als Dekoration.'],
+]
+
+const SIZES = [
+  ['m','Mobil','390'],
+  ['t','Tablet','834'],
+  ['d','Desktop','1440'],
+]
+
+document.getElementById('rows').innerHTML = DIRECTIONS.map(([num, name, file, sig]) => `
+  <section class="row">
+    <div class="meta">
+      <span class="num">${num}</span>
+      <span class="name"><a href="${file}">${name}</a></span>
+    </div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${SIZES.map(([cls, label, width]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${file}">${width} px</a></div>
+          <div class="shell"><iframe src="${file}" title="${name} — ${label}" loading="lazy" scrolling="no"></iframe></div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

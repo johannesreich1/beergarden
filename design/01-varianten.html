@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · sieben Ausprägungen</title>
+<style>
+:root{
+  --bg:#141414; --line:#2E2E2E;
+  --text:#E6E4DF; --mute:#8A8781; --accent:#C8A24A;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 32px 26px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+header p{margin:14px 0 0;max-width:70ch;color:var(--mute)}
+header a{color:var(--text)}
+header b{color:var(--text);font-weight:500}
+
+.row{padding:34px 32px;border-bottom:1px solid var(--line)}
+.meta{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.num{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--accent)}
+.sig{color:var(--mute);font-size:13.5px;max-width:76ch;margin:0 0 20px}
+.sig b{color:var(--text);font-weight:500}
+
+.frames{display:flex;gap:22px;align-items:flex-start;overflow-x:auto;padding-bottom:6px}
+.device{flex:0 0 auto}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:7px;display:flex;
+  justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}
+.cap a:hover{color:var(--accent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--line)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+
+.d .shell{width:520px;height:440px}
+.d iframe{width:1440px;height:1218px;transform:scale(.3611)}
+.m .shell{width:203px;height:440px}
+.m iframe{width:390px;height:845px;transform:scale(.5205)}
+
+footer{padding:32px 32px 64px;color:var(--mute);max-width:80ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){ .row,header,footer{padding-left:18px;padding-right:18px} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Biergarten Freunde · sieben Ausprägungen</h1>
+  <p>
+    <b>Die Positionierung ist bei allen identisch</b> — gleiches Markup, gleiches Raster,
+    gleiche Umbruchpunkte. Nachgeprüft: außerhalb des Stylesheets unterscheiden sich die
+    Dateien nur in Titel, Überschrift und der einen Leiste unter dem Kopf. Was sich
+    unterscheidet, ist ausschließlich die Ausprägung.
+    <a href="index.html">Zurück zur Übersicht</a> ·
+    <a href="01-vergleich.html">Hell/Dunkel-Vergleich der Grundfassung</a>
+  </p>
+</header>
+
+<div id="rows"></div>
+
+<footer>
+  <p>
+    Jede Datei kann hell und dunkel — bis auf <b>Leuchtschrift</b>, wo beides nicht
+    dieselbe Sache in anderer Farbe ist, sondern zwei Zustände: tagsüber ist das Schild
+    aus und man sieht nur die Glasrohre, abends brennt es.
+  </p>
+  <p>
+    Nichts davon ist gebaut. <code>web/app/assets/css/main.css</code> ist unverändert der
+    Prototyp. Sag, welche Ausprägung es wird — oder welche Teile aus welcher.
+  </p>
+</footer>
+
+<script>
+const VARIANTEN = [
+  ['00','Bierdeckel — die Grundfassung','01-bierdeckel.html',
+   'Stroh, warmes Braun, Gold als dritte Druckfarbe, Schaumkante. <b>Der Stand von vorhin</b>, hier nur zum Danebenhalten.'],
+  ['a','Risograph','01a-risograph.html',
+   'Zwei Farben, jede einzeln gedruckt, jede mit eigenem Punktraster. <b>Der Titel liegt zweimal übereinander</b> — die Maschine trifft den Passer nie, und genau das ist das Verfahren.'],
+  ['b','Überdruck','01b-ueberdruck.html',
+   'Zwei lasierende Farben übereinander. <b>Wo Gelb und Blau sich decken, entsteht Grün</b> — nicht als gewählte dritte Farbe, sondern als Folge der beiden ersten.'],
+  ['c','Blindprägung','01c-blindpraegung.html',
+   'Der Titel ist nicht gedruckt, sondern in die Pappe gepresst — keine Farbe, nur Kante und Licht. <b>Die einzige Druckfarbe ist Goldfolie, und die bekommen nur die Uhrzeiten.</b>'],
+  ['d','Münchner Secession','01d-secession.html',
+   'Der Jugendstil ist hier erfunden worden, nicht importiert. Gedehnte Versalien, Salbei und Ocker, <b>ein haarfeiner Rahmen mit abgesetzten Eckmarken</b> statt einer Kastenlinie.'],
+  ['e','Stempel auf Kraftpappe — gewählt','01e-stempel.html',
+   'Rohe Pappe, Gummistempel, trockenes Kissen. Ausgebaut: <b>das Logo ist ein Siegel</b> mit Schrift auf dem Ring und der Raute im Kern, die Schalter sind Abdrücke statt Rechtecke, und die tragende Idee — <b>die Seite ist eine Stempelkarte</b>, wo du warst, ist abgestempelt. Als einzige Ausprägung schon auf der neuen Palette.'],
+  ['f','Leuchtschrift','01f-leuchtschrift.html',
+   'Das Schild über dem Eingang. <b>Tagsüber aus, abends an</b> — hell und dunkel sind hier zwei Zustände desselben Gegenstands, nicht zwei Farbfassungen.'],
+]
+
+const ANSICHTEN = [
+  ['d','Desktop hell','hell','1440'],
+  ['d','Desktop dunkel','dunkel','1440'],
+  ['m','Mobil hell','hell','390'],
+]
+
+document.getElementById('rows').innerHTML = VARIANTEN.map(([num, name, datei, sig]) => `
+  <section class="row">
+    <div class="meta">
+      <span class="num">${num}</span>
+      <span class="name"><a href="${datei}">${name}</a></span>
+    </div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${ANSICHTEN.map(([cls, label, theme, width]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${width} px</a></div>
+          <div class="shell">
+            <iframe src="${datei}?theme=${theme}" title="${name} — ${label}"
+                    loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

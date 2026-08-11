@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>09 Wirtshaustafel · Biergärten München</title>
+<style>
+/* ============================================================
+   09 · WIRTSHAUSTAFEL
+   Die Kreidetafel am Eingang. Die Disziplin liegt darin, Kreide
+   nur für die Auszeichnung zu benutzen — Uhrzeiten, Minuten und
+   Fakten bleiben scharf gesetzt. Sonst wird es Deko statt Tafel.
+   ============================================================ */
+:root{
+  --schiefer:#242D28;
+  --schiefer-hell:#2E3833;
+  --kreide:#EDE8DC;
+  --kreide-matt:rgba(237,232,220,.62);
+  --kreide-blau:#A6C6C1;
+  --kreide-gelb:#E2BE68;
+  --kreide-rot:#D98C77;
+  --hand:"Chalkboard SE","Bradley Hand","Comic Sans MS",cursive;
+  --body:Optima,"Segoe UI",Candara,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--schiefer);
+  /* Schieferkörnung: dichtes, sehr schwaches Punktraster in drei Größen */
+  background-image:
+    radial-gradient(circle at 25% 30%, rgba(255,255,255,.030) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 65%, rgba(0,0,0,.10) 0 1.5px, transparent 2px),
+    radial-gradient(circle at 45% 85%, rgba(255,255,255,.020) 0 1px, transparent 1.5px);
+  background-size:13px 13px, 19px 19px, 29px 29px;
+  color:var(--kreide);
+  font:16.5px/1.6 var(--body);
+  -webkit-font-smoothing:antialiased;
+}
+/* Der Holzrahmen der Tafel */
+.rahmen{border:10px solid #5A452C;border-image:linear-gradient(160deg,#6B5334,#43331E) 1;
+  margin:10px;min-height:calc(100vh - 20px)}
+.tafel{max-width:1240px;margin:0 auto;padding:0 20px 76px}
+
+/* ---------- Kopf ---------- */
+.kopf{padding:44px 0 26px;text-align:center}
+.datum{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--kreide-matt)}
+h1{margin:16px 0 0;font-family:var(--hand);font-weight:400;
+  font-size:clamp(36px,10vw,80px);line-height:1.02;letter-spacing:.005em;
+  /* Kreide staubt: ein sehr weicher heller Schein statt harter Kanten */
+  text-shadow:0 0 14px rgba(237,232,220,.24), 0 1px 0 rgba(0,0,0,.3)}
+h1 em{font-style:normal;color:var(--kreide-gelb);display:block}
+.kopf p{margin:18px auto 0;max-width:44ch;color:var(--kreide-matt);font-size:16px}
+
+.strich{display:block;width:100%;height:11px;margin:8px 0 0;overflow:visible}
+.strich path{fill:none;stroke:var(--kreide-matt);stroke-width:2;stroke-linecap:round}
+
+h2{font-family:var(--hand);font-size:clamp(21px,5vw,28px);font-weight:400;margin:36px 0 0;
+  color:var(--kreide-gelb);text-shadow:0 0 12px rgba(226,190,104,.25)}
+
+/* ---------- Tour ---------- */
+.gang{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;padding:14px 0;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--kreide-blau)}
+.gang b{font-size:13px;color:var(--kreide)}
+.gang a{margin-left:auto;color:var(--kreide-matt);text-transform:none;letter-spacing:.03em;
+  text-decoration:none;border-bottom:1px dotted var(--kreide-matt)}
+
+.posten{padding:8px 0 22px}
+.posten .zeile{display:flex;justify-content:space-between;gap:18px;align-items:baseline;
+  flex-wrap:wrap}
+.posten h3{margin:0;font-family:var(--hand);font-weight:400;font-size:clamp(23px,5.4vw,33px);
+  line-height:1.14;text-shadow:0 0 10px rgba(237,232,220,.18)}
+/* Uhrzeiten und Zahlen bleiben bewusst scharf — sie sind Daten, keine Handschrift */
+.posten .uhr{font-family:var(--mono);font-size:14.5px;letter-spacing:.04em;color:var(--kreide-gelb);
+  white-space:nowrap}
+.posten p{margin:10px 0 0;max-width:58ch;color:var(--kreide-matt)}
+.zutaten{margin-top:13px;display:flex;flex-wrap:wrap;gap:22px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--kreide-matt)}
+.zutaten .nass{color:var(--kreide-blau)}
+.angeschrieben{margin-top:13px;font-family:var(--hand);font-size:16px;color:var(--kreide-rot);
+  max-width:52ch;line-height:1.4}
+
+/* ---------- Rechnung ---------- */
+.rechnung{margin-top:14px;padding-top:18px;display:flex;gap:34px;flex-wrap:wrap;
+  align-items:flex-end;justify-content:space-between}
+.rechnung .summe{font-family:var(--hand);font-size:clamp(30px,8vw,50px);line-height:1;
+  color:var(--kreide-gelb);text-shadow:0 0 16px rgba(226,190,104,.3)}
+.rechnung .titel{font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--kreide-matt);margin-bottom:6px}
+.rechnung .rand{font-family:var(--mono);font-size:11px;letter-spacing:.09em;line-height:2;
+  color:var(--kreide-matt);text-align:right}
+
+/* ---------- Karte ---------- */
+.karte{list-style:none;margin:6px 0 0;padding:0}
+.karte li{display:flex;align-items:baseline;gap:14px;padding:12px 0}
+.karte li + li{border-top:1px dotted rgba(237,232,220,.26)}
+.karte .min{font-family:var(--mono);font-size:13.5px;color:var(--kreide-gelb);width:56px;flex:0 0 auto}
+.karte .name{font-family:var(--hand);font-size:20px;flex:1;min-width:0;line-height:1.2}
+.karte .wo{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--kreide-matt);white-space:nowrap}
+
+.filter{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px 20px}
+.filter button{font-family:var(--hand);font-size:16px;padding:4px 2px;border:0;background:transparent;
+  color:var(--kreide-matt);cursor:pointer;border-bottom:2px dotted transparent}
+.filter button[aria-pressed="true"]{color:var(--kreide-gelb);border-bottom-color:var(--kreide-gelb)}
+
+.fuss{margin-top:32px;padding-top:16px;border-top:1px dotted rgba(237,232,220,.26);
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;line-height:1.9;
+  color:rgba(237,232,220,.45);max-width:72ch}
+:focus-visible{outline:2px solid var(--kreide-gelb);outline-offset:3px}
+
+@media (min-width:760px){
+  .rahmen{margin:16px}
+  .tafel{padding:0 32px 88px}
+  .zwei{display:grid;grid-template-columns:1.4fr 1fr;gap:52px;align-items:start}
+}
+@media (min-width:1120px){
+  .rahmen{border-width:14px;margin:22px}
+  .tafel{padding:0 52px 104px}
+  .kopf{padding:60px 0 32px}
+  .zwei{grid-template-columns:1.45fr 1fr;gap:70px}
+}
+</style>
+</head>
+<body>
+<div class="rahmen">
+<div class="tafel">
+
+  <header class="kopf">
+    <div class="datum">Dienstag · 10. August · Sonnenuntergang 20:38</div>
+    <h1>Heute im Angebot<em>Drei Biergärten</em></h1>
+    <svg class="strich" viewBox="0 0 400 11" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M3,7 C60,3 110,9 168,5 C232,1 286,9 344,4 C368,2 384,6 397,5"/>
+    </svg>
+    <p>Sag, wo du losgehst und wie lange du Zeit hast. Die Tour schreibt sich selbst
+       an — samt Alternativen.</p>
+  </header>
+
+  <div class="zwei">
+    <section>
+      <h2>Ab Candidplatz, 15:00 Uhr</h2>
+      <svg class="strich" viewBox="0 0 400 11" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M3,6 C74,2 128,9 196,5 C258,2 310,8 397,4"/>
+      </svg>
+
+      <div class="gang"><span>ÖPNV</span><b>≈28 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="posten">
+        <div class="zeile">
+          <h3>Augustiner Schützengarten</h3>
+          <span class="uhr">15:28–16:53</span>
+        </div>
+        <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+           großen Kastanien. Kaum jemand kennt ihn.</p>
+        <div class="zutaten"><span>Augustiner</span><span>2.500 Plätze</span><span>Selbstbedienung</span><span>11:30–23:00</span></div>
+      </article>
+
+      <div class="gang"><span>zu Fuß</span><b>≈20 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="posten">
+        <div class="zeile">
+          <h3>Gasthof Hinterbrühl</h3>
+          <span class="uhr">17:13–18:38</span>
+        </div>
+        <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach
+           zum schönsten Biergarten Oberbayerns gewählt.</p>
+        <div class="zutaten"><span>Augustiner</span><span>1.000 Plätze</span><span class="nass">Am Wasser</span></div>
+        <p class="angeschrieben">Achtung: Selbstbedienung derzeit vor allem Sa &amp; So!</p>
+      </article>
+
+      <div class="gang"><span>zu Fuß</span><b>≈23 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="posten">
+        <div class="zeile">
+          <h3>Gutshof Menterschwaige</h3>
+          <span class="uhr">19:01–20:26</span>
+        </div>
+        <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass, Isarsteig in
+           drei Minuten.</p>
+        <div class="zutaten"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+      </article>
+
+      <svg class="strich" viewBox="0 0 400 11" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M3,5 C88,9 146,2 214,6 C276,10 330,3 397,6"/>
+      </svg>
+
+      <div class="rechnung">
+        <div>
+          <div class="titel">Von Tür zu Tür</div>
+          <div class="summe">5 h 46 min</div>
+        </div>
+        <div class="rand">
+          zurück um 20:46<br>43 Minuten zu Fuß<br>Sonnenuntergang 20:38
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Alle Biergärten</h2>
+      <svg class="strich" viewBox="0 0 400 11" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M3,4 C70,8 130,2 200,6 C262,10 320,3 397,7"/>
+      </svg>
+
+      <ul class="karte">
+        <li><span class="min">17 min</span><span class="name">Giesinger Bräustüberl</span><span class="wo">Obergiesing</span></li>
+        <li><span class="min">20 min</span><span class="name">Gutshof Menterschwaige</span><span class="wo">Harlaching</span></li>
+        <li><span class="min">20 min</span><span class="name">Paulaner am Nockherberg</span><span class="wo">Au</span></li>
+        <li><span class="min">21 min</span><span class="name">Am Viktualienmarkt</span><span class="wo">Altstadt</span></li>
+        <li><span class="min">23 min</span><span class="name">Hofbräukeller</span><span class="wo">Haidhausen</span></li>
+        <li><span class="min">24 min</span><span class="name">Zum Flaucher</span><span class="wo">Isarauen</span></li>
+      </ul>
+
+      <div class="filter">
+        <button aria-pressed="true">Am Wasser</button>
+        <button aria-pressed="false">Wald &amp; Grün</button>
+        <button aria-pressed="false">Stadtfeeling</button>
+        <button aria-pressed="false">Selbstbedienung</button>
+      </div>
+
+      <p class="fuss">
+        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor. „Bei schönem Wetter“
+        heißt: der Wirt entscheidet morgens um neun.
+      </p>
+    </section>
+  </div>
+</div>
+</div>
+</body>
+</html>

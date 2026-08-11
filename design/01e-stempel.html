@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Stempel</title>
+<style>
+/* ============================================================
+   STEMPEL AUF KRAFTPAPPE — ausgebaut
+   Rohe Pappe, Gummistempel, trockenes Kissen. Die Farbe reisst
+   auf, der Abdruck sitzt schief. Das ist die Signatur.
+
+   Neu gegenüber dem ersten Wurf:
+     · Palette aus palette.html — Enzian und Märzen als die zwei
+       Stempelfarben, Malz für den Text, Kraft als Untergrund.
+     · Das Logo ist ein echtes Siegel: Schrift auf dem Ring,
+       Raute im Kern, Ortsangabe im Fuss.
+     · Die Schalter sind Stempelabdrücke, nicht Rechtecke.
+     · Und die tragende Idee: die Seite ist eine Stempelkarte.
+       Wo du warst, ist abgestempelt. Damit hat der Stil einen
+       Grund und nicht nur ein Aussehen.
+
+   Positionierung unverändert gegenüber den anderen Ausprägungen.
+   ============================================================ */
+:root{
+  /* Kraftpappe, warm — zwischen Kellerstroh und Dunkles */
+  --kraft:#CBA469;
+  --kraft-tief:#BE9354;
+  --schaum:#FBF5E6;
+
+  --enzian:#1B3F8B;      /* erste Stempelfarbe */
+  --maerzen:#A8560F;     /* zweite Stempelfarbe */
+  --malz:#2E1C0D;
+  --dunkles:#6E3B16;
+  /* Gold trägt weiter die Zeiten. Auf Kraft muss es dunkler sein als
+     das Helles aus der Palette, sonst verschwindet es im Untergrund. */
+  --gold:#7E5606;
+
+  --schrift:var(--malz);
+  --schrift-weich:#4E3417;
+  --grau:#7A5F35;
+  --kante:rgba(46,28,13,.32);
+  --kante-fein:rgba(46,28,13,.18);
+  --ring:rgba(46,28,13,.16);
+  --warnfeld:rgba(168,86,15,.16);
+  --auf-farbe:var(--schaum);
+
+  /* Aufgerissene Stempelfarbe: zwei gekreuzte Streifenmasken.
+     Einmal definiert, überall benutzt — Titel, Siegel, Schalter. */
+  --aufriss:
+    repeating-linear-gradient(81deg, #000 0 9px, rgba(0,0,0,.42) 9px 10px, #000 10px 21px),
+    repeating-linear-gradient(9deg, #000 0 13px, rgba(0,0,0,.38) 13px 14px, #000 14px 28px);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --body:"American Typewriter","Courier New",serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="hell"]){
+  --kraft:#241A0E; --kraft-tief:#31240F; --schaum:#F0E3C4;
+  --enzian:#8FB4DF; --maerzen:#E09A55; --malz:#EBDCBB; --dunkles:#C9A97A;
+  --gold:#E8B647;
+  --schrift:#EBDCBB; --schrift-weich:#C4AF88; --grau:#94805C;
+  --kante:rgba(235,220,187,.28); --kante-fein:rgba(235,220,187,.15);
+  --ring:rgba(235,220,187,.14);
+  --warnfeld:rgba(224,154,85,.16);
+  --auf-farbe:#241A0E;
+}}
+:root[data-theme="dunkel"]{
+  --kraft:#241A0E; --kraft-tief:#31240F; --schaum:#F0E3C4;
+  --enzian:#8FB4DF; --maerzen:#E09A55; --malz:#EBDCBB; --dunkles:#C9A97A;
+  --gold:#E8B647;
+  --schrift:#EBDCBB; --schrift-weich:#C4AF88; --grau:#94805C;
+  --kante:rgba(235,220,187,.28); --kante-fein:rgba(235,220,187,.15);
+  --ring:rgba(235,220,187,.14);
+  --warnfeld:rgba(224,154,85,.16);
+  --auf-farbe:#241A0E;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--kraft);
+  /* Pappfaser: grobe, ungleichmässige Rillen — Kraftpappe ist nicht glatt */
+  background-image:
+    repeating-linear-gradient(94deg, rgba(0,0,0,.045) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(2deg, rgba(255,255,255,.10) 0 1px, transparent 1px 4px);
+  color:var(--schrift);font:16.5px/1.66 var(--body);-webkit-font-smoothing:antialiased;
+}
+.sheet{max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+
+/* Jeder Abdruck bekommt dieselbe aufgerissene Farbe. */
+.abdruck{-webkit-mask-image:var(--aufriss);-webkit-mask-composite:source-in;
+  mask-image:var(--aufriss);mask-composite:intersect}
+
+.licht{position:fixed;top:12px;right:12px;z-index:9;display:flex;gap:6px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
+.licht button{font:inherit;padding:7px 11px;border:1px solid var(--kante);background:var(--kraft);
+  color:var(--schrift-weich);cursor:pointer}
+.licht button[aria-pressed="true"]{background:var(--enzian);border-color:var(--enzian);color:var(--auf-farbe)}
+
+/* ---------------------------------------------------------------- Kopf */
+.kopf{padding:30px 0 24px}
+.marke{font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--grau)}
+
+/* Das Siegel: Schrift auf dem Ring, Raute im Kern, Ort im Fuss.
+   Schief aufgesetzt, weil ein Gummistempel nie gerade sitzt. */
+.siegel{width:132px;height:132px;display:block;margin:18px 0 0;
+  transform:rotate(-6.5deg);color:var(--enzian)}
+.siegel .ringlinie{fill:none;stroke:currentColor}
+.siegel text{font-family:var(--display);font-weight:900;fill:currentColor;
+  letter-spacing:.14em}
+.siegel .ort{font-family:var(--mono);font-weight:400;letter-spacing:.22em}
+.siegel .raute{fill:currentColor}
+
+h1{margin:16px 0 0;font-family:var(--display);font-weight:900;
+  font-size:clamp(28px,7.6vw,56px);line-height:.98;letter-spacing:-.032em;
+  text-transform:uppercase;color:var(--enzian);
+  transform:rotate(-1.4deg);transform-origin:left center}
+h1 em{font-style:normal;display:block;color:var(--maerzen);
+  transform:rotate(.9deg);transform-origin:left center}
+.kopf p{margin:20px 0 0;max-width:44ch;font-size:15.5px;color:var(--schrift-weich)}
+
+/* Abgerissene Pappkante statt Schaum */
+.schaumkante{margin:24px 0 0;height:9px;
+  background:repeating-linear-gradient(94deg, var(--kante) 0 3px, transparent 3px 9px)}
+
+/* -------------------------------------------------------------- Deckel */
+.deckel{background:var(--kraft-tief);padding:22px 20px 20px;position:relative;
+  box-shadow:inset 0 0 0 2px var(--kante)}
+.deckel > .kennung{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--grau);display:block;margin-bottom:16px}
+.ring{position:absolute;width:132px;height:132px;border-radius:50%;
+  border:10px solid var(--ring);right:-26px;top:-32px;pointer-events:none}
+
+/* ---------------------------------------------------------------- Tour */
+.tour{margin-top:26px}
+.etappe{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--enzian);padding:13px 0;border-bottom:1px solid var(--kante-fein);
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.etappe .dauer{color:var(--schrift);font-weight:700}
+.etappe .prueft{margin-left:auto;color:var(--grau);text-transform:none;letter-spacing:.04em;
+  border-bottom:1px solid currentColor;text-decoration:none}
+
+.station{padding:20px 0 22px;border-bottom:1px solid var(--kante-fein);position:relative}
+.station:last-child{border-bottom:0}
+.zeile{display:flex;justify-content:space-between;gap:18px;align-items:baseline;flex-wrap:wrap}
+.station h3{margin:0;font-family:var(--display);font-weight:900;font-size:21px;
+  letter-spacing:-.026em;text-transform:uppercase;line-height:1.14;color:var(--schrift)}
+.uhr{font-family:var(--mono);font-size:15px;white-space:nowrap;color:var(--gold);font-weight:700}
+.station p{margin:11px 0 0;font-size:15.5px;max-width:60ch;color:var(--schrift-weich)}
+
+/* Die Stempelkarte: wo du warst, ist abgestempelt. */
+.besucht{position:absolute;right:4px;top:14px;width:86px;height:86px;
+  transform:rotate(11deg);color:var(--maerzen);opacity:.85;pointer-events:none}
+.besucht .ringlinie{fill:none;stroke:currentColor}
+.besucht text{font-family:var(--display);font-weight:900;fill:currentColor;letter-spacing:.1em}
+.besucht .datum{font-family:var(--mono);font-weight:400;letter-spacing:.14em}
+
+.stempel{margin-top:15px;display:flex;flex-wrap:wrap;gap:6px}
+.stempel span{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--schrift-weich);padding:5px 11px;box-shadow:inset 0 0 0 1px var(--kante)}
+.wasser{color:var(--enzian)!important;box-shadow:inset 0 0 0 1px var(--enzian)!important}
+.hinweis{margin-top:15px;padding:11px 13px;background:var(--warnfeld);
+  border-top:2px solid var(--maerzen);font-size:14.5px;color:var(--maerzen)}
+
+.summe{margin-top:20px;padding-top:16px;border-top:2px solid var(--kante);
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.summe .gross{font-family:var(--display);font-weight:900;font-size:30px;letter-spacing:-.032em;
+  color:var(--gold)}
+.summe .klein{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--grau);line-height:1.9}
+
+/* --------------------------------------------------------- Verzeichnis */
+.abschnitt{margin-top:34px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--grau);border-bottom:1px solid var(--kante);padding-bottom:9px}
+.liste{width:100%;border-collapse:collapse;margin-top:2px}
+.liste tr{border-bottom:1px solid var(--kante-fein)}
+.liste td{padding:13px 8px 13px 0;vertical-align:baseline}
+.liste .min{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--gold);width:64px;
+  white-space:nowrap}
+.liste .ort{font-family:var(--display);font-weight:900;font-size:14.5px;letter-spacing:-.02em;
+  text-transform:uppercase;color:var(--schrift)}
+.liste .wo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--schrift-weich);white-space:nowrap}
+/* Die Stempelkarte: jedes Feld hat seinen Platz, der Abdruck sitzt darin.
+   Quer über dem Namen sah es besser aus und war unlesbar. */
+.liste td.feld{width:34px;padding-right:10px}
+.liste .marke{display:block;width:30px;height:30px;border-radius:50%;
+  box-shadow:inset 0 0 0 1.5px var(--kante-fein)}
+.liste tr.abgestempelt .marke{
+  box-shadow:inset 0 0 0 2px var(--maerzen);color:var(--maerzen);
+  transform:rotate(-9deg);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-size:7.5px;letter-spacing:.04em;line-height:1;
+  -webkit-mask-image:var(--aufriss);-webkit-mask-composite:source-in;
+  mask-image:var(--aufriss);mask-composite:intersect}
+.liste tr.abgestempelt .marke::before{content:"OK"}
+.liste tr.abgestempelt .ort{color:var(--schrift-weich)}
+.liste .ort{line-height:1.25}
+
+/* -------------------------------------------------------------- Filter */
+.filter{margin-top:26px;display:flex;flex-wrap:wrap;gap:10px}
+.filter button{
+  font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;padding:11px 15px;background:transparent;color:var(--enzian);
+  border:0;box-shadow:inset 0 0 0 2.5px var(--enzian);cursor:pointer;
+  transform:rotate(-1.6deg);transition:transform .14s, background .14s, color .14s;
+  -webkit-mask-image:var(--aufriss);-webkit-mask-composite:source-in;
+  mask-image:var(--aufriss);mask-composite:intersect}
+.filter button:nth-child(2n){transform:rotate(1.1deg)}
+.filter button:nth-child(3n){transform:rotate(-.6deg)}
+.filter button[aria-pressed="true"]{background:var(--enzian);color:var(--auf-farbe);
+  transform:rotate(1.4deg) scale(1.03)}
+.filter button:nth-child(2n)[aria-pressed="true"]{transform:rotate(-1.8deg) scale(1.03)}
+
+.fuss{margin-top:40px;padding-top:18px;border-top:1px solid var(--kante-fein);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;line-height:1.9;color:var(--grau);
+  max-width:70ch}
+:focus-visible{outline:2.5px solid var(--maerzen);outline-offset:3px}
+
+@media (min-width:760px){
+  .sheet{padding:34px 30px 80px}
+  .spalten{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin-top:26px}
+  .tour{margin-top:0}
+  .abschnitt{margin-top:0}
+}
+@media (min-width:1100px){
+  .sheet{display:grid;grid-template-columns:minmax(300px,1fr) 2fr;gap:44px;
+    padding:52px 40px 90px;align-items:start}
+  .kopf{padding:0;position:sticky;top:52px}
+  h1{font-size:clamp(34px,3.1vw,48px)}
+  .spalten{grid-template-columns:1.15fr 1fr;margin-top:0}
+  .rechts{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div class="licht" role="group" aria-label="Lichtstimmung">
+  <button data-theme="hell" aria-pressed="false">Hell</button>
+  <button data-theme="dunkel" aria-pressed="false">Dunkel</button>
+</div>
+
+<div class="sheet">
+  <header class="kopf">
+    <div class="marke">Tourenplaner · München</div>
+
+    <svg class="siegel abdruck" viewBox="0 0 132 132" role="img"
+         aria-label="Siegel: Biergarten Freunde, München">
+      <defs>
+        <path id="ringpfad" d="M66,66 m-49,0 a49,49 0 1,1 98,0 a49,49 0 1,1 -98,0"/>
+      </defs>
+      <circle class="ringlinie" cx="66" cy="66" r="63" stroke-width="3"/>
+      <circle class="ringlinie" cx="66" cy="66" r="57" stroke-width="1.5"/>
+      <circle class="ringlinie" cx="66" cy="66" r="34" stroke-width="1.5"/>
+      <text font-size="11.5">
+        <textPath href="#ringpfad" startOffset="50%" text-anchor="middle">
+          BIERGARTEN · FREUNDE ·
+        </textPath>
+      </text>
+      <path class="raute" d="M66,48 L78,66 L66,84 L54,66 Z"/>
+      <text class="ort" x="66" y="112" font-size="8" text-anchor="middle">MÜNCHEN</text>
+    </svg>
+
+    <h1 class="abdruck">Biergarten<em>Freunde</em></h1>
+    <p>Sag, wo du losgehst und wie lange du Zeit hast. Die Tour baut sich selbst,
+       samt Alternativen. Wo du warst, wird abgestempelt.</p>
+    <div class="schaumkante" aria-hidden="true"></div>
+  </header>
+
+  <div class="rechts">
+    <div class="spalten">
+      <section class="deckel tour">
+        <span class="kennung">Dienstag · ab Candidplatz · 15:00</span>
+        <div class="ring" aria-hidden="true"></div>
+
+        <div class="etappe"><span>ÖPNV</span><span class="dauer">≈28 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Augustiner Schützengarten</h3><span class="uhr">15:28–16:53</span></div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="stempel"><span>Augustiner</span><span>2.500 Plätze</span>
+            <span>Selbstbedienung</span><span>11:30–23:00</span></div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈20 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <svg class="besucht abdruck" viewBox="0 0 86 86" role="img" aria-label="Besucht am 4. Juli">
+            <circle class="ringlinie" cx="43" cy="43" r="41" stroke-width="2.5"/>
+            <circle class="ringlinie" cx="43" cy="43" r="36" stroke-width="1"/>
+            <text x="43" y="40" font-size="12" text-anchor="middle">BESUCHT</text>
+            <text class="datum" x="43" y="55" font-size="8" text-anchor="middle">04 · JUL 26</text>
+          </svg>
+          <div class="zeile"><h3>Gasthof Hinterbrühl</h3><span class="uhr">17:13–18:38</span></div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei.
+             Mehrfach zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.000 Plätze</span>
+            <span class="wasser">Am Wasser</span></div>
+          <div class="hinweis">Selbstbedienungs-Biergarten läuft derzeit vor allem
+            Samstag und Sonntag.</div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈23 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Gutshof Menterschwaige</h3><span class="uhr">19:01–20:26</span></div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass,
+             Isarsteig in drei Minuten.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+        </article>
+
+        <div class="summe">
+          <div><div class="klein">Von Tür zu Tür</div><div class="gross">5 h 46 min</div></div>
+          <div class="klein">zurück 20:46 · 43 min zu Fuß<br>Sonnenuntergang 20:38</div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="abschnitt">Deine Stempelkarte · 6 von 35</h2>
+        <table class="liste"><tbody>
+          <tr class="abgestempelt"><td class="feld"><span class="marke"></span></td><td class="min">17 min</td><td class="ort">Giesinger Bräustüberl</td><td class="wo">Obergiesing</td></tr>
+          <tr><td class="feld"><span class="marke"></span></td><td class="min">20 min</td><td class="ort">Gutshof Menterschwaige</td><td class="wo">Harlaching</td></tr>
+          <tr class="abgestempelt"><td class="feld"><span class="marke"></span></td><td class="min">20 min</td><td class="ort">Paulaner am Nockherberg</td><td class="wo">Au</td></tr>
+          <tr><td class="feld"><span class="marke"></span></td><td class="min">21 min</td><td class="ort">Am Viktualienmarkt</td><td class="wo">Altstadt</td></tr>
+          <tr><td class="feld"><span class="marke"></span></td><td class="min">23 min</td><td class="ort">Hofbräukeller</td><td class="wo">Haidhausen</td></tr>
+          <tr class="abgestempelt"><td class="feld"><span class="marke"></span></td><td class="min">24 min</td><td class="ort">Zum Flaucher</td><td class="wo">Isarauen</td></tr>
+        </tbody></table>
+
+        <div class="filter">
+          <button aria-pressed="true">Am Wasser</button>
+          <button aria-pressed="false">Wald &amp; Grün</button>
+          <button aria-pressed="false">Stadtfeeling</button>
+          <button aria-pressed="false">Bierkeller</button>
+          <button aria-pressed="false">Selbstbedienung</button>
+          <button aria-pressed="false">Eigene Brotzeit</button>
+        </div>
+
+        <p class="fuss">Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor.
+          Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.filter button').forEach(b => {
+  b.addEventListener('click', () => {
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true')
+  })
+})
+
+const knoepfe = document.querySelectorAll('.licht button')
+const erzwungen = new URLSearchParams(location.search).get('theme')
+function setzen(wert){
+  if (wert) document.documentElement.dataset.theme = wert
+  else delete document.documentElement.dataset.theme
+  knoepfe.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === wert)))
+}
+if (erzwungen === 'hell' || erzwungen === 'dunkel') setzen(erzwungen)
+knoepfe.forEach(b => b.addEventListener('click', () => setzen(b.dataset.theme)))
+</script>
+</body>
+</html>

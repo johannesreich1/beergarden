@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>08 Raute · Biergärten München</title>
+<style>
+/* ============================================================
+   08 · RAUTE
+   Die bayerische Raute als Geometrie, nicht als Folklore.
+   Die 45°-Schräge ist Layoutmittel: Abschnitte werden diagonal
+   geschnitten, Marken sitzen auf der Rautenachse. Kein Wappen,
+   keine Girlande — nur die Form.
+   ============================================================ */
+:root{
+  --weiss:#FFFFFF;
+  --papier:#F4F5F7;
+  --blau:#2C5697;
+  --blau-tief:#1B3866;
+  --tinte:#0F1216;
+  --grau:#6A7080;
+  --gold:#E0A008;
+  --display:Futura,"Avenir Next Demi","Century Gothic",sans-serif;
+  --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--weiss);color:var(--tinte);font:15.5px/1.56 var(--body)}
+.feld{max-width:1300px;margin:0 auto}
+
+/* ---------- Kopf: blaue Fläche, diagonal beschnitten ---------- */
+.wappen{
+  background:var(--blau);color:#fff;padding:38px 20px 84px;
+  clip-path:polygon(0 0, 100% 0, 100% calc(100% - 52px), 0 100%);
+  position:relative;overflow:hidden;
+}
+/* Rautenraster: zwei gekreuzte 45°-Streifenraster */
+.wappen::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.16;
+  background-image:
+    repeating-linear-gradient(45deg, #fff 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(-45deg, #fff 0 1px, transparent 1px 46px);
+}
+.wappen > *{position:relative}
+.marke{font-family:var(--mono);font-size:9.5px;letter-spacing:.34em;text-transform:uppercase;
+  color:rgba(255,255,255,.7)}
+h1{margin:16px 0 0;font-family:var(--display);font-weight:600;
+  font-size:clamp(36px,10vw,86px);line-height:.94;letter-spacing:-.028em}
+.wappen p{margin:20px 0 0;max-width:44ch;font-size:16.5px;color:rgba(255,255,255,.88)}
+
+/* ---------- Rautenmarke: das Zeichen vor jeder Station ---------- */
+.raute{width:13px;height:13px;background:var(--gold);transform:rotate(45deg);
+  display:inline-block;flex:0 0 auto}
+.raute.hohl{background:transparent;box-shadow:inset 0 0 0 2px var(--blau)}
+
+.bahn{padding:0 20px 60px}
+h2{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--grau);margin:40px 0 0;
+  display:flex;align-items:center;gap:12px}
+h2::after{content:"";flex:1;height:2px;background:var(--tinte)}
+
+/* ---------- Tour ---------- */
+.etappe{display:flex;align-items:center;gap:12px;padding:14px 0;flex-wrap:wrap;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--blau)}
+.etappe b{color:var(--tinte);font-size:13px}
+.etappe a{margin-left:auto;color:var(--grau);text-transform:none;letter-spacing:.02em;
+  text-decoration:none;border-bottom:1px solid #D8DBE2}
+
+.halt{padding:16px 0 24px;border-top:2px solid var(--tinte)}
+.halt .kopf{display:flex;gap:14px;align-items:flex-start}
+.halt .titelzeile{flex:1;min-width:0;display:flex;justify-content:space-between;gap:16px;
+  align-items:baseline;flex-wrap:wrap}
+.halt h3{margin:0;font-family:var(--display);font-weight:600;font-size:clamp(20px,5vw,29px);
+  letter-spacing:-.018em;line-height:1.1}
+.halt .uhr{font-family:var(--mono);font-size:14px;color:var(--blau);white-space:nowrap}
+.halt p{margin:12px 0 0 25px;max-width:58ch;color:#3A404C}
+.werte{margin:14px 0 0 25px;display:flex;flex-wrap:wrap;gap:0}
+.werte span{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grau);padding:5px 11px;border:1px solid #D8DBE2;margin:-1px 0 0 -1px}
+.werte .nass{color:var(--blau);border-color:var(--blau)}
+.merke{margin:14px 0 0 25px;padding:10px 13px;background:var(--papier);
+  border-top:3px solid var(--gold);font-size:14px;color:#4A4118}
+
+/* ---------- Bilanz: diagonal geschnittener Block ---------- */
+.bilanz{
+  margin-top:26px;background:var(--tinte);color:#fff;padding:34px 20px 26px;
+  clip-path:polygon(0 34px, 100% 0, 100% 100%, 0 100%);
+  display:flex;gap:32px;flex-wrap:wrap;align-items:flex-end}
+.bilanz .wert{font-family:var(--display);font-weight:600;font-size:clamp(26px,7vw,42px);
+  line-height:.95;letter-spacing:-.025em;color:var(--gold)}
+.bilanz .was{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.6);margin-bottom:5px}
+
+/* ---------- Verzeichnis ---------- */
+.reihe{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #E2E5EA}
+.reihe .min{font-family:var(--mono);font-size:14px;color:var(--blau);width:52px;flex:0 0 auto}
+.reihe .name{font-family:var(--display);font-weight:600;font-size:16.5px;flex:1;min-width:0;
+  letter-spacing:-.01em}
+.reihe .wo{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+
+.filter{margin-top:22px;display:flex;flex-wrap:wrap;gap:0}
+.filter button{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  padding:11px 15px;border:2px solid var(--tinte);background:transparent;color:var(--tinte);
+  cursor:pointer;margin:-2px 0 0 -2px}
+.filter button[aria-pressed="true"]{background:var(--blau);border-color:var(--blau);color:#fff}
+
+.fuss{margin-top:34px;padding-top:16px;border-top:2px solid var(--tinte);
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;line-height:1.9;color:var(--grau);
+  max-width:74ch}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+@media (min-width:760px){
+  .wappen{padding:52px 32px 96px}
+  .bahn{padding:0 32px 76px}
+  .zwei{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:start}
+}
+@media (min-width:1120px){
+  .wappen{padding:68px 48px 118px;
+    clip-path:polygon(0 0, 100% 0, 100% calc(100% - 84px), 0 100%)}
+  .wappen .innen{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:end}
+  .wappen p{margin:0 0 10px}
+  .bahn{padding:0 48px 96px}
+  .zwei{grid-template-columns:1.45fr 1fr;gap:64px}
+  .bilanz{padding:52px 40px 34px;clip-path:polygon(0 52px, 100% 0, 100% 100%, 0 100%)}
+}
+</style>
+</head>
+<body>
+<div class="feld">
+
+  <header class="wappen">
+    <div class="innen">
+      <div>
+        <div class="marke">Tourenplaner · München</div>
+        <h1>Bier<br>gärten</h1>
+      </div>
+      <p>Sag, wo du losgehst, wie lange du Zeit hast und was du willst — die Tour baut
+         sich selbst, samt Alternativen. Kein Login.</p>
+    </div>
+  </header>
+
+  <div class="bahn">
+    <div class="zwei">
+      <section>
+        <h2>Deine Tour · ab Candidplatz, 15:00</h2>
+
+        <div class="etappe"><span class="raute hohl"></span><span>ÖPNV</span><b>≈28 min</b><a href="#">Verbindung prüfen</a></div>
+
+        <article class="halt">
+          <div class="kopf">
+            <span class="raute"></span>
+            <div class="titelzeile">
+              <h3>Augustiner Schützengarten</h3>
+              <span class="uhr">15:28–16:53</span>
+            </div>
+          </div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="werte"><span>Augustiner</span><span>2.500 Plätze</span><span>Selbstbedienung</span><span>11:30–23:00</span></div>
+        </article>
+
+        <div class="etappe"><span class="raute hohl"></span><span>zu Fuß</span><b>≈20 min</b><a href="#">Verbindung prüfen</a></div>
+
+        <article class="halt">
+          <div class="kopf">
+            <span class="raute"></span>
+            <div class="titelzeile">
+              <h3>Gasthof Hinterbrühl</h3>
+              <span class="uhr">17:13–18:38</span>
+            </div>
+          </div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach
+             zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="werte"><span>Augustiner</span><span>1.000 Plätze</span><span class="nass">Am Wasser</span></div>
+          <div class="merke">Selbstbedienungs-Biergarten läuft derzeit vor allem Samstag
+             und Sonntag.</div>
+        </article>
+
+        <div class="etappe"><span class="raute hohl"></span><span>zu Fuß</span><b>≈23 min</b><a href="#">Verbindung prüfen</a></div>
+
+        <article class="halt">
+          <div class="kopf">
+            <span class="raute"></span>
+            <div class="titelzeile">
+              <h3>Gutshof Menterschwaige</h3>
+              <span class="uhr">19:01–20:26</span>
+            </div>
+          </div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass, Isarsteig in
+             drei Minuten.</p>
+          <div class="werte"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+        </article>
+
+        <div class="bilanz">
+          <div><div class="was">Von Tür zu Tür</div><div class="wert">5 h 46</div></div>
+          <div><div class="was">Zurück</div><div class="wert">20:46</div></div>
+          <div><div class="was">Zu Fuß</div><div class="wert">43 min</div></div>
+          <div><div class="was">Sonnenuntergang</div><div class="wert">20:38</div></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Alle Biergärten</h2>
+        <div class="reihe"><span class="min">17 min</span><span class="name">Giesinger Bräustüberl</span><span class="wo">Obergiesing</span></div>
+        <div class="reihe"><span class="min">20 min</span><span class="name">Gutshof Menterschwaige</span><span class="wo">Harlaching</span></div>
+        <div class="reihe"><span class="min">20 min</span><span class="name">Paulaner am Nockherberg</span><span class="wo">Au</span></div>
+        <div class="reihe"><span class="min">21 min</span><span class="name">Am Viktualienmarkt</span><span class="wo">Altstadt</span></div>
+        <div class="reihe"><span class="min">23 min</span><span class="name">Hofbräukeller</span><span class="wo">Haidhausen</span></div>
+        <div class="reihe"><span class="min">24 min</span><span class="name">Zum Flaucher</span><span class="wo">Isarauen</span></div>
+
+        <div class="filter">
+          <button aria-pressed="true">Am Wasser</button>
+          <button aria-pressed="false">Wald &amp; Grün</button>
+          <button aria-pressed="false">Stadtfeeling</button>
+          <button aria-pressed="false">Selbstbedienung</button>
+        </div>
+
+        <p class="fuss">
+          Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor. Wo beim Ausschank
+          k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>06 Isar-Topografie · Biergärten München</title>
+<style>
+/* ============================================================
+   06 · ISAR-TOPOGRAFIE
+   Die Karte als Grundlage, nicht als Beilage. Höhenlinien, ein
+   Vermessungszug statt einer Route: jede Etappe bekommt Peilung,
+   Distanz und Höhendifferenz. Die Isar ist die einzige Farbe.
+   ============================================================ */
+:root{
+  --messtisch:#E7E4DA;
+  --hoehenlinie:rgba(120,112,92,.30);
+  --hoehenlinie-stark:rgba(120,112,92,.52);
+  --tinte:#1E2320;
+  --grau:#6C7069;
+  --wasser:#2E6E66;
+  --wasser-tief:#153733;
+  --trasse:#B03A18;
+  --display:Futura,"Avenir Next","Century Gothic",sans-serif;
+  --body:Optima,"Segoe UI",Candara,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--messtisch);
+  color:var(--tinte);
+  font:16px/1.58 var(--body);
+  -webkit-font-smoothing:antialiased;
+}
+/* Höhenlinien: konzentrische Ringe um drei Zentren, zwei Dichten.
+   Ergibt ein Relief, ohne dass eine einzige Grafikdatei nötig wäre. */
+.gelaende{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    repeating-radial-gradient(ellipse 62% 46% at 18% 22%,
+      transparent 0 17px, var(--hoehenlinie) 17px 18px),
+    repeating-radial-gradient(ellipse 48% 70% at 84% 58%,
+      transparent 0 21px, var(--hoehenlinie) 21px 22px),
+    repeating-radial-gradient(ellipse 80% 40% at 46% 92%,
+      transparent 0 26px, var(--hoehenlinie) 26px 27px);
+}
+/* Der Fluss als einzige geschwungene Form über dem Relief */
+.fluss{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.9}
+
+.messblatt{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:0 18px 84px}
+
+/* ---------- Blattkopf: wie ein Kartenrand ---------- */
+.blattkopf{border-bottom:2px solid var(--tinte);padding:34px 0 16px;
+  display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.blattnummer{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--grau)}
+h1{margin:10px 0 0;font-family:var(--display);font-weight:500;
+  font-size:clamp(30px,7.6vw,58px);line-height:.98;letter-spacing:-.012em}
+.massstab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grau);text-align:right;line-height:1.9}
+
+h2{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--grau);margin:32px 0 0;padding-bottom:8px;
+  border-bottom:1px solid var(--hoehenlinie-stark)}
+
+/* ---------- Vermessungszug ---------- */
+.zug{margin-top:18px}
+.strecke{display:grid;grid-template-columns:auto 1fr;gap:0 16px;
+  padding:12px 0;border-bottom:1px dotted var(--hoehenlinie-stark)}
+.strecke .peilung{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--trasse);white-space:nowrap}
+.strecke .werte{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--grau)}
+.strecke .werte a{color:var(--grau);text-decoration:none;border-bottom:1px solid var(--hoehenlinie-stark)}
+.strecke .werte a:hover{color:var(--wasser);border-color:var(--wasser)}
+
+.punkt{padding:18px 0 22px;border-bottom:1px solid var(--hoehenlinie-stark)}
+.punkt .zeile{display:flex;justify-content:space-between;gap:18px;align-items:baseline;flex-wrap:wrap}
+.punkt .nr{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--trasse);
+  display:block;margin-bottom:5px}
+.punkt h3{margin:0;font-family:var(--display);font-weight:500;font-size:clamp(20px,4.6vw,28px);
+  letter-spacing:-.01em;line-height:1.14}
+.punkt .uhr{font-family:var(--mono);font-size:14px;letter-spacing:.04em;color:var(--wasser);
+  white-space:nowrap}
+.punkt p{margin:11px 0 0;max-width:58ch;color:#3E443F}
+.attribute{margin-top:13px;display:flex;flex-wrap:wrap;gap:0;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grau)}
+.attribute span{padding:4px 10px;border:1px solid var(--hoehenlinie-stark);margin:-1px 0 0 -1px}
+.attribute .nass{color:var(--wasser);border-color:var(--wasser)}
+.vermerk{margin-top:13px;padding:9px 12px;background:rgba(176,58,24,.09);
+  border-top:2px solid var(--trasse);font-size:14px;color:#7A2A11}
+
+/* ---------- Schlussrechnung ---------- */
+.schluss{margin-top:20px;display:flex;gap:34px;flex-wrap:wrap;align-items:flex-end;
+  padding-top:18px;border-top:2px solid var(--tinte)}
+.schluss .wert{font-family:var(--display);font-weight:500;font-size:clamp(28px,7vw,44px);
+  line-height:.94;letter-spacing:-.02em}
+.schluss .bezeichnung{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--grau);margin-bottom:6px}
+
+/* ---------- Punktverzeichnis ---------- */
+.verzeichnis{width:100%;border-collapse:collapse;margin-top:12px}
+.verzeichnis th{font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--grau);text-align:left;font-weight:400;padding:0 8px 7px 0}
+.verzeichnis td{padding:11px 8px 11px 0;border-top:1px solid var(--hoehenlinie);vertical-align:baseline}
+.verzeichnis .dist{font-family:var(--mono);font-size:13px;color:var(--trasse);white-space:nowrap}
+.verzeichnis .name{font-family:var(--display);font-size:15.5px;font-weight:500}
+.verzeichnis .lage{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+
+.filter{margin-top:20px;display:flex;flex-wrap:wrap;gap:0}
+.filter button{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  padding:9px 13px;border:1px solid var(--tinte);background:transparent;color:var(--tinte);
+  cursor:pointer;margin:-1px 0 0 -1px}
+.filter button[aria-pressed="true"]{background:var(--wasser);border-color:var(--wasser);color:var(--messtisch)}
+
+.blattfuss{margin-top:34px;padding-top:14px;border-top:2px solid var(--tinte);
+  font-family:var(--mono);font-size:10px;line-height:1.9;letter-spacing:.08em;color:var(--grau);
+  display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+:focus-visible{outline:2px solid var(--trasse);outline-offset:2px}
+
+@media (min-width:760px){
+  .messblatt{padding:0 30px 96px}
+  .zwei{display:grid;grid-template-columns:1.35fr 1fr;gap:44px;align-items:start}
+}
+@media (min-width:1120px){
+  .messblatt{padding:0 48px 116px}
+  .zwei{grid-template-columns:1.45fr 1fr;gap:64px}
+  .strecke{grid-template-columns:170px 1fr}
+  h1{font-size:clamp(44px,4.4vw,64px)}
+}
+</style>
+</head>
+<body>
+<div class="gelaende" aria-hidden="true"></div>
+<svg class="fluss" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
+  <path d="M78,-2 C74,14 66,24 60,36 C54,48 52,58 46,70 C40,82 34,90 30,102"
+        fill="none" stroke="#2E6E66" stroke-width="2.4" opacity=".34"/>
+  <path d="M78,-2 C74,14 66,24 60,36 C54,48 52,58 46,70 C40,82 34,90 30,102"
+        fill="none" stroke="#2E6E66" stroke-width=".5" opacity=".6"/>
+</svg>
+
+<div class="messblatt">
+
+  <header class="blattkopf">
+    <div>
+      <div class="blattnummer">Messtischblatt · München-Süd · Aufnahme Dienstag</div>
+      <h1>Biergärten<br>der Isarauen</h1>
+    </div>
+    <div class="massstab">
+      Standpunkt Candidplatz<br>
+      48.1148 N · 11.5687 O<br>
+      Aufbruch 15:00 Uhr
+    </div>
+  </header>
+
+  <div class="zwei">
+    <section>
+      <h2>Vermessungszug · vier Etappen</h2>
+
+      <div class="zug">
+        <div class="strecke">
+          <span class="peilung">Etappe 1 · ÖPNV</span>
+          <span class="werte">≈28 min · 4,9 km Luftlinie · Peilung 312° · <a href="#">Verbindung prüfen</a></span>
+        </div>
+
+        <article class="punkt">
+          <div class="zeile">
+            <div>
+              <span class="nr">Punkt 1</span>
+              <h3>Augustiner Schützengarten</h3>
+            </div>
+            <span class="uhr">15:28–16:53</span>
+          </div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="attribute"><span>Augustiner</span><span>2.500 Plätze</span><span>Selbstbedienung</span><span>11:30–23:00</span></div>
+        </article>
+
+        <div class="strecke">
+          <span class="peilung">Etappe 2 · zu Fuß</span>
+          <span class="werte">≈20 min · 1,2 km · Peilung 204° · <a href="#">Verbindung prüfen</a></span>
+        </div>
+
+        <article class="punkt">
+          <div class="zeile">
+            <div>
+              <span class="nr">Punkt 2</span>
+              <h3>Gasthof Hinterbrühl</h3>
+            </div>
+            <span class="uhr">17:13–18:38</span>
+          </div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach
+             zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="attribute"><span>Augustiner</span><span>1.000 Plätze</span><span class="nass">Am Wasser</span></div>
+          <div class="vermerk">Selbstbedienungs-Biergarten läuft derzeit vor allem
+             Samstag und Sonntag.</div>
+        </article>
+
+        <div class="strecke">
+          <span class="peilung">Etappe 3 · zu Fuß</span>
+          <span class="werte">≈23 min · 1,4 km · Peilung 96° · <a href="#">Verbindung prüfen</a></span>
+        </div>
+
+        <article class="punkt">
+          <div class="zeile">
+            <div>
+              <span class="nr">Punkt 3</span>
+              <h3>Gutshof Menterschwaige</h3>
+            </div>
+            <span class="uhr">19:01–20:26</span>
+          </div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass, Isarsteig in
+             drei Minuten.</p>
+          <div class="attribute"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+        </article>
+
+        <div class="strecke">
+          <span class="peilung">Rückweg · ÖPNV</span>
+          <span class="werte">≈20 min · 3,1 km · Peilung 28° · <a href="#">Verbindung prüfen</a></span>
+        </div>
+      </div>
+
+      <div class="schluss">
+        <div>
+          <div class="bezeichnung">Zugdauer</div>
+          <div class="wert">5 h 46 min</div>
+        </div>
+        <div>
+          <div class="bezeichnung">Rückkehr</div>
+          <div class="wert">20:46</div>
+        </div>
+        <div>
+          <div class="bezeichnung">Sonnenuntergang</div>
+          <div class="wert">20:38</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Punktverzeichnis · ab Standpunkt</h2>
+      <table class="verzeichnis">
+        <thead><tr><th>Fahrzeit</th><th>Bezeichnung</th><th>Lage</th></tr></thead>
+        <tbody>
+          <tr><td class="dist">17 min</td><td class="name">Giesinger Bräustüberl</td><td class="lage">Obergiesing</td></tr>
+          <tr><td class="dist">20 min</td><td class="name">Gutshof Menterschwaige</td><td class="lage">Harlaching</td></tr>
+          <tr><td class="dist">20 min</td><td class="name">Paulaner am Nockherberg</td><td class="lage">Au</td></tr>
+          <tr><td class="dist">21 min</td><td class="name">Am Viktualienmarkt</td><td class="lage">Altstadt</td></tr>
+          <tr><td class="dist">23 min</td><td class="name">Hofbräukeller</td><td class="lage">Haidhausen</td></tr>
+          <tr><td class="dist">24 min</td><td class="name">Zum Flaucher</td><td class="lage">Isarauen</td></tr>
+        </tbody>
+      </table>
+
+      <div class="filter">
+        <button aria-pressed="true">Am Wasser</button>
+        <button aria-pressed="false">Wald</button>
+        <button aria-pressed="false">Stadt</button>
+        <button aria-pressed="false">Aussicht</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="blattfuss">
+    <span>Fahrzeiten geschätzt aus Luftlinie und Umwegfaktor · Höhenmeter nicht berücksichtigt</span>
+    <span>Blatt 1 von 1</span>
+  </div>
+</div>
+</body>
+</html>

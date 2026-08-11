@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 Sachlichkeit · Biergärten München</title>
+<style>
+/* ============================================================
+   10 · SACHLICHKEIT
+   Strenges Raster, kein Ornament, keine Textur, kein Schatten.
+   Die einzige Farbe kommt aus der Sache selbst: jede Brauerei hat
+   ihre, und die ordnet die Seite. Wer die Farbe kennt, liest die
+   Tour, ohne den Namen zu lesen.
+   ============================================================ */
+:root{
+  --papier:#ECECE9;
+  --schwarz:#0B0B0B;
+  --grau:#75757A;
+  --linie:#C9C9C5;
+
+  --augustiner:#2E6B3A;
+  --paulaner:#2B5EA8;
+  --loewen:#1F4C8F;
+  --hofbraeu:#3E86C4;
+  --spaten:#C99512;
+  --giesinger:#9E3030;
+  --unbekannt:#6B6B66;
+
+  --display:Futura,"Avenir Next Demi","Century Gothic",sans-serif;
+  --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--papier);color:var(--schwarz);font:15px/1.55 var(--body)}
+.raster{max-width:1360px;margin:0 auto;padding:0 16px 72px}
+
+/* ---------- Kopf ---------- */
+.kopf{padding:28px 0 22px;border-bottom:3px solid var(--schwarz)}
+.zeile1{font-family:var(--mono);font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--grau)}
+h1{margin:14px 0 0;font-family:var(--display);font-weight:600;
+  font-size:clamp(34px,9.6vw,78px);line-height:.92;letter-spacing:-.032em;text-transform:uppercase}
+.kopf p{margin:18px 0 0;max-width:46ch;font-size:16px;color:#33333A}
+
+/* Die Farbleiste: der Schlüssel zum Ordnungssystem, direkt unter dem Titel */
+.schluessel{display:flex;margin-top:22px;height:8px}
+.schluessel span{flex:1}
+
+h2{font-family:var(--mono);font-size:9.5px;font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--grau);margin:34px 0 0;padding-bottom:7px;
+  border-bottom:1px solid var(--schwarz)}
+
+/* ---------- Tour: jede Station trägt ihre Brauereifarbe als Fläche ---------- */
+.etappe{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--grau);display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;padding:13px 0}
+.etappe b{font-size:13px;color:var(--schwarz);letter-spacing:.04em}
+.etappe a{margin-left:auto;color:var(--grau);text-transform:none;letter-spacing:.02em;
+  text-decoration:none;border-bottom:1px solid var(--linie)}
+
+.station{display:grid;grid-template-columns:8px 1fr;gap:0 16px;margin-bottom:2px}
+.station .farbe{background:var(--marke,var(--unbekannt))}
+.station .inhalt{padding:16px 0 20px;border-top:1px solid var(--schwarz)}
+.station .titelzeile{display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  flex-wrap:wrap}
+.station h3{margin:0;font-family:var(--display);font-weight:600;font-size:clamp(19px,4.8vw,27px);
+  letter-spacing:-.022em;line-height:1.1;text-transform:uppercase}
+.station .uhr{font-family:var(--mono);font-size:14px;letter-spacing:.03em;white-space:nowrap}
+.station p{margin:11px 0 0;max-width:58ch;color:#33333A}
+.daten{margin-top:13px;display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));
+  gap:0;border-top:1px solid var(--linie)}
+.daten div{padding:8px 10px 8px 0;border-right:1px solid var(--linie)}
+.daten div:last-child{border-right:0}
+.daten dt,.daten .k{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grau)}
+.daten .w{font-family:var(--mono);font-size:12.5px;margin-top:3px}
+.einschraenkung{margin-top:12px;padding:9px 12px;background:var(--schwarz);color:var(--papier);
+  font-size:13.5px}
+
+/* ---------- Bilanz ---------- */
+.bilanz{margin-top:20px;border-top:3px solid var(--schwarz);padding-top:16px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0}
+.bilanz div{border-right:1px solid var(--linie);padding-right:14px}
+.bilanz div:last-child{border-right:0}
+.bilanz .k{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--grau)}
+.bilanz .w{font-family:var(--display);font-weight:600;font-size:clamp(22px,5.6vw,34px);
+  line-height:1;letter-spacing:-.028em;margin-top:6px}
+
+/* ---------- Verzeichnis ---------- */
+.liste{width:100%;border-collapse:collapse;margin-top:8px}
+.liste td{padding:11px 10px 11px 0;border-bottom:1px solid var(--linie);vertical-align:baseline}
+.liste .marke{width:8px;padding:0;background:var(--marke,var(--unbekannt));border-bottom:0}
+.liste .min{font-family:var(--mono);font-size:13.5px;width:56px;white-space:nowrap;
+  padding-left:14px}
+.liste .name{font-family:var(--display);font-weight:600;font-size:15.5px;letter-spacing:-.014em;
+  text-transform:uppercase}
+.liste .wo{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+
+.filter{margin-top:20px;display:flex;flex-wrap:wrap;gap:0}
+.filter button{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  padding:11px 15px;border:1px solid var(--schwarz);background:transparent;color:var(--schwarz);
+  cursor:pointer;margin:-1px 0 0 -1px}
+.filter button[aria-pressed="true"]{background:var(--schwarz);color:var(--papier)}
+
+.fuss{margin-top:32px;padding-top:14px;border-top:1px solid var(--schwarz);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;line-height:2;color:var(--grau);
+  max-width:76ch}
+:focus-visible{outline:2px solid var(--schwarz);outline-offset:2px}
+
+@media (min-width:760px){
+  .raster{padding:0 28px 84px}
+  .kopf{display:grid;grid-template-columns:1.5fr 1fr;gap:40px;align-items:end}
+  .kopf p{margin:0 0 6px}
+  .schluessel{grid-column:1/-1;margin-top:24px}
+  .zwei{display:grid;grid-template-columns:1.4fr 1fr;gap:44px;align-items:start}
+  .station{grid-template-columns:10px 1fr;gap:0 20px}
+}
+@media (min-width:1120px){
+  .raster{padding:0 44px 104px}
+  .kopf{grid-template-columns:1.7fr 1fr;gap:64px;padding:44px 0 26px}
+  .zwei{grid-template-columns:1.5fr 1fr;gap:64px}
+  .station{grid-template-columns:12px 1fr;gap:0 26px}
+  h1{font-size:clamp(56px,5.4vw,84px)}
+}
+</style>
+</head>
+<body>
+<div class="raster">
+
+  <header class="kopf">
+    <div>
+      <div class="zeile1">Tourenplaner · München · Dienstag, 15:00</div>
+      <h1>Biergärten</h1>
+    </div>
+    <p>Sag, wo du losgehst, wie lange du Zeit hast und was du willst. Die Tour baut sich
+       selbst, samt Alternativen.</p>
+    <div class="schluessel" aria-hidden="true">
+      <span style="background:var(--augustiner)"></span>
+      <span style="background:var(--paulaner)"></span>
+      <span style="background:var(--loewen)"></span>
+      <span style="background:var(--hofbraeu)"></span>
+      <span style="background:var(--spaten)"></span>
+      <span style="background:var(--giesinger)"></span>
+      <span style="background:var(--unbekannt)"></span>
+    </div>
+  </header>
+
+  <div class="zwei">
+    <section>
+      <h2>Deine Tour · drei Stationen · ab Candidplatz</h2>
+
+      <div class="etappe"><span>ÖPNV</span><b>≈28 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="station" style="--marke:var(--augustiner)">
+        <div class="farbe"></div>
+        <div class="inhalt">
+          <div class="titelzeile">
+            <h3>Augustiner Schützengarten</h3>
+            <span class="uhr">15:28–16:53</span>
+          </div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="daten">
+            <div><span class="k">Ausschank</span><span class="w">Augustiner</span></div>
+            <div><span class="k">Plätze</span><span class="w">2.500</span></div>
+            <div><span class="k">Bedienung</span><span class="w">SB</span></div>
+            <div><span class="k">Geöffnet</span><span class="w">11:30–23:00</span></div>
+          </div>
+        </div>
+      </article>
+
+      <div class="etappe"><span>zu Fuß</span><b>≈20 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="station" style="--marke:var(--augustiner)">
+        <div class="farbe"></div>
+        <div class="inhalt">
+          <div class="titelzeile">
+            <h3>Gasthof Hinterbrühl</h3>
+            <span class="uhr">17:13–18:38</span>
+          </div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach
+             zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="daten">
+            <div><span class="k">Ausschank</span><span class="w">Augustiner</span></div>
+            <div><span class="k">Plätze</span><span class="w">1.000</span></div>
+            <div><span class="k">Lage</span><span class="w">Am Wasser</span></div>
+            <div><span class="k">Geöffnet</span><span class="w">11:30–23:00</span></div>
+          </div>
+          <div class="einschraenkung">SB-Biergarten läuft derzeit vor allem Samstag und Sonntag.</div>
+        </div>
+      </article>
+
+      <div class="etappe"><span>zu Fuß</span><b>≈23 min</b><a href="#">Verbindung prüfen</a></div>
+
+      <article class="station" style="--marke:var(--augustiner)">
+        <div class="farbe"></div>
+        <div class="inhalt">
+          <div class="titelzeile">
+            <h3>Gutshof Menterschwaige</h3>
+            <span class="uhr">19:01–20:26</span>
+          </div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass, Isarsteig in
+             drei Minuten.</p>
+          <div class="daten">
+            <div><span class="k">Ausschank</span><span class="w">Augustiner</span></div>
+            <div><span class="k">Plätze</span><span class="w">1.100</span></div>
+            <div><span class="k">Lage</span><span class="w">Aussicht</span></div>
+            <div><span class="k">Geöffnet</span><span class="w">11:00–23:00</span></div>
+          </div>
+        </div>
+      </article>
+
+      <div class="bilanz">
+        <div><span class="k">Von Tür zu Tür</span><div class="w">5 h 46</div></div>
+        <div><span class="k">Zurück</span><div class="w">20:46</div></div>
+        <div><span class="k">Zu Fuß</span><div class="w">43 min</div></div>
+        <div><span class="k">Sonnenuntergang</span><div class="w">20:38</div></div>
+      </div>
+
+      <p class="fuss">
+        Diese Tour bleibt bei einer Brauerei — drei verschiedene hätten im Ranking fünf
+        Punkte je Brauerei gebracht, die Fahrzeiten haben dagegen gesprochen.
+      </p>
+    </section>
+
+    <section>
+      <h2>Alle Biergärten · Fahrzeit ab Candidplatz</h2>
+      <table class="liste">
+        <tbody>
+          <tr style="--marke:var(--giesinger)"><td class="marke"></td><td class="min">17</td><td class="name">Giesinger Bräustüberl</td><td class="wo">Obergiesing</td></tr>
+          <tr style="--marke:var(--augustiner)"><td class="marke"></td><td class="min">20</td><td class="name">Menterschwaige</td><td class="wo">Harlaching</td></tr>
+          <tr style="--marke:var(--paulaner)"><td class="marke"></td><td class="min">20</td><td class="name">Am Nockherberg</td><td class="wo">Au</td></tr>
+          <tr style="--marke:var(--unbekannt)"><td class="marke"></td><td class="min">21</td><td class="name">Viktualienmarkt</td><td class="wo">Altstadt</td></tr>
+          <tr style="--marke:var(--hofbraeu)"><td class="marke"></td><td class="min">23</td><td class="name">Hofbräukeller</td><td class="wo">Haidhausen</td></tr>
+          <tr style="--marke:var(--loewen)"><td class="marke"></td><td class="min">24</td><td class="name">Zum Flaucher</td><td class="wo">Isarauen</td></tr>
+        </tbody>
+      </table>
+
+      <div class="filter">
+        <button aria-pressed="true">Am Wasser</button>
+        <button aria-pressed="false">Wald</button>
+        <button aria-pressed="false">Stadt</button>
+        <button aria-pressed="false">Keller</button>
+        <button aria-pressed="false">SB</button>
+      </div>
+
+      <p class="fuss">
+        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor. Grau heißt: Brauerei
+        nicht sicher zu verifizieren — das betrifft neun von 35 Einträgen.
+      </p>
+    </section>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,317 @@
+[
+  {
+    "name": "Candidplatz",
+    "lat": 48.1148,
+    "lon": 11.5687
+  },
+  {
+    "name": "Marienplatz",
+    "lat": 48.1374,
+    "lon": 11.5755
+  },
+  {
+    "name": "Hauptbahnhof",
+    "lat": 48.1402,
+    "lon": 11.56
+  },
+  {
+    "name": "Sendlinger Tor",
+    "lat": 48.1334,
+    "lon": 11.5665
+  },
+  {
+    "name": "Odeonsplatz",
+    "lat": 48.1428,
+    "lon": 11.5776
+  },
+  {
+    "name": "Karlsplatz (Stachus)",
+    "lat": 48.1394,
+    "lon": 11.5661
+  },
+  {
+    "name": "Ostbahnhof",
+    "lat": 48.1272,
+    "lon": 11.6045
+  },
+  {
+    "name": "Max-Weber-Platz",
+    "lat": 48.1352,
+    "lon": 11.5972
+  },
+  {
+    "name": "Kolumbusplatz",
+    "lat": 48.1234,
+    "lon": 11.5772
+  },
+  {
+    "name": "Fraunhoferstraße",
+    "lat": 48.1298,
+    "lon": 11.5757
+  },
+  {
+    "name": "Silberhornstraße",
+    "lat": 48.1152,
+    "lon": 11.5786
+  },
+  {
+    "name": "Giesing Bahnhof",
+    "lat": 48.1112,
+    "lon": 11.5893
+  },
+  {
+    "name": "Wettersteinplatz",
+    "lat": 48.1091,
+    "lon": 11.5688
+  },
+  {
+    "name": "St.-Quirin-Platz",
+    "lat": 48.1041,
+    "lon": 11.5694
+  },
+  {
+    "name": "Mangfallplatz",
+    "lat": 48.0996,
+    "lon": 11.569
+  },
+  {
+    "name": "Implerstraße",
+    "lat": 48.1247,
+    "lon": 11.5479
+  },
+  {
+    "name": "Harras",
+    "lat": 48.1187,
+    "lon": 11.5401
+  },
+  {
+    "name": "Poccistraße",
+    "lat": 48.1264,
+    "lon": 11.5528
+  },
+  {
+    "name": "Thalkirchen",
+    "lat": 48.1013,
+    "lon": 11.5473
+  },
+  {
+    "name": "Brudermühlstraße",
+    "lat": 48.1133,
+    "lon": 11.5562
+  },
+  {
+    "name": "Universität",
+    "lat": 48.1509,
+    "lon": 11.5809
+  },
+  {
+    "name": "Münchner Freiheit",
+    "lat": 48.1616,
+    "lon": 11.5867
+  },
+  {
+    "name": "Giselastraße",
+    "lat": 48.156,
+    "lon": 11.5847
+  },
+  {
+    "name": "Studentenstadt",
+    "lat": 48.1809,
+    "lon": 11.6103
+  },
+  {
+    "name": "Scheidplatz",
+    "lat": 48.1734,
+    "lon": 11.5686
+  },
+  {
+    "name": "Bonner Platz",
+    "lat": 48.1663,
+    "lon": 11.5723
+  },
+  {
+    "name": "Rotkreuzplatz",
+    "lat": 48.152,
+    "lon": 11.5385
+  },
+  {
+    "name": "Laim",
+    "lat": 48.142,
+    "lon": 11.509
+  },
+  {
+    "name": "Hirschgarten S-Bahn",
+    "lat": 48.1512,
+    "lon": 11.5217
+  },
+  {
+    "name": "Pasing",
+    "lat": 48.1497,
+    "lon": 11.4614
+  },
+  {
+    "name": "Westfriedhof",
+    "lat": 48.1637,
+    "lon": 11.5312
+  },
+  {
+    "name": "Olympiazentrum",
+    "lat": 48.1758,
+    "lon": 11.5566
+  },
+  {
+    "name": "Moosach",
+    "lat": 48.18,
+    "lon": 11.51
+  },
+  {
+    "name": "Feldmoching",
+    "lat": 48.201,
+    "lon": 11.539
+  },
+  {
+    "name": "Arabellapark",
+    "lat": 48.1546,
+    "lon": 11.6208
+  },
+  {
+    "name": "Prinzregentenplatz",
+    "lat": 48.14,
+    "lon": 11.606
+  },
+  {
+    "name": "Effnerplatz",
+    "lat": 48.1518,
+    "lon": 11.6188
+  },
+  {
+    "name": "Trudering",
+    "lat": 48.1206,
+    "lon": 11.6549
+  },
+  {
+    "name": "Michaelibad",
+    "lat": 48.1075,
+    "lon": 11.6255
+  },
+  {
+    "name": "Neuperlach Süd",
+    "lat": 48.0908,
+    "lon": 11.6394
+  },
+  {
+    "name": "Innsbrucker Ring",
+    "lat": 48.1152,
+    "lon": 11.6115
+  },
+  {
+    "name": "Fürstenried West",
+    "lat": 48.0912,
+    "lon": 11.4796
+  },
+  {
+    "name": "Aidenbachstraße",
+    "lat": 48.0937,
+    "lon": 11.5219
+  },
+  {
+    "name": "Obersendling",
+    "lat": 48.094,
+    "lon": 11.53
+  },
+  {
+    "name": "Solln",
+    "lat": 48.0784,
+    "lon": 11.525
+  },
+  {
+    "name": "Klinikum Großhadern",
+    "lat": 48.1093,
+    "lon": 11.474
+  },
+  {
+    "name": "Schwabing",
+    "lat": 48.165,
+    "lon": 11.583
+  },
+  {
+    "name": "Haidhausen",
+    "lat": 48.132,
+    "lon": 11.593
+  },
+  {
+    "name": "Au",
+    "lat": 48.125,
+    "lon": 11.579
+  },
+  {
+    "name": "Bogenhausen",
+    "lat": 48.15,
+    "lon": 11.61
+  },
+  {
+    "name": "Neuhausen",
+    "lat": 48.155,
+    "lon": 11.535
+  },
+  {
+    "name": "Maxvorstadt",
+    "lat": 48.15,
+    "lon": 11.57
+  },
+  {
+    "name": "Glockenbachviertel",
+    "lat": 48.129,
+    "lon": 11.571
+  },
+  {
+    "name": "Untergiesing",
+    "lat": 48.115,
+    "lon": 11.572
+  },
+  {
+    "name": "Harlaching",
+    "lat": 48.1,
+    "lon": 11.57
+  },
+  {
+    "name": "Ramersdorf",
+    "lat": 48.115,
+    "lon": 11.605
+  },
+  {
+    "name": "Berg am Laim",
+    "lat": 48.13,
+    "lon": 11.63
+  },
+  {
+    "name": "Allach",
+    "lat": 48.19,
+    "lon": 11.47
+  },
+  {
+    "name": "Aubing",
+    "lat": 48.158,
+    "lon": 11.413
+  },
+  {
+    "name": "Freimann",
+    "lat": 48.195,
+    "lon": 11.61
+  },
+  {
+    "name": "Milbertshofen",
+    "lat": 48.19,
+    "lon": 11.565
+  },
+  {
+    "name": "Westpark",
+    "lat": 48.1195,
+    "lon": 11.5185
+  },
+  {
+    "name": "Nymphenburg",
+    "lat": 48.158,
+    "lon": 11.504
+  }
+]

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>02 Fahrplan · Biergärten München</title>
+<style>
+/* ============================================================
+   02 · FAHRPLAN
+   Der MVV-Aushang als Ordnungsprinzip. Die Tour ist eine Linie,
+   die Stationen sind Halte, das Verkehrsmittel gibt die Farbe.
+   Auf dem Desktop kippt das Liniendiagramm in die Waagerechte.
+   ============================================================ */
+:root{
+  --papier:#F1EFEA;
+  --tinte:#15171C;
+  --grau:#767A82;
+  --linie:#D3D0C8;
+  --ubahn:#0065B1;
+  --sbahn:#00934C;
+  --fuss:#15171C;
+  --warn:#E30613;
+  --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --schmal:"Avenir Next Condensed","Helvetica Neue",Impact,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--papier);color:var(--tinte);font:15px/1.5 var(--sans)}
+.blatt{max-width:1320px;margin:0 auto;padding:0 16px 64px}
+
+/* ---------- Kopfleiste ---------- */
+.leiste{display:flex;align-items:stretch;gap:0;margin:0 -16px;background:var(--tinte);color:var(--papier)}
+.leiste .signet{background:var(--ubahn);color:#fff;font-family:var(--schmal);font-weight:700;
+  font-size:34px;line-height:1;padding:16px 18px;letter-spacing:-.02em;display:flex;align-items:center}
+.leiste .titel{padding:14px 16px;display:flex;flex-direction:column;justify-content:center}
+.leiste .titel b{font-family:var(--schmal);font-size:23px;font-weight:600;letter-spacing:.01em;
+  text-transform:uppercase}
+.leiste .titel span{font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+  text-transform:uppercase;color:#9BA1AB;margin-top:3px}
+.leiste .stand{margin-left:auto;padding:14px 16px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:#9BA1AB;display:flex;align-items:flex-end}
+
+h2{font-family:var(--mono);font-size:10.5px;font-weight:400;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--grau);margin:34px 0 0;padding-bottom:8px;
+  border-bottom:2px solid var(--tinte)}
+
+/* ---------- Liniendiagramm, senkrecht ---------- */
+.strecke{margin-top:20px;position:relative;padding-left:44px}
+.strecke::before{content:"";position:absolute;left:13px;top:9px;bottom:9px;width:6px;
+  background:linear-gradient(180deg,
+    var(--ubahn) 0 20%, var(--fuss) 20% 56%, var(--fuss) 56% 78%, var(--ubahn) 78% 100%)}
+.halt{position:relative;padding:0 0 26px}
+.halt::before{content:"";position:absolute;left:-38px;top:4px;width:20px;height:20px;
+  background:var(--papier);border:5px solid var(--tinte)}
+.halt.start::before,.halt.ziel::before{background:var(--tinte)}
+.halt .zeit{font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:-.01em}
+.halt .zeit small{font-size:12px;font-weight:400;color:var(--grau);margin-left:8px;letter-spacing:.1em}
+.halt h3{margin:2px 0 0;font-family:var(--schmal);font-size:25px;font-weight:600;
+  letter-spacing:.005em;line-height:1.1}
+.halt p{margin:7px 0 0;font-size:14px;color:#3E434B;max-width:56ch}
+.halt .daten{margin-top:9px;display:flex;flex-wrap:wrap;gap:0;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--grau)}
+.halt .daten span{padding:4px 10px;border:1px solid var(--linie);margin:-1px 0 0 -1px}
+.halt .stoerung{margin-top:10px;padding:8px 11px;background:#fff;border-top:3px solid var(--warn);
+  font-size:13.5px;color:#7A1410}
+
+/* Fahrtabschnitt zwischen zwei Halten */
+.fahrt{position:relative;padding:0 0 22px;margin-top:-10px}
+.fahrt .mittel{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.fahrt .kuerzel{background:var(--ubahn);color:#fff;padding:3px 8px;font-weight:700;letter-spacing:.1em}
+.fahrt.zufuss .kuerzel{background:var(--tinte)}
+.fahrt .alt{display:block;margin-top:7px;font-family:var(--mono);font-size:11px;color:var(--grau);
+  letter-spacing:.06em}
+.fahrt .alt a{color:var(--grau);text-decoration:none;border-bottom:1px solid var(--linie)}
+.fahrt .alt a:hover{color:var(--ubahn);border-color:var(--ubahn)}
+
+/* ---------- Bilanz ---------- */
+.bilanz{margin-top:8px;border-top:2px solid var(--tinte);border-bottom:2px solid var(--tinte);
+  padding:16px 0;display:flex;gap:34px;flex-wrap:wrap}
+.bilanz div{display:flex;flex-direction:column}
+.bilanz dt,.bilanz .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grau)}
+.bilanz .w{font-family:var(--schmal);font-size:30px;font-weight:600;line-height:1.1;margin-top:3px}
+
+/* ---------- Abfahrtstabelle ---------- */
+.tafel{width:100%;border-collapse:collapse;margin-top:14px}
+.tafel th{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--grau);text-align:left;padding:0 10px 8px 0;font-weight:400}
+.tafel td{padding:12px 10px 12px 0;border-top:1px solid var(--linie);vertical-align:baseline}
+.tafel .min{font-family:var(--mono);font-size:18px;font-weight:700;width:58px;white-space:nowrap}
+.tafel .ziel{font-family:var(--schmal);font-size:18px;font-weight:600}
+.tafel .via{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+.tafel .mittelzelle span{background:var(--tinte);color:#fff;font-family:var(--mono);font-size:9.5px;
+  padding:3px 7px;letter-spacing:.1em}
+.tafel .mittelzelle span.rad{background:var(--sbahn)}
+
+/* ---------- Filter ---------- */
+.filter{margin-top:18px;display:flex;flex-wrap:wrap;gap:0}
+.filter button{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  padding:10px 14px;border:1px solid var(--tinte);background:transparent;color:var(--tinte);
+  cursor:pointer;margin:-1px 0 0 -1px}
+.filter button[aria-pressed="true"]{background:var(--tinte);color:var(--papier)}
+
+.hinweisfuss{margin-top:30px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+  color:var(--grau);max-width:74ch;line-height:1.7}
+:focus-visible{outline:3px solid var(--ubahn);outline-offset:1px}
+
+/* ---------- Tablet ---------- */
+@media (min-width:760px){
+  .blatt{padding:0 26px 76px}
+  .leiste{margin:0 -26px}
+  .zwei{display:grid;grid-template-columns:1.25fr 1fr;gap:38px;align-items:start}
+  h2{margin-top:30px}
+}
+/* ---------- Desktop: Diagramm kippt in die Waagerechte ---------- */
+@media (min-width:1120px){
+  .blatt{padding:0 40px 96px}
+  .leiste{margin:0 -40px}
+  .strecke{padding-left:0;padding-top:58px;display:flex;gap:0}
+  .strecke::before{left:0;right:0;top:22px;bottom:auto;width:auto;height:6px;
+    background:linear-gradient(90deg,
+      var(--ubahn) 0 22%, var(--fuss) 22% 55%, var(--fuss) 55% 78%, var(--ubahn) 78% 100%)}
+  .halt{flex:1 1 0;padding:0 22px 0 0;min-width:0}
+  .halt::before{left:0;top:-44px}
+  .fahrt{position:absolute;top:-58px;padding:0;margin:0}
+  .fahrt.f1{left:14%}.fahrt.f2{left:41%}.fahrt.f3{left:68%}
+  .fahrt .alt{display:none}
+  .halt h3{font-size:21px}
+  .zwei{grid-template-columns:1fr 1fr;gap:52px}
+}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+  <header class="leiste">
+    <div class="signet">B</div>
+    <div class="titel">
+      <b>Biergärten München</b>
+      <span>Tourenplaner · Linie ab Candidplatz</span>
+    </div>
+    <div class="stand">Dienstag · Stand 15:00</div>
+  </header>
+
+  <h2>Fahrtverlauf</h2>
+
+  <div class="strecke">
+    <div class="fahrt f1">
+      <span class="mittel"><span class="kuerzel">U</span> ÖPNV ≈ 28 min</span>
+      <span class="alt">zu Fuß 51 · Rad 18 · <a href="#">Verbindung prüfen</a></span>
+    </div>
+
+    <div class="halt start">
+      <div class="zeit">15:00 <small>Abfahrt</small></div>
+      <h3>Candidplatz</h3>
+      <p>Alles rechnet ab hier und wieder zurück.</p>
+    </div>
+
+    <div class="halt">
+      <div class="zeit">15:28 <small>bis 16:53</small></div>
+      <h3>Augustiner Schützengarten</h3>
+      <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter großen
+         Kastanien. Kaum jemand kennt ihn.</p>
+      <div class="daten"><span>Augustiner</span><span>2.500 Plätze</span><span>SB</span><span>11:30–23:00</span></div>
+    </div>
+
+    <div class="fahrt zufuss f2">
+      <span class="mittel"><span class="kuerzel">F</span> zu Fuß ≈ 20 min</span>
+      <span class="alt">Rad 8 · ÖPNV 36 · <a href="#">Verbindung prüfen</a></span>
+    </div>
+
+    <div class="halt">
+      <div class="zeit">17:13 <small>bis 18:38</small></div>
+      <h3>Gasthof Hinterbrühl</h3>
+      <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei.</p>
+      <div class="daten"><span>Augustiner</span><span>1.000 Plätze</span><span>Am Wasser</span></div>
+      <div class="stoerung">SB-Biergarten läuft derzeit vor allem Samstag und Sonntag.</div>
+    </div>
+
+    <div class="fahrt zufuss f3">
+      <span class="mittel"><span class="kuerzel">F</span> zu Fuß ≈ 23 min</span>
+      <span class="alt">Rad 9 · ÖPNV 33 · <a href="#">Verbindung prüfen</a></span>
+    </div>
+
+    <div class="halt ziel">
+      <div class="zeit">19:01 <small>bis 20:26</small></div>
+      <h3>Gutshof Menterschwaige</h3>
+      <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass.</p>
+      <div class="daten"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+    </div>
+  </div>
+
+  <div class="zwei">
+    <section>
+      <div class="bilanz">
+        <div><span class="k">Von Tür zu Tür</span><span class="w">5 h 46</span></div>
+        <div><span class="k">Zurück</span><span class="w">20:46</span></div>
+        <div><span class="k">Zu Fuß</span><span class="w">43 min</span></div>
+        <div><span class="k">Sonnenuntergang</span><span class="w">20:38</span></div>
+      </div>
+
+      <p class="hinweisfuss">
+        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor, nicht aus dem
+        MVV-Fahrplan. Umstiege sind nicht gerechnet. Jede Etappe zeigt alle drei
+        Zeiten — Antippen öffnet die echte Verbindung.
+      </p>
+    </section>
+
+    <section>
+      <h2>Abfahrten ab Candidplatz</h2>
+      <table class="tafel">
+        <thead>
+          <tr><th>Zeit</th><th>Ziel</th><th>Mittel</th><th>Lage</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="min">17</td><td class="ziel">Giesinger Bräustüberl</td><td class="mittelzelle"><span class="rad">Rad</span></td><td class="via">Obergiesing</td></tr>
+          <tr><td class="min">20</td><td class="ziel">Gutshof Menterschwaige</td><td class="mittelzelle"><span>U</span></td><td class="via">Harlaching</td></tr>
+          <tr><td class="min">20</td><td class="ziel">Paulaner am Nockherberg</td><td class="mittelzelle"><span>U</span></td><td class="via">Au</td></tr>
+          <tr><td class="min">21</td><td class="ziel">Am Viktualienmarkt</td><td class="mittelzelle"><span>U</span></td><td class="via">Altstadt</td></tr>
+          <tr><td class="min">23</td><td class="ziel">Hofbräukeller</td><td class="mittelzelle"><span>U</span></td><td class="via">Haidhausen</td></tr>
+          <tr><td class="min">24</td><td class="ziel">Zum Flaucher</td><td class="mittelzelle"><span class="rad">Rad</span></td><td class="via">Isarauen</td></tr>
+        </tbody>
+      </table>
+
+      <div class="filter">
+        <button aria-pressed="true">Am Wasser</button>
+        <button aria-pressed="false">Wald &amp; Grün</button>
+        <button aria-pressed="false">Stadtfeeling</button>
+        <button aria-pressed="false">Bierkeller</button>
+        <button aria-pressed="false">Selbstbedienung</button>
+      </div>
+    </section>
+  </div>
+</div>
+</body>
+</html>

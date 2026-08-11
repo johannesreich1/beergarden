@@ -1,0 +1,15 @@
+.DS_Store
+
+/api/vendor
+/api/.env
+/api/storage/*.key
+/api/public/storage
+/api/public/hot
+
+/web/node_modules
+/web/.nuxt
+/web/.output
+/web/.env
+
+.idea/workspace.xml
+.idea/shelf

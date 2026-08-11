@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Biergärten München</title>
+<style>
+:root{
+  --schaum:#FBF4E2; --malz:#2B1809; --holz:#3A2412; --holz-2:#452C17;
+  --hell:#F0B429; --bernstein:#B5651D; --isar:#5FB3A1; --raute:#5389BE;
+  --text:#DFD0B2; --mute:#9C8A6E;
+  --line:rgba(240,180,41,.18); --line-soft:rgba(223,208,178,.13);
+  --fd:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --fm:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--malz);background-image:linear-gradient(180deg,#3A2410 0%,#2B1809 34%,#180D04 100%);
+  background-attachment:fixed;color:var(--text);font-family:var(--fd);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding-bottom:calc(52px + env(safe-area-inset-bottom))}
+.wrap{max-width:620px;margin:0 auto;padding:0 18px}
+.eyebrow{font-family:var(--fm);font-size:10.5px;letter-spacing:.19em;text-transform:uppercase;color:var(--mute)}
+
+.head{background:var(--schaum);color:var(--malz);padding:calc(26px + env(safe-area-inset-top)) 0 22px}
+.head .eyebrow{color:#8A6A3E}
+h1{margin:8px 0 0;line-height:.9;font-weight:800;letter-spacing:-.04em;text-transform:uppercase}
+h1 .l1,h1 .l2{display:block;font-size:clamp(34px,11.6vw,52px)}
+h1 .l1{color:var(--malz)} h1 .l2{color:var(--bernstein)}
+.head p{margin:13px 0 0;font-size:14px;color:#6B5334;max-width:36ch}
+.head p b{color:var(--malz);font-weight:650}
+.foam{height:26px;background-repeat:repeat-x;position:relative;
+  background-image:
+    radial-gradient(circle at 11px 3px,var(--schaum) 11px,rgba(0,0,0,0) 11.6px),
+    radial-gradient(circle at 7px 1px,var(--schaum) 7px,rgba(0,0,0,0) 7.6px),
+    radial-gradient(circle at 15px 0px,var(--schaum) 15px,rgba(0,0,0,0) 15.6px);
+  background-size:27px 26px,17px 26px,35px 26px;background-position:0 0,10px 0,4px 0}
+.foam i{position:absolute;background:var(--schaum);border-radius:50%;opacity:.55}
+.foam i:nth-child(1){width:5px;height:5px;left:14%;top:26px}
+.foam i:nth-child(2){width:3px;height:3px;left:39%;top:30px}
+.foam i:nth-child(3){width:6px;height:6px;left:68%;top:27px}
+.foam i:nth-child(4){width:3px;height:3px;left:86%;top:31px}
+
+.seg{display:flex;gap:9px;margin:30px 0 0}
+.seg button{flex:1;padding:13px 8px;border-radius:10px;cursor:pointer;font-family:inherit;background:transparent;
+  border:1.5px solid var(--line-soft);color:var(--mute);font-size:13.5px;font-weight:700;position:relative}
+.seg button::after{content:"";position:absolute;inset:4px;border-radius:6px;border:1px solid currentColor;opacity:.22}
+.seg button[aria-selected="true"]{background:var(--hell);border-color:var(--hell);color:#2B1809}
+
+.section-title{display:flex;align-items:center;gap:11px;margin:32px 0 4px}
+.section-title h2{margin:0;font-size:11.5px;font-family:var(--fm);letter-spacing:.2em;text-transform:uppercase;color:var(--hell);font-weight:500}
+.section-title .rule{flex:1;height:1px;background:var(--line-soft)}
+.note{margin:8px 0 0;color:var(--mute);font-size:13.5px}
+.btn{font-size:12.5px;padding:7px 11px;border-radius:9px;cursor:pointer;border:1px solid var(--line-soft);
+  background:transparent;color:var(--text);font-family:inherit;text-decoration:none;display:inline-block}
+.btn.gold{border-color:rgba(240,180,41,.42);color:var(--hell)}
+.btn.on{background:var(--hell);border-color:var(--hell);color:#2B1809;font-weight:650}
+.btn.warn{border-color:rgba(181,101,29,.6);color:#E09A55}
+.btn.big{padding:10px 15px;font-size:13.5px}
+
+/* ---- Steuerung ---- */
+.panel{margin:20px 0 0;padding:15px;border-radius:14px;background:var(--holz);border:1px solid var(--line)}
+.panel + .panel{margin-top:11px}
+.panel > .eyebrow{display:block;margin-bottom:11px}
+.startrow{display:flex;gap:8px}
+.inp{flex:1;padding:11px 13px;border-radius:10px;background:var(--holz-2);border:1px solid var(--line-soft);
+  color:var(--schaum);font-family:inherit;font-size:15px;min-width:0}
+.inp::placeholder{color:var(--mute)}
+.startmeta{margin-top:9px;font-family:var(--fm);font-size:11px;color:var(--mute)}
+.startmeta b{color:var(--isar)}
+.grid{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 13px;border-radius:999px;font-size:12.5px;cursor:pointer;border:1px solid var(--line-soft);
+  background:transparent;color:var(--mute);font-family:inherit;white-space:nowrap}
+.chip[aria-pressed="true"]{background:rgba(95,179,161,.16);border-color:rgba(95,179,161,.5);color:var(--isar)}
+.chip.g[aria-pressed="true"]{background:var(--hell);border-color:var(--hell);color:#2B1809;font-weight:650}
+.frow{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:3px}
+.frow::-webkit-scrollbar{display:none}
+.sub{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.sub .v{font-family:var(--fm);font-size:14px;color:var(--hell)}
+input[type=range]{width:100%;accent-color:var(--hell);background:transparent}
+.stepper{display:flex;align-items:center;gap:10px}
+.step{width:40px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--holz-2);
+  color:var(--hell);font-size:19px;font-family:var(--fm);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.stepper .lbl{flex:1;text-align:center}
+.stepper .lbl small{display:block;font-family:var(--fm);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.stepper .lbl strong{font-family:var(--fm);font-size:17px;color:var(--schaum);font-weight:500}
+
+.mats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.mats::-webkit-scrollbar{display:none}
+.mat{flex:0 0 auto;width:72px;height:72px;border-radius:11px;cursor:pointer;position:relative;background:var(--holz-2);
+  border:2px solid var(--bc,#6B5A3E);color:var(--text);font-family:inherit;display:flex;align-items:center;
+  justify-content:center;text-align:center;padding:6px;font-size:10.5px;font-weight:700;line-height:1.15}
+.mat::after{content:"";position:absolute;inset:4px;border-radius:7px;border:1px solid var(--bc,#6B5A3E);opacity:.45}
+.mat[aria-pressed="true"]{background:var(--bc);color:#FFF}
+.mat[aria-pressed="true"]::after{border-color:rgba(255,255,255,.5)}
+.mat small{display:block;font-family:var(--fm);font-size:8.5px;font-weight:400;opacity:.7;margin-top:3px}
+
+/* ---- Vorschläge ---- */
+.plan{border:1px solid var(--line-soft);border-radius:13px;padding:14px;background:rgba(255,255,255,.022);margin-bottom:9px}
+.plan.active{border-color:var(--hell);background:rgba(240,180,41,.08)}
+.plan .ptop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.plan .rank{font-family:var(--fm);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--hell)}
+.plan .tot{font-family:var(--fm);font-size:13px;color:var(--schaum)}
+.chain{margin:9px 0 0;font-size:15.5px;color:var(--schaum);font-weight:650;line-height:1.35;letter-spacing:-.01em}
+.chain span{color:var(--mute);font-weight:400}
+.plan .pmeta{margin-top:7px;font-family:var(--fm);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.plan .ptags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.ptag{font-family:var(--fm);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;
+  border-radius:5px;background:rgba(255,255,255,.05);color:var(--mute)}
+.ptag.w{color:var(--isar);background:rgba(95,179,161,.12)}
+.plan .pact{margin-top:11px}
+.empty{border:1px dashed var(--line-soft);border-radius:13px;padding:18px 15px;color:var(--mute);font-size:13.5px}
+
+/* ---- Lichtleiste ---- */
+.rail-track{position:relative;height:13px;border-radius:7px;margin-top:4px;
+  background:linear-gradient(90deg,#FFF3CE 0%,#F7CE6D 34%,#EDA254 62%,#C8574B 74%,#6B5FA0 88%,#2E3760 100%);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+.rail-sunset{position:absolute;top:-7px;bottom:-7px;width:1.5px;background:rgba(255,255,255,.75);border-radius:2px}
+.rail-sunset::after{content:"20:34";position:absolute;top:-15px;left:50%;transform:translateX(-50%);
+  font-family:var(--fm);font-size:9px;color:rgba(255,255,255,.85);white-space:nowrap}
+.pip{position:absolute;top:50%;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;transform:rotate(45deg);
+  border-radius:2.5px;background:#180D04;border:2px solid var(--schaum);transition:left .4s cubic-bezier(.2,.8,.25,1)}
+.rail-scale{display:flex;justify-content:space-between;margin-top:9px}
+.rail-scale span{font-family:var(--fm);font-size:10px;color:var(--mute)}
+
+.map-shell{margin:16px 0 0;border-radius:14px;overflow:hidden;border:1px solid var(--line-soft);background:#1E1206;position:relative}
+svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
+.map-legend{position:absolute;left:11px;bottom:10px;display:flex;flex-direction:column;gap:4px;
+  font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--mute);text-transform:uppercase}
+.map-legend i{display:inline-block;width:16px;height:0;border-top:2px solid;margin-right:6px;vertical-align:3px}
+
+.tl{margin:18px 0 0;position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:5.5px;top:8px;bottom:34px;width:1px;background:var(--line-soft)}
+.node{position:relative;margin:0 0 12px}
+.node::before{content:"";position:absolute;left:-26px;top:6px;width:12px;height:12px;transform:rotate(45deg);
+  border-radius:2px;background:var(--malz);border:1.5px solid var(--mute)}
+.node.stop::before{border-color:var(--hell);background:var(--hell)}
+.node.skipped::before{background:var(--malz);border-color:#5A452C}
+.node.term::before{border-color:var(--isar)}
+.leg{color:var(--mute);font-size:13px;padding:2px 0 12px}
+.leg .mode{font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--hell);margin-right:8px}
+.leg.bike .mode{color:var(--isar)}
+.leg.transit .mode{color:var(--raute)}
+.leg a{color:var(--mute);text-decoration:underline;text-underline-offset:2px}
+.legmodes{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.lm{font-family:var(--fm);font-size:10px;letter-spacing:.05em;padding:4px 8px;border-radius:6px;
+  background:rgba(255,255,255,.05);color:var(--mute);text-decoration:none;display:inline-block;border:1px solid transparent}
+.lm b{font-weight:600}
+.lm.sel{background:rgba(240,180,41,.15);color:var(--hell);border-color:rgba(240,180,41,.35)}
+.lm.over{opacity:.45}
+
+.card{background:var(--holz);border:1px solid var(--line);border-radius:13px;padding:15px 15px 13px}
+.card.off{opacity:.42}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card h3{margin:0;font-size:19px;font-weight:750;letter-spacing:-.02em;color:var(--schaum);line-height:1.15}
+.time{font-family:var(--fm);font-size:14px;color:var(--hell);white-space:nowrap;text-align:right;line-height:1.35}
+.time em{display:block;font-style:normal;font-size:10px;letter-spacing:.1em;color:var(--mute);text-transform:uppercase}
+.time.gone{color:var(--mute)}
+.water{display:inline-flex;margin-top:8px;font-family:var(--fm);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--isar)}
+.seen{display:inline-block;margin-left:8px;font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:#E09A55;border:1px solid rgba(224,154,85,.45);border-radius:5px;padding:1px 5px;vertical-align:2px}
+.desc{margin:10px 0 0;font-size:14px;color:var(--text)}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.fact{font-family:var(--fm);font-size:10.5px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,.05);color:var(--mute)}
+.warnbox{margin:11px 0 0;padding:9px 11px;border-radius:9px;font-size:13px;background:rgba(181,101,29,.14);
+  border:1px solid rgba(181,101,29,.4);color:#EDBE8E}
+.actions{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0 0;align-items:center}
+.dur{display:flex;align-items:center;margin-left:auto;border:1px solid var(--line-soft);border-radius:9px;overflow:hidden}
+.dur button{width:32px;height:30px;border:0;background:transparent;color:var(--hell);font-family:var(--fm);font-size:16px;cursor:pointer}
+.dur span{font-family:var(--fm);font-size:12px;color:var(--text);min-width:46px;text-align:center}
+.total{margin:8px 0 0;padding:14px 15px;border-radius:13px;background:rgba(240,180,41,.07);border:1px solid var(--line-soft)}
+.total .row{display:flex;justify-content:space-between;align-items:baseline}
+.total strong{font-family:var(--fm);font-size:22px;color:var(--schaum);font-weight:500}
+.total .hint{margin-top:7px;font-size:13px;color:var(--mute)}
+
+.count{margin:20px 0 0;font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--hell)}
+.glist{margin:12px 0 0;display:flex;flex-direction:column;gap:9px}
+.g{border:1px solid var(--line-soft);border-radius:13px;padding:13px 14px;background:rgba(255,255,255,.02);border-left:3px solid var(--bc,#6B5A3E)}
+.g.seenrow{opacity:.5}
+.g .gtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.g h4{margin:0;font-size:16.5px;font-weight:700;color:var(--schaum);letter-spacing:-.01em}
+.g .away{font-family:var(--fm);font-size:11px;color:var(--mute);white-space:nowrap}
+.g .gmeta{margin-top:5px;font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.g .gmeta b{color:var(--bc,#C0A97E);font-weight:600}
+.g p{margin:8px 0 0;font-size:13.5px;color:var(--text)}
+.g .gnote{margin:8px 0 0;font-size:12.5px;color:#E09A55}
+.g .gtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.g .gact{margin-top:11px;display:flex;gap:7px;flex-wrap:wrap}
+
+.tips{margin:16px 0 0;display:flex;flex-direction:column;gap:1px;border-radius:13px;overflow:hidden;border:1px solid var(--line-soft)}
+.tip{padding:13px 14px;background:rgba(255,255,255,.025)}
+.tip strong{display:block;color:var(--schaum);font-size:14px;margin-bottom:3px}
+.tip span{font-size:13.5px;color:var(--mute)}
+footer{margin:38px 0 0;padding:18px 0 0;border-top:1px solid var(--line-soft);color:var(--mute);font-size:12px}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--hell);outline-offset:2px;border-radius:6px}
+@media (prefers-reduced-motion:reduce){.pip{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="head"><div class="wrap">
+  <div class="eyebrow">Dienstag 11. August · 31° · Sonne · Sonnenuntergang 20:34</div>
+  <h1><span class="l1">Biergärten</span><span class="l2">München</span></h1>
+  <p>Sag, wo du losgehst, wie lange du Zeit hast, wie du unterwegs bist und was du willst — die Tour baut sich selbst, samt Alternativen.</p>
+</div></div>
+<div class="foam"><i></i><i></i><i></i><i></i></div>
+
+<div class="wrap">
+  <div class="seg" id="seg">
+    <button data-v="tour" aria-selected="true">Tour bauen</button>
+    <button data-v="dir" aria-selected="false">Alle Biergärten</button>
+  </div>
+
+  <section id="viewTour">
+    <div class="panel">
+      <span class="eyebrow">Start und Ziel</span>
+      <div class="startrow">
+        <input class="inp" id="startIn" list="places" placeholder="Haltestelle oder Viertel" autocomplete="off">
+        <button class="btn" id="geo" title="Standort verwenden">Standort</button>
+      </div>
+      <datalist id="places"></datalist>
+      <div class="startmeta" id="startMeta"></div>
+    </div>
+
+    <div class="panel">
+      <span class="eyebrow">Rahmen</span>
+      <div class="stepper">
+        <button class="step" id="minus">–</button>
+        <div class="lbl"><small>Losgehen</small><strong id="startLbl">15:00</strong></div>
+        <button class="step" id="plus">+</button>
+      </div>
+      <div style="margin-top:15px"><div class="sub"><span class="eyebrow">Zeitfenster</span></div>
+        <div class="grid" id="fBudget"></div></div>
+      <div style="margin-top:15px"><div class="sub"><span class="eyebrow">Stationen</span></div>
+        <div class="grid" id="fStops"></div></div>
+      <div style="margin-top:15px"><div class="sub"><span class="eyebrow">Unterwegs</span></div>
+        <div class="grid" id="fMode"></div></div>
+      <div style="margin-top:16px">
+        <div class="sub"><span class="eyebrow" id="walkLbl">Max. Fußweg pro Etappe</span><span class="v" id="walkV">25 min</span></div>
+        <input type="range" id="walkR" min="5" max="50" step="5" value="25">
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="eyebrow">Was du willst</span>
+      <div class="frow" id="fChar"></div>
+      <div style="margin-top:13px" class="mats" id="fBrew"></div>
+      <div style="margin-top:13px" class="frow" id="fExtra"></div>
+    </div>
+
+    <div class="section-title"><h2>Vorschläge</h2><div class="rule"></div></div>
+    <p class="note" id="genNote"></p>
+    <div id="plans" style="margin-top:14px"></div>
+
+    <div id="detail" hidden>
+      <div class="section-title"><h2>Deine Tour</h2><div class="rule"></div></div>
+      <div class="rail-track" id="track"><div class="rail-sunset" id="sunset"></div></div>
+      <div class="rail-scale"><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span></div>
+      <div class="map-shell">
+        <svg class="map" id="map" role="img" aria-label="Karte der Tour"></svg>
+        <div class="map-legend">
+          <div><i style="border-color:var(--hell);border-top-style:dotted"></i>zu Fuß</div>
+          <div><i style="border-color:var(--isar);border-top-style:dashed"></i>Rad</div>
+          <div><i style="border-color:var(--raute);border-top-style:dashed"></i>ÖPNV</div>
+        </div>
+      </div>
+      <div class="tl" id="timeline"></div>
+      <div class="total" id="total"></div>
+    </div>
+  </section>
+
+  <section id="viewDir" hidden>
+    <input class="inp" id="q" type="search" placeholder="Suchen: Name, Stadtteil, Brauerei …" style="width:100%;margin-top:22px" autocomplete="off">
+    <div class="panel"><span class="eyebrow">Charakter</span><div class="frow" id="dChar"></div></div>
+    <div class="panel"><span class="eyebrow">Ausschank</span><div class="mats" id="dBrew"></div></div>
+    <div class="panel"><span class="eyebrow">Filter</span><div class="frow" id="dExtra"></div></div>
+    <div class="count" id="count"></div>
+    <div class="glist" id="glist"></div>
+    <div class="section-title"><h2>Praxis</h2><div class="rule"></div></div>
+    <div class="tips" id="tips"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+/* ================= BRAUEREIEN & TAGS ================= */
+const BREW={
+  augustiner:{n:'Augustiner',s:'AUGU-<br>STINER',c:'#2E6B3A'},
+  paulaner:{n:'Paulaner',s:'PAU-<br>LANER',c:'#2B5EA8'},
+  loewen:{n:'Löwenbräu',s:'LÖWEN-<br>BRÄU',c:'#1F4C8F'},
+  hofbraeu:{n:'Hofbräu',s:'HOF-<br>BRÄU',c:'#3E86C4'},
+  spaten:{n:'Spaten',s:'SPATEN',c:'#D19A16'},
+  ayinger:{n:'Ayinger',s:'AYIN-<br>GER',c:'#6E8FC4'},
+  giesinger:{n:'Giesinger',s:'GIE-<br>SINGER',c:'#9E3030'},
+  bio:{n:'Bio / Lammsbräu',s:'BIO',c:'#6E8F3C'},
+  wechselnd:{n:'wechselnd',s:'WECH-<br>SELND',c:'#B08D50'},
+  ka:{n:'k. A.',s:'K. A.',c:'#6B5A3E'}
+};
+const TAGS={wasser:'Am Wasser',wald:'Wald & Grün',stadt:'Stadtfeeling',aussicht:'Aussicht',
+  keller:'Bierkeller',spielplatz:'Spielplatz',musik:'Live-Musik'};
+const T=(h,m)=>h*60+(m||0);
+
+/* ================= BIERGÄRTEN =================
+   di: dienstags offen · from/to: Dienstag · acc: Fußweg ab Haltestelle · q: Charme 1–5 */
+let G=[];
+let PLACES=[];
+
+/* ================= DATEN AUS DER API =================
+   Früher standen hier 35 Biergärten und 63 Haltestellen als Literale.
+   Jetzt kommen sie aus GET /api/gardens und GET /api/start-points.
+
+   Der Adapter bildet auf die Kurznamen des Prototyps ab. Das ist Wegwerfcode:
+   er stirbt mit dem Nuxt-Frontend, in dem die Feldnamen der API direkt gelten.
+   Deshalb hier bewusst keine Politur. */
+
+const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m;};
+
+function adaptGarden(g){
+  const hours=g.opening_hours||[];
+  // Der Planer ist auf Dienstag verdrahtet. weekday 2 nach ISO-8601.
+  const tue=hours.find(h=>h.weekday===2)||{};
+  // An einem Ruhetag stehen keine Zeiten. Statt eine Zahl zu erfinden, nehmen
+  // wir die Zeiten eines Tages, an dem derselbe Garten offen hat.
+  const open=hours.find(h=>!h.is_closed)||{};
+  return {
+    k:g.slug, n:g.name, hood:g.district,
+    // null heißt in der API "nicht verifiziert". Im Prototyp heißt das 'ka'
+    // und wird als "k. A." angezeigt - dieselbe Aussage, andere Schreibweise.
+    brew:g.brewery?g.brewery.slug:'ka',
+    seats:g.seats,
+    tags:g.tags||[],
+    sb:g.self_service?1:0,
+    bz:g.own_food_allowed?1:0,
+    di:tue.is_closed?0:1,
+    from:toMin(tue.opens_at||open.opens_at),
+    to:toMin(tue.closes_at||open.closes_at),
+    acc:g.station_walk_min??0,
+    q:g.charm,
+    zone:g.zone,
+    lat:g.lat, lon:g.lon,
+    p:g.description,
+    note:g.caveat
+  };
+}
+
+async function loadData(){
+  const [gardens,places]=await Promise.all([
+    fetch('/api/gardens').then(r=>r.json()),
+    fetch('/api/start-points').then(r=>r.json())
+  ]);
+  G=gardens.data.map(adaptGarden);
+  PLACES=places.data.map(p=>[p.name,p.lat,p.lon]);
+}
+
+const TIPS=[
+ ['Fahrzeiten sind Schätzungen','Die Minuten kommen aus Luftlinie plus Umwegfaktor, nicht aus dem MVV-Fahrplan. Jede Etappe zeigt alle drei Zeiten — Antippen öffnet die echte Route in Google Maps.'],
+ ['Warum Rad oft gewinnt','Flaucher, Hinterbrühl, Aumeister und Insel Mühle haben keine Haltestelle vor der Tür — mit dem Rad fällt der Fußweg von der Station weg, deshalb sind die Radzeiten dort auffällig kürzer. Wenn du Rad und U-Bahn mischen willst: die Fahrradmitnahme ist werktags von 6 bis 9 und von 16 bis 18 Uhr gesperrt.'],
+ ['Eigene Brotzeit','Im Selbstbedienungsbereich darfst du dein Essen mitbringen, Getränke nicht. Der Filter zeigt dir, wo das geht.'],
+ ['31 Grad','Kastanienschatten suchen, zwischendurch Wasser bestellen, erstes Getränk als Radler.'],
+ ['Ticket','Im Stadtgebiet reicht eine MVV-Tageskarte Zone M. Für Pullach, Baierbrunn und Unterföhring eine Zone mehr.'],
+ ['Licht','Sonnenuntergang 20:34, letztes brauchbares Tageslicht gegen 21:10. Der Planer legt Wasser- und Aussichtsplätze deshalb ans Ende.']
+];
+
+/* ================= STATE ================= */
+const state={view:'tour',start:T(15),budget:360,nStops:3,maxWalk:25,mode:'mix',
+  startPt:{n:'Candidplatz',lat:48.1148,lon:11.5687},
+  fChar:[],fBrew:[],fExtra:['stadt'],
+  plan:null,durs:{},last:null,skip:{},
+  visited:{flaucher:1,hinterbruehl:1,menter:1}};
+
+/* Der Prototyp lief als Artifact und benutzte dessen window.storage. Außerhalb
+   gibt es die API nicht - localStorage leistet hier dasselbe. */
+const STORAGE_KEY='bg-planer-v4';
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(e){}}
+function load(){try{const raw=localStorage.getItem(STORAGE_KEY);
+  if(raw)Object.assign(state,JSON.parse(raw));}catch(e){}}
+
+const hhmm=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const dur=m=>m>=60?(m%60?Math.floor(m/60)+' h '+(m%60)+' min':Math.floor(m/60)+' h'):m+' min';
+const gById=k=>G.find(g=>g.k===k);
+const has=(a,v)=>a.indexOf(v)>=0;
+const tog=(a,v)=>{const i=a.indexOf(v);i>=0?a.splice(i,1):a.push(v);};
+const SUNSET=T(20,34);
+
+/* ================= GEO & FAHRZEIT ================= */
+function km(a,b){const R=6371,r=x=>x*Math.PI/180;
+  const dLat=r(b.lat-a.lat),dLon=r(b.lon-a.lon);
+  const s=Math.sin(dLat/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));}
+const MODES={mix:'Gemischt',walk:'Zu Fuß',bike:'Rad',transit:'ÖPNV'};
+const MODELBL={walk:'zu Fuß',bike:'Rad',transit:'ÖPNV'};
+function times(a,b){
+  const d=km(a,b);
+  const walk=Math.max(3,Math.round(d*1.30/4.8*60));
+  const bike=Math.max(3,Math.round(d*1.25/15*60)+2);
+  const acc=(a.acc||0)+(b.acc||0);
+  const transit=Math.max(8,Math.round(9+acc+d*1.30/20*60));
+  return {walk,bike,transit,km:d};
+}
+function travel(a,b){
+  const t=times(a,b);
+  let mode;
+  if(state.mode==='mix') mode=(t.walk<=state.maxWalk && t.walk<=t.transit+10)?'walk':'transit';
+  else mode=state.mode;
+  const feasible = state.mode==='mix' ? true : t[mode]<=state.maxWalk;
+  return Object.assign(t,{mode,min:t[mode],feasible});
+}
+const dirLink=(a,b,mode)=>'https://www.google.com/maps/dir/?api=1&origin='+a.lat+','+a.lon+
+  '&destination='+b.lat+','+b.lon+'&travelmode='+
+  (mode==='walk'?'walking':mode==='bike'?'bicycling':'transit');
+function modeRow(a,b,sel){
+  const t=times(a,b);
+  return `<div class="legmodes">`+['walk','bike','transit'].map(m=>
+    `<a class="lm ${m===sel?'sel':''} ${(state.mode!=='mix'&&t[m]>state.maxWalk)?'over':''}"
+        href="${dirLink(a,b,m)}" target="_blank" rel="noopener">${MODELBL[m]} <b>${t[m]}</b> min</a>`).join('')+
+    `</div>`;
+}
+
+/* ================= FILTER ================= */
+function pool(){
+  return G.filter(g=>{
+    if(state.fChar.length && !state.fChar.every(t=>has(g.tags,t))) return false;
+    if(state.fBrew.length && !has(state.fBrew,g.brew)) return false;
+    if(has(state.fExtra,'sb') && !g.sb) return false;
+    if(has(state.fExtra,'bz') && !g.bz) return false;
+    if(has(state.fExtra,'neu') && state.visited[g.k]) return false;
+    if(has(state.fExtra,'stadt') && g.zone==='umland') return false;
+    if(!g.di) return false;
+    return true;
+  });
+}
+
+/* ================= ROUTEN-GENERATOR ================= */
+function generate(){
+  const S=state.startPt, n=state.nStops, budget=state.budget;
+  const cand=pool();
+  const wantWater=has(state.fExtra,'wasser');
+  if(cand.length<n) return {routes:[],reason:cand.length?'Nur '+cand.length+' Biergärten passen zu deinen Wünschen — für '+n+' Stationen zu wenig.':'Kein Biergarten passt zu dieser Kombination.'};
+
+  const tS=new Map(), tP=new Map();
+  cand.forEach(g=>tS.set(g.k,travel(S,g)));
+  cand.forEach(a=>cand.forEach(b=>{if(a!==b)tP.set(a.k+'>'+b.k,travel(a,b));}));
+
+  const results=[];
+  const near=g=>cand.filter(x=>x!==g).sort((a,b)=>tP.get(g.k+'>'+a.k).min-tP.get(g.k+'>'+b.k).min).slice(0,14);
+  const firsts=cand.slice().sort((a,b)=>tS.get(a.k).min-tS.get(b.k).min).slice(0,20);
+
+  function walkPath(path,tv){
+    if(path.length===n){
+      const back=tS.get(path[path.length-1].k);
+      if(!back.feasible) return;
+      const total=tv+back.min;
+      const sit=budget-total;
+      if(sit < n*45) return;
+      let each=Math.min(150,Math.floor(sit/n/5)*5);
+      if(each<45) return;
+      /* Zeitfenster prüfen */
+      let t=state.start, legs=[], ok=true;
+      for(let i=0;i<path.length;i++){
+        const leg=i===0?tS.get(path[0].k):tP.get(path[i-1].k+'>'+path[i].k);
+        t+=leg.min;
+        if(t<path[i].from || t+each>path[i].to){ok=false;break;}
+        legs.push(leg); t+=each;
+      }
+      if(!ok) return;
+      const end=t+back.min;
+      /* Bewertung */
+      const brews=new Set(path.map(g=>g.brew)).size;
+      const water=path.some(g=>has(g.tags,'wasser'));
+      if(wantWater && !water) return;
+      const lastG=path[path.length-1];
+      let sc=0;
+      path.forEach(g=>{sc+=g.q*10; if(state.visited[g.k]) sc-=22;});
+      sc-=(tv+back.min)*0.75;
+      sc+=each*0.16;
+      sc+=brews*5;
+      if(water) sc+=10;
+      if(t>SUNSET-30 && (has(lastG.tags,'wasser')||has(lastG.tags,'aussicht'))) sc+=14;
+      if(lastG.note) sc-=6;
+      results.push({keys:path.map(g=>g.k),legs,back,each,end,travel:tv+back.min,sc,
+        walk:legs.reduce((a,l)=>a+(l.mode==='walk'?l.min:0),0)+(back.mode==='walk'?back.min:0)});
+      return;
+    }
+    const last=path[path.length-1];
+    const opts=last?near(last):firsts;
+    for(const g of opts){
+      if(path.indexOf(g)>=0) continue;
+      const leg=last?tP.get(last.k+'>'+g.k):tS.get(g.k);
+      if(!leg.feasible) continue;
+      if(tv+leg.min > budget-n*45) continue;
+      path.push(g); walkPath(path,tv+leg.min); path.pop();
+    }
+  }
+  for(const g of firsts){ const l=tS.get(g.k); if(l.feasible) walkPath([g],l.min); }
+
+  results.sort((a,b)=>b.sc-a.sc);
+  const seen=new Set(), out=[];
+  for(const r of results){
+    const id=r.keys.slice().sort().join('|');
+    if(seen.has(id)) continue;
+    seen.add(id); out.push(r);
+    if(out.length>=6) break;
+  }
+  return {routes:out,reason:out.length?'':'Mit '+dur(budget)+', '+MODES[state.mode].toLowerCase()+
+    ' und maximal '+state.maxWalk+' Minuten pro Etappe geht sich das nicht aus. Mehr Zeit, weniger Stationen, längere Etappen — oder auf Rad umstellen.'};
+}
+
+/* ================= PLAN → ROUTE ================= */
+function planFrom(r){
+  return {keys:r.keys,legs:r.legs.map(l=>({min:l.min,mode:l.mode,km:l.km})),
+          back:{min:r.back.min,mode:r.back.mode,km:r.back.km},each:r.each};
+}
+function schedule(){
+  const p=state.plan; if(!p) return null;
+  const gs=p.keys.map(gById);
+  const active=[]; let pending=0;
+  for(let i=0;i<gs.length;i++){
+    if(state.skip[gs[i].k]){pending+=p.legs[i].min;continue;}
+    active.push({g:gs[i],legMin:p.legs[i].min+pending,legMode:pending?'transit':p.legs[i].mode,
+      from:i===0?state.startPt:(active.length?active[active.length-1].g:state.startPt)});
+    pending=0;
+  }
+  let cut=active.length-1;
+  if(state.last){const i=active.findIndex(a=>a.g.k===state.last);if(i>=0)cut=i;}
+  let t=state.start,rows=[];
+  for(let i=0;i<=cut;i++){
+    const a=active[i]; t+=a.legMin; const arrive=t;
+    const d=state.durs[a.g.k]!==undefined?state.durs[a.g.k]:p.each;
+    t+=d;
+    rows.push({g:a.g,from:i===0?state.startPt:active[i-1].g,legMin:a.legMin,legMode:a.legMode,arrive,depart:t,d,isLast:i===cut});
+  }
+  const back=rows.length?travel(rows[rows.length-1].g,state.startPt):{min:0,mode:'walk'};
+  return {rows,back,end:t+back.min,skippedAny:active.length<gs.length||cut<active.length-1};
+}
+
+/* ================= KARTE ================= */
+const LAT0=48.1400,LON0=11.5750,K=3400,COSL=Math.cos(LAT0*Math.PI/180);
+const px=(lat,lon)=>[(lon-LON0)*COSL*K,(LAT0-lat)*K];
+const ISAR=[[48.1990,11.6200],[48.1840,11.6060],[48.1700,11.6000],[48.1580,11.5940],[48.1470,11.5905],
+ [48.1385,11.5900],[48.1310,11.5850],[48.1265,11.5790],[48.1215,11.5740],[48.1170,11.5680],
+ [48.1130,11.5610],[48.1090,11.5490],[48.1010,11.5480],[48.0965,11.5445],[48.0880,11.5450]];
+const LAKES=[{lat:48.1596,lon:11.5928,rx:.0024,ry:.0014},{lat:48.1103,lon:11.6293,rx:.0016,ry:.0009},
+ {lat:48.0958,lon:11.5413,rx:.0007,ry:.0017},{lat:48.1220,lon:11.5250,rx:.0012,ry:.0006}];
+const PARKS=[
+ {pts:[[48.1435,11.5830],[48.1500,11.5875],[48.1620,11.5875],[48.1760,11.5975],[48.1880,11.6070],
+       [48.1860,11.6150],[48.1720,11.6100],[48.1590,11.6020],[48.1470,11.5945],[48.1415,11.5885]]},
+ {pts:[[48.1050,11.6195],[48.1165,11.6205],[48.1170,11.6390],[48.1045,11.6375]]},
+ {pts:[[48.1180,11.5590],[48.1130,11.5455],[48.0940,11.5395],[48.0870,11.5410],[48.0890,11.5560],[48.1050,11.5590]]},
+ {pts:[[48.1150,11.5120],[48.1250,11.5150],[48.1240,11.5340],[48.1140,11.5320]]},
+ {pts:[[48.1440,11.5000],[48.1640,11.4980],[48.1650,11.5220],[48.1450,11.5230]]}];
+const HOODS=[{lat:48.1375,lon:11.5715,t:'Zentrum'},{lat:48.1645,lon:11.5780,t:'Schwabing'},
+ {lat:48.1765,lon:11.6240,t:'Oberföhring'},{lat:48.1130,lon:11.6110,t:'Neuperlach'},
+ {lat:48.1010,lon:11.5500,t:'Thalkirchen'},{lat:48.1560,lon:11.5150,t:'Nymphenburg'}];
+const poly=p=>p.map(x=>px(x[0],x[1]).join(',')).join(' ');
+function smooth(pts){const q=pts.map(p=>px(p[0],p[1]));let d='M'+q[0][0].toFixed(1)+','+q[0][1].toFixed(1);
+ for(let i=1;i<q.length-1;i++){const mx=(q[i][0]+q[i+1][0])/2,my=(q[i][1]+q[i+1][1])/2;
+  d+=' Q'+q[i][0].toFixed(1)+','+q[i][1].toFixed(1)+' '+mx.toFixed(1)+','+my.toFixed(1);}
+ return d+' L'+q[q.length-1][0].toFixed(1)+','+q[q.length-1][1].toFixed(1);}
+
+function drawMap(){
+  const svg=document.getElementById('map'),sch=schedule();if(!sch)return;
+  const S=state.startPt;
+  const pts=[S,...state.plan.keys.map(gById)];let xs=[],ys=[];
+  pts.forEach(p=>{const [x,y]=px(p.lat,p.lon);xs.push(x);ys.push(y);});
+  let x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const padX=(x1-x0)*.30+38,padY=(y1-y0)*.20+38;x0-=padX;x1+=padX;y0-=padY;y1+=padY;
+  let w=x1-x0,h=y1-y0;const A=1/1.02;
+  if(w/h>A){const nh=w/A;y0-=(nh-h)/2;h=nh;}else{const nw=h*A;x0-=(nw-w)/2;w=nw;}
+  svg.setAttribute('viewBox',[x0,y0,w,h].map(v=>v.toFixed(1)).join(' '));
+  const on=sch.rows.map(r=>r.g.k);let out='';
+  PARKS.forEach(p=>out+=`<polygon points="${poly(p.pts)}" fill="#2C3D22" opacity=".7"/>`);
+  out+=`<path d="${smooth(ISAR)}" fill="none" stroke="#2F6A60" stroke-width="6" stroke-linecap="round" opacity=".9"/>`;
+  out+=`<path d="${smooth(ISAR)}" fill="none" stroke="#5FB3A1" stroke-width="2" stroke-linecap="round" opacity=".55"/>`;
+  LAKES.forEach(l=>{const [cx,cy]=px(l.lat,l.lon);
+    out+=`<ellipse cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" rx="${(l.rx*COSL*K).toFixed(1)}" ry="${(l.ry*K).toFixed(1)}" fill="#2F6A60" stroke="#5FB3A1" stroke-width="1" opacity=".85"/>`;});
+  HOODS.forEach(hd=>{const [x,y]=px(hd.lat,hd.lon);
+    out+=`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" fill="#7A6644" font-size="7.5" letter-spacing="1.4" font-family="ui-monospace,monospace" text-anchor="middle">${hd.t.toUpperCase()}</text>`;});
+  let prev=S;
+  sch.rows.forEach(r=>{const [ax,ay]=px(prev.lat,prev.lon),[bx,by]=px(r.g.lat,r.g.lon);
+    const mx=(ax+bx)/2+(by-ay)*.13,my=(ay+by)/2-(bx-ax)*.13;
+    const col=r.legMode==='walk'?'#F0B429':r.legMode==='bike'?'#5FB3A1':'#5389BE';
+    const dash=r.legMode==='walk'?'1 6':r.legMode==='bike'?'5 4':'9 6';
+    out+=`<path d="M${ax.toFixed(1)},${ay.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${bx.toFixed(1)},${by.toFixed(1)}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="${dash}"/>`;
+    prev=r.g;});
+  const [sx,sy]=px(S.lat,S.lon);
+  out+=`<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="5.5" fill="none" stroke="#FBF4E2" stroke-width="2"/>
+        <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="1.8" fill="#FBF4E2"/>
+        <text x="${sx.toFixed(1)}" y="${(sy+16).toFixed(1)}" fill="#FBF4E2" font-size="8.5" font-family="ui-monospace,monospace" text-anchor="middle">${S.n.toUpperCase()}</text>`;
+  state.plan.keys.map(gById).forEach(g=>{const [x,y]=px(g.lat,g.lon),act=on.includes(g.k);
+    out+=`<g class="pin" data-key="${g.k}" style="cursor:pointer">
+      <rect x="${(x-6).toFixed(1)}" y="${(y-6).toFixed(1)}" width="12" height="12" rx="2"
+        transform="rotate(45 ${x.toFixed(1)} ${y.toFixed(1)})" fill="${act?'#F0B429':'#5A452C'}" stroke="#1E1206" stroke-width="1.5"/>
+      <text x="${x.toFixed(1)}" y="${(y-13).toFixed(1)}" fill="${act?'#FBF4E2':'#8A7452'}" font-size="9" font-weight="700"
+        font-family="-apple-system,sans-serif" text-anchor="middle">${short(g.n)}</text></g>`;});
+  svg.innerHTML=out;
+  svg.querySelectorAll('.pin').forEach(el=>el.addEventListener('click',()=>{
+    const c=document.getElementById('card-'+el.dataset.key);if(c)c.scrollIntoView({behavior:'smooth',block:'center'});}));
+}
+const short=n=>n.replace(/^(Augustiner Gutshof |Biergarten am |Königlicher |Waldgaststätte |Schlosswirtschaft |Café )/,'')
+  .replace(' im Englischen Garten','').replace(' am Wiener Platz','').replace(' am Nockherberg','')
+  .replace(' im Alten Botanischen Garten','').replace(' Kunstkraftwerk','').replace(' im Westpark','');
+
+/* ================= RENDER: FILTER ================= */
+function filterHTML(kind){
+  if(kind==='char') return Object.entries(TAGS).map(([k,v])=>
+    `<button class="chip" data-c="${k}" aria-pressed="${has(state.fChar,k)}">${v}</button>`).join('');
+  if(kind==='brew') return Object.entries(BREW).map(([k,v])=>
+    `<button class="mat" data-b="${k}" style="--bc:${v.c}" aria-pressed="${has(state.fBrew,k)}">
+      <span>${v.s}<small>${G.filter(g=>g.brew===k).length}</small></span></button>`).join('');
+  const ex=[['wasser','Mind. einer am Wasser'],['sb','Selbstbedienung'],['bz','Eigene Brotzeit'],
+            ['neu','Nur neue'],['stadt','Nur Stadtgebiet']];
+  return ex.map(([k,v])=>`<button class="chip" data-e="${k}" aria-pressed="${has(state.fExtra,k)}">${v}</button>`).join('');
+}
+function renderFilters(){
+  ['fChar','dChar'].forEach(id=>document.getElementById(id).innerHTML=filterHTML('char'));
+  ['fBrew','dBrew'].forEach(id=>document.getElementById(id).innerHTML=filterHTML('brew'));
+  ['fExtra','dExtra'].forEach(id=>document.getElementById(id).innerHTML=filterHTML('extra'));
+  document.getElementById('fBudget').innerHTML=[[240,'4 h'],[300,'5 h'],[360,'6 h'],[420,'7 h']]
+    .map(([v,l])=>`<button class="chip g" data-budget="${v}" aria-pressed="${state.budget===v}">${l}</button>`).join('');
+  document.getElementById('fStops').innerHTML=[2,3,4]
+    .map(v=>`<button class="chip g" data-stops="${v}" aria-pressed="${state.nStops===v}">${v} Stationen</button>`).join('');
+  document.getElementById('fMode').innerHTML=Object.entries(MODES)
+    .map(([k,v])=>`<button class="chip g" data-mode="${k}" aria-pressed="${state.mode===k}">${v}</button>`).join('');
+  document.getElementById('walkLbl').textContent=
+    state.mode==='bike'?'Max. Radzeit pro Etappe':
+    state.mode==='transit'?'Max. Fahrzeit pro Etappe':'Max. Fußweg pro Etappe';
+}
+
+/* ================= RENDER: VORSCHLÄGE ================= */
+let SUGGEST=[];
+function renderPlans(){
+  const res=generate(); SUGGEST=res.routes;
+  const el=document.getElementById('plans');
+  document.getElementById('genNote').textContent=
+    'Aus '+pool().length+' passenden Biergärten, dienstags geöffnet, Öffnungszeiten berücksichtigt.';
+  if(!res.routes.length){ el.innerHTML=`<div class="empty">${res.reason}</div>`; return; }
+  const activeId=state.plan?state.plan.keys.slice().sort().join('|'):'';
+  el.innerHTML=res.routes.map((r,i)=>{
+    const gs=r.keys.map(gById), id=r.keys.slice().sort().join('|');
+    const tags=[];
+    if(gs.some(g=>has(g.tags,'wasser'))) tags.push(['w','am Wasser']);
+    if(gs.some(g=>has(g.tags,'wald'))) tags.push(['','Grün']);
+    if(gs.some(g=>has(g.tags,'stadt'))) tags.push(['','Stadt']);
+    if(gs.some(g=>has(g.tags,'aussicht'))) tags.push(['','Aussicht']);
+    if(gs.some(g=>state.visited[g.k])) tags.push(['','kennst du teilweise']);
+    const brews=[...new Set(gs.map(g=>BREW[g.brew].n))].join(' · ');
+    return `<div class="plan ${id===activeId?'active':''}">
+      <div class="ptop"><span class="rank">${i===0?'Bester Treffer':'Alternative '+i}</span>
+        <span class="tot">${hhmm(state.start)}–${hhmm(r.end)} · ${dur(r.end-state.start)}</span></div>
+      <div class="chain">${gs.map(g=>short(g.n)).join(' <span>→</span> ')}</div>
+      <div class="pmeta">${r.each} min pro Station · ${r.travel} min unterwegs</div>
+      <div class="legmodes">${(()=>{const pts=[state.startPt,...gs,state.startPt];
+        const sum={walk:0,bike:0,transit:0};
+        for(let j=0;j<pts.length-1;j++){const t=times(pts[j],pts[j+1]);
+          sum.walk+=t.walk;sum.bike+=t.bike;sum.transit+=t.transit;}
+        return ['walk','bike','transit'].map(m=>
+          `<span class="lm ${state.mode===m||(state.mode==='mix'&&m==='walk'&&r.walk===r.travel)?'sel':''}">${MODELBL[m]} <b>${sum[m]}</b> min</span>`).join('');})()}</div>
+      <div class="ptags">${tags.map(t=>`<span class="ptag ${t[0]}">${t[1]}</span>`).join('')}
+        <span class="ptag">${brews}</span></div>
+      <div class="pact"><button class="btn big ${id===activeId?'on':''}" data-take="${i}">
+        ${id===activeId?'Ausgewählt':'Diese Tour nehmen'}</button></div>
+    </div>`;}).join('');
+  el.querySelectorAll('[data-take]').forEach(b=>b.onclick=()=>{
+    state.plan=planFrom(SUGGEST[+b.dataset.take]);state.durs={};state.skip={};state.last=null;
+    save();renderPlans();renderDetail();
+    document.getElementById('detail').scrollIntoView({behavior:'smooth',block:'start'});});
+}
+
+/* ================= RENDER: DETAIL ================= */
+function renderDetail(){
+  const d=document.getElementById('detail');
+  const sch=schedule();
+  if(!state.plan||!sch||!sch.rows.length){d.hidden=true;return;}
+  d.hidden=false;
+  const track=document.getElementById('track');
+  track.querySelectorAll('.pip').forEach(n=>n.remove());
+  const T0=T(14),T1=T(22),pos=m=>Math.max(0,Math.min(100,(m-T0)/(T1-T0)*100));
+  document.getElementById('sunset').style.left=pos(SUNSET)+'%';
+  sch.rows.forEach(r=>{const p=document.createElement('div');p.className='pip';p.style.left=pos(r.arrive)+'%';track.appendChild(p);});
+  drawMap();
+
+  let html=`<div class="node"><div class="leg"><span class="mode">Start</span>
+    <b style="color:var(--schaum)">${hhmm(state.start)}</b> · ${state.startPt.n}</div></div>`;
+  const gs=state.plan.keys.map(gById);
+  gs.forEach(g=>{
+    const row=sch.rows.find(r=>r.g.k===g.k),off=!row,b=BREW[g.brew];
+    if(row){
+      html+=`<div class="node"><div class="leg ${row.legMode}">
+        <span class="mode">${MODELBL[row.legMode]} · ≈${row.legMin} min</span>ab ${row.from.n}
+        ${row.legMode==='transit'?'· Umstiege nicht gerechnet':''}
+        ${modeRow(row.from,g,row.legMode)}</div></div>`;
+    }
+    html+=`<div class="node ${off?'skipped':'stop'}"><div class="card ${off?'off':''}" id="card-${g.k}">
+      <div class="card-top">
+        <div><h3>${g.n}${state.visited[g.k]?'<span class="seen">warst du</span>':''}</h3>
+          ${has(g.tags,'wasser')?'<div class="water">Am Wasser</div>':''}</div>
+        <div class="time ${off?'gone':''}">${row?hhmm(row.arrive)+'–'+hhmm(row.depart):'—'}<em>${row?dur(row.d):'ausgelassen'}</em></div>
+      </div>
+      <p class="desc">${g.p}</p>
+      <div class="facts"><span class="fact">${b.n}</span><span class="fact">${g.seats.toLocaleString('de-DE')} Plätze</span>
+        <span class="fact">${g.sb?'Selbstbedienung':'nur Bedienung'}</span>
+        <span class="fact">offen ${hhmm(g.from)}–${hhmm(g.to)}</span></div>
+      ${g.note?`<div class="warnbox">${g.note}</div>`:''}
+      <div class="actions">
+        <a class="btn gold" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(g.n+', München')}" target="_blank" rel="noopener">Karte</a>
+        <button class="btn ${off?'warn':''}" data-skip="${g.k}">${off?'Wieder rein':'Auslassen'}</button>
+        <button class="btn ${state.visited[g.k]?'on':''}" data-seen="${g.k}">War ich schon</button>
+        ${(row&&!row.isLast)?`<button class="btn" data-last="${g.k}">Hier Schluss</button>`:''}
+        ${row?`<span class="dur"><button data-dm="${g.k}">–</button><span>${dur(row.d)}</span><button data-dp="${g.k}">+</button></span>`:''}
+      </div></div></div>`;});
+  const lastG=sch.rows[sch.rows.length-1].g;
+  html+=`<div class="node term"><div class="leg ${sch.back.mode}">
+    <span class="mode">${MODELBL[sch.back.mode]} · ≈${sch.back.min} min</span>Zurück nach ${state.startPt.n}
+    ${modeRow(lastG,state.startPt,sch.back.mode)}</div></div>
+    <div class="node term"><div class="leg"><span class="mode">Ziel</span>
+    <b style="color:var(--schaum)">${hhmm(sch.end)}</b> · ${state.startPt.n}</div></div>`;
+  document.getElementById('timeline').innerHTML=html;
+
+  const tl=document.getElementById('timeline');
+  const cur=k=>state.durs[k]!==undefined?state.durs[k]:state.plan.each;
+  tl.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{const k=b.dataset.dm;state.durs[k]=Math.max(30,cur(k)-15);save();renderDetail(1);});
+  tl.querySelectorAll('[data-dp]').forEach(b=>b.onclick=()=>{const k=b.dataset.dp;state.durs[k]=Math.min(240,cur(k)+15);save();renderDetail(1);});
+  tl.querySelectorAll('[data-skip]').forEach(b=>b.onclick=()=>{const k=b.dataset.skip;
+    state.skip[k]?delete state.skip[k]:state.skip[k]=1;if(state.last===k)state.last=null;save();renderDetail(1);});
+  tl.querySelectorAll('[data-seen]').forEach(b=>b.onclick=()=>{const k=b.dataset.seen;
+    state.visited[k]?delete state.visited[k]:state.visited[k]=1;save();renderDetail(1);renderDir();});
+  tl.querySelectorAll('[data-last]').forEach(b=>b.onclick=()=>{state.last=b.dataset.last;save();renderDetail(1);});
+
+  const span=sch.end-state.start,over=span>state.budget;
+  const walk=sch.rows.reduce((a,r)=>a+(r.legMode==='walk'?r.legMin:0),0)+(sch.back.mode==='walk'?sch.back.min:0);
+  document.getElementById('total').innerHTML=
+    `<div class="row"><div class="eyebrow">Von Tür zu Tür</div><strong>${dur(span)}</strong></div>
+     <div class="hint" style="${over?'color:#E09A55':''}">
+       ${over?'Über deinem Zeitfenster von '+dur(state.budget)+'. ':''}
+       ${sch.rows.length} Station${sch.rows.length>1?'en':''}, ${walk} Minuten zu Fuß, zurück um ${hhmm(sch.end)}.
+       ${sch.rows[sch.rows.length-1].depart>SUNSET?' Letzte Station geht in den Sonnenuntergang.':''}</div>
+     ${(Object.keys(state.skip).length||state.last||Object.keys(state.durs).length)
+        ?'<div style="margin-top:11px"><button class="btn" id="resetPlan">Änderungen zurücksetzen</button></div>':''}`;
+  const rp=document.getElementById('resetPlan');
+  if(rp)rp.onclick=()=>{state.skip={};state.durs={};state.last=null;save();renderDetail();};
+}
+
+/* ================= RENDER: VERZEICHNIS ================= */
+let q='';
+function renderDir(){
+  const list=G.filter(g=>{
+    if(state.fChar.length && !state.fChar.every(t=>has(g.tags,t))) return false;
+    if(state.fBrew.length && !has(state.fBrew,g.brew)) return false;
+    if(has(state.fExtra,'sb') && !g.sb) return false;
+    if(has(state.fExtra,'bz') && !g.bz) return false;
+    if(has(state.fExtra,'neu') && state.visited[g.k]) return false;
+    if(has(state.fExtra,'stadt') && g.zone==='umland') return false;
+    if(has(state.fExtra,'wasser') && !has(g.tags,'wasser')) return false;
+    if(q){const s=(g.n+' '+g.hood+' '+BREW[g.brew].n).toLowerCase();if(!s.includes(q))return false;}
+    return true;
+  }).map(g=>({g,t:travel(state.startPt,g)})).sort((a,b)=>a.t.min-b.t.min);
+
+  document.getElementById('count').textContent=list.length+' von '+G.length+' · Fahrzeit ab '+state.startPt.n;
+  document.getElementById('glist').innerHTML=list.length?list.map(({g,t})=>{
+    const b=BREW[g.brew],seen=!!state.visited[g.k];
+    return `<div class="g ${seen?'seenrow':''}" style="--bc:${b.c}">
+      <div class="gtop"><h4>${g.n}${seen?'<span class="seen">warst du</span>':''}</h4><span class="away">≈${t.min} min</span></div>
+      <div class="gmeta"><b>${b.n}</b> · ${g.hood} · ${g.seats.toLocaleString('de-DE')} Plätze</div>
+      ${modeRow(state.startPt,g,t.mode)}
+      <p>${g.p}</p>${g.note?`<p class="gnote">${g.note}</p>`:''}
+      <div class="gtags">${g.tags.map(x=>`<span class="ptag ${x==='wasser'?'w':''}">${TAGS[x]}</span>`).join('')}
+        ${g.sb?'<span class="ptag">Selbstbedienung</span>':''}
+        <span class="ptag">${hhmm(g.from)}–${hhmm(g.to)}</span>
+        ${!g.di?'<span class="ptag" style="color:#E09A55">heute zu</span>':''}</div>
+      <div class="gact"><a class="btn gold" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(g.n+', München')}" target="_blank" rel="noopener">Karte</a>
+        <button class="btn ${seen?'on':''}" data-dseen="${g.k}">${seen?'Kennst du':'War ich schon'}</button></div></div>`;}).join('')
+   :`<div class="empty">Nichts gefunden. Filter lockern.</div>`;
+  document.querySelectorAll('[data-dseen]').forEach(b=>b.onclick=()=>{const k=b.dataset.dseen;
+    state.visited[k]?delete state.visited[k]:state.visited[k]=1;save();renderDir();renderPlans();renderDetail();});
+}
+
+/* ================= EVENTS ================= */
+function refresh(){renderFilters();renderPlans();renderDetail();renderDir();save();}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-c],[data-b],[data-e],[data-budget],[data-stops],[data-mode]');
+  if(!b)return;
+  if(b.dataset.c!==undefined&&b.dataset.c)tog(state.fChar,b.dataset.c);
+  else if(b.dataset.b)tog(state.fBrew,b.dataset.b);
+  else if(b.dataset.e)tog(state.fExtra,b.dataset.e);
+  else if(b.dataset.budget)state.budget=+b.dataset.budget;
+  else if(b.dataset.stops)state.nStops=+b.dataset.stops;
+  else if(b.dataset.mode){state.mode=b.dataset.mode;
+    if(state.mode==='bike'&&state.maxWalk<20)state.maxWalk=25;
+    document.getElementById('walkR').value=state.maxWalk;
+    document.getElementById('walkV').textContent=state.maxWalk+' min';}
+  refresh();
+});
+document.getElementById('seg').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  state.view=b.dataset.v;save();syncView();window.scrollTo({top:0,behavior:'smooth'});});
+function syncView(){
+  document.querySelectorAll('#seg button').forEach(x=>x.setAttribute('aria-selected',x.dataset.v===state.view));
+  document.getElementById('viewTour').hidden=state.view!=='tour';
+  document.getElementById('viewDir').hidden=state.view!=='dir';
+}
+document.getElementById('minus').onclick=()=>{state.start=Math.max(T(11),state.start-15);document.getElementById('startLbl').textContent=hhmm(state.start);renderPlans();renderDetail();save();};
+document.getElementById('plus').onclick=()=>{state.start=Math.min(T(20),state.start+15);document.getElementById('startLbl').textContent=hhmm(state.start);renderPlans();renderDetail();save();};
+const wr=document.getElementById('walkR');
+wr.addEventListener('input',()=>{state.maxWalk=+wr.value;document.getElementById('walkV').textContent=state.maxWalk+' min';});
+wr.addEventListener('change',()=>{renderPlans();renderDetail();save();});
+
+const si=document.getElementById('startIn');
+function setStart(n,lat,lon,src){
+  state.startPt={n,lat,lon};
+  document.getElementById('startMeta').innerHTML=src==='geo'
+    ? 'Position übernommen · <b>'+n+'</b>'
+    : 'Alles rechnet ab <b>'+n+'</b> und wieder zurück.';
+  si.value=n; refresh();
+}
+si.addEventListener('change',()=>{
+  const v=si.value.trim().toLowerCase();
+  const hit=PLACES.find(p=>p[0].toLowerCase()===v)||PLACES.find(p=>p[0].toLowerCase().includes(v));
+  if(hit)setStart(hit[0],hit[1],hit[2]);
+  else document.getElementById('startMeta').innerHTML='Kenne ich nicht — nimm eine Haltestelle aus der Liste. Weiter ab <b>'+state.startPt.n+'</b>.';
+});
+document.getElementById('geo').onclick=()=>{
+  if(!navigator.geolocation){document.getElementById('startMeta').textContent='Standort ist hier nicht verfügbar — Haltestelle eintippen.';return;}
+  document.getElementById('startMeta').textContent='Suche Position …';
+  navigator.geolocation.getCurrentPosition(
+    p=>{const me={lat:p.coords.latitude,lon:p.coords.longitude};
+      const nearest=PLACES.map(x=>({n:x[0],lat:x[1],lon:x[2],d:km(me,{lat:x[1],lon:x[2]})})).sort((a,b)=>a.d-b.d)[0];
+      setStart(nearest.d<1.2?nearest.n:'Mein Standort',me.lat,me.lon,'geo');},
+    ()=>{document.getElementById('startMeta').textContent='Standort nicht freigegeben — Haltestelle eintippen.';},
+    {timeout:8000});
+};
+document.getElementById('q').addEventListener('input',e=>{q=e.target.value.trim().toLowerCase();renderDir();});
+document.getElementById('tips').innerHTML=TIPS.map(t=>`<div class="tip"><strong>${t[0]}</strong><span>${t[1]}</span></div>`).join('');
+(async()=>{
+  // Ohne Daten hat die Seite nichts zu zeigen. Ein stiller Fehler in der
+  // Konsole wäre hier die schlechteste Variante.
+  try{
+    await loadData();
+  }catch(e){
+    document.getElementById('foot').innerHTML=
+      'Die Daten kommen nicht an. Läuft die API unter <code>/api/gardens</code>?';
+    return;
+  }
+
+  document.getElementById('places').innerHTML=PLACES.map(p=>`<option value="${p[0]}">`).join('');
+  document.getElementById('foot').innerHTML=
+    `${G.length} Biergärten. Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte Verbindung auf „Verbindung prüfen“ tippen. Wo beim Ausschank <b>k.&nbsp;A.</b> steht, war die Brauerei nicht sicher zu verifizieren. „Bei schönem Wetter“ heißt: der Wirt entscheidet morgens.`;
+
+  load();
+  syncView();
+  document.getElementById('startLbl').textContent=hhmm(state.start);
+  document.getElementById('walkR').value=state.maxWalk;
+  document.getElementById('walkV').textContent=state.maxWalk+' min';
+  si.value=state.startPt.n;
+  document.getElementById('startMeta').innerHTML='Alles rechnet ab <b>'+state.startPt.n+'</b> und wieder zurück.';
+  renderFilters();renderPlans();renderDetail();renderDir();
+})();
+</script>
+</body>
+</html>

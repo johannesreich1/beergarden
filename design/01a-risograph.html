@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Risograph</title>
+<style>
+/* ============================================================
+   01a · RISOGRAPH
+   Zwei Farben, jede einzeln gedruckt, jede mit eigenem Raster.
+   Die Maschine trifft den Passer nie — das ist kein Fehler,
+   sondern das Verfahren. Der Punktraster liegt sichtbar über
+   allen Flächen, das Papier scheint durch.
+
+   Raster und Reihenfolge sind identisch mit 01-bierdeckel.html.
+   ============================================================ */
+:root{
+  --papier:#F2EFE4;
+  --flaeche:#E8E3D2;
+  --blau:#3D5588;
+  --orange:#F1502F;
+  --tinte:#232733;
+  --tinte-weich:#4C5262;
+  --grau:#7C8091;
+
+  --raster:rgba(35,39,51,.16);
+  --kante:rgba(61,85,136,.30);
+  --kante-stark:rgba(61,85,136,.52);
+  --ring:rgba(241,80,47,.24);
+  --warnfeld:rgba(241,80,47,.13);
+  --warntext:#8E2716;
+
+  --display:Futura,"Avenir Next Demi","Century Gothic",sans-serif;
+  --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="hell"]){
+    --papier:#16181F; --flaeche:#1E2129;
+    --blau:#7B98D6; --orange:#FF7B58;
+    --tinte:#E4E6EE; --tinte-weich:#B4B8C6; --grau:#8A8FA0;
+    --raster:rgba(228,230,238,.10);
+    --kante:rgba(123,152,214,.34); --kante-stark:rgba(123,152,214,.60);
+    --ring:rgba(255,123,88,.26);
+    --warnfeld:rgba(255,123,88,.14); --warntext:#FFB8A2;
+  }
+}
+:root[data-theme="dunkel"]{
+  --papier:#16181F; --flaeche:#1E2129;
+  --blau:#7B98D6; --orange:#FF7B58;
+  --tinte:#E4E6EE; --tinte-weich:#B4B8C6; --grau:#8A8FA0;
+  --raster:rgba(228,230,238,.10);
+  --kante:rgba(123,152,214,.34); --kante-stark:rgba(123,152,214,.60);
+  --ring:rgba(255,123,88,.26);
+  --warnfeld:rgba(255,123,88,.14); --warntext:#FFB8A2;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--papier);color:var(--tinte);
+  font:16px/1.62 var(--body);-webkit-font-smoothing:antialiased;
+}
+/* Der Punktraster über allem. Riso druckt kein Vollton, sondern Punkte. */
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:9;
+  background-image:radial-gradient(circle at 1px 1px, var(--raster) .9px, transparent 1.1px);
+  background-size:4px 4px;
+}
+.sheet{max-width:1180px;margin:0 auto;padding:26px 18px 70px}
+
+.licht{position:fixed;top:12px;right:12px;z-index:10;display:flex;gap:6px;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase}
+.licht button{font:inherit;padding:7px 11px;border:1.5px solid var(--blau);background:var(--papier);
+  color:var(--blau);cursor:pointer}
+.licht button[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--papier)}
+
+/* ---------- Kopf: der Titel liegt zweimal übereinander ---------- */
+.kopf{padding:30px 0 24px}
+.marke{font-family:var(--mono);font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--blau)}
+h1{
+  margin:14px 0 0;font-family:var(--display);font-weight:600;
+  font-size:clamp(31px,8.6vw,64px);line-height:.96;letter-spacing:-.028em;
+  text-transform:uppercase;color:var(--blau);position:relative;
+}
+/* Die zweite Farbe: derselbe Text, 4 px daneben, halbtransparent.
+   Wo beide liegen, wird es dunkel — genau wie beim echten Riso. */
+h1 .zweitdruck{
+  position:absolute;left:4px;top:5px;color:var(--orange);opacity:.72;
+  mix-blend-mode:multiply;pointer-events:none;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="hell"]) h1 .zweitdruck{mix-blend-mode:screen;opacity:.55}
+}
+:root[data-theme="dunkel"] h1 .zweitdruck{mix-blend-mode:screen;opacity:.55}
+h1 em{font-style:normal;display:block}
+.kopf p{margin:20px 0 0;max-width:44ch;font-size:15.5px;color:var(--tinte-weich)}
+
+/* Die Schaumkante wird zum Farbbalken — Riso kann keine feinen Verläufe */
+.schaumkante{margin:24px 0 0;display:flex;height:14px}
+.schaumkante span{flex:1}
+.schaumkante span:nth-child(odd){background:var(--blau)}
+.schaumkante span:nth-child(even){background:var(--orange)}
+
+/* ---------- Deckel ---------- */
+.deckel{background:var(--flaeche);border:2.5px solid var(--blau);padding:22px 20px 20px;
+  position:relative}
+.deckel > .kennung{font-family:var(--mono);font-size:9.5px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--orange);display:block;margin-bottom:16px}
+.ring{position:absolute;width:132px;height:132px;border-radius:50%;
+  border:11px solid var(--ring);right:-26px;top:-32px;pointer-events:none}
+
+/* ---------- Tour ---------- */
+.tour{margin-top:26px}
+.etappe{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--orange);padding:13px 0;border-bottom:2px solid var(--kante);
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.etappe .dauer{color:var(--tinte);font-weight:700}
+.etappe .prueft{margin-left:auto;color:var(--grau);text-transform:none;letter-spacing:.04em;
+  border-bottom:1px solid currentColor;text-decoration:none}
+
+.station{padding:20px 0 22px;border-bottom:2px solid var(--kante)}
+.station:last-child{border-bottom:0}
+.zeile{display:flex;justify-content:space-between;gap:18px;align-items:baseline;flex-wrap:wrap}
+.station h3{margin:0;font-family:var(--display);font-weight:600;font-size:23px;
+  letter-spacing:-.024em;text-transform:uppercase;line-height:1.1;color:var(--blau)}
+.uhr{font-family:var(--mono);font-size:15px;white-space:nowrap;color:var(--orange);font-weight:700}
+.station p{margin:11px 0 0;font-size:15.5px;max-width:60ch;color:var(--tinte-weich)}
+.stempel{margin-top:15px;display:flex;flex-wrap:wrap;gap:6px}
+.stempel span{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--blau);padding:5px 11px;box-shadow:inset 0 0 0 1.5px var(--kante-stark)}
+.wasser{color:var(--orange)!important;box-shadow:inset 0 0 0 1.5px var(--orange)!important}
+.hinweis{margin-top:15px;padding:11px 13px;background:var(--warnfeld);
+  border-top:3px solid var(--orange);font-size:14.5px;color:var(--warntext)}
+
+.summe{margin-top:20px;padding-top:16px;border-top:3px solid var(--blau);
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.summe .gross{font-family:var(--display);font-weight:600;font-size:32px;letter-spacing:-.03em;
+  color:var(--orange)}
+.summe .klein{font-family:var(--mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--grau);line-height:1.9}
+
+/* ---------- Verzeichnis ---------- */
+.abschnitt{margin-top:34px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--orange);border-bottom:2.5px solid var(--blau);padding-bottom:9px}
+.liste{width:100%;border-collapse:collapse;margin-top:2px}
+.liste tr{border-bottom:1.5px solid var(--kante)}
+.liste td{padding:13px 8px 13px 0;vertical-align:baseline}
+.liste .min{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--orange);width:64px;
+  white-space:nowrap}
+.liste .ort{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:-.02em;
+  text-transform:uppercase;color:var(--blau)}
+.liste .wo{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--grau);white-space:nowrap}
+
+.filter{margin-top:26px;display:flex;flex-wrap:wrap;gap:7px}
+.filter button{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:10px 14px;border:1.5px solid var(--blau);background:transparent;color:var(--blau);cursor:pointer}
+.filter button[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--papier)}
+
+.fuss{margin-top:40px;padding-top:18px;border-top:1.5px solid var(--kante);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;line-height:1.9;color:var(--grau);
+  max-width:70ch}
+:focus-visible{outline:2.5px solid var(--orange);outline-offset:2px}
+
+@media (min-width:760px){
+  .sheet{padding:34px 30px 80px}
+  .spalten{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;margin-top:26px}
+  .tour{margin-top:0}
+  .abschnitt{margin-top:0}
+}
+@media (min-width:1100px){
+  .sheet{display:grid;grid-template-columns:minmax(300px,1fr) 2fr;gap:44px;
+    padding:52px 40px 90px;align-items:start}
+  .kopf{padding:0;position:sticky;top:52px}
+  h1{font-size:clamp(40px,3.6vw,56px)}
+  .spalten{grid-template-columns:1.15fr 1fr;margin-top:0}
+  .rechts{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div class="licht" role="group" aria-label="Lichtstimmung">
+  <button data-theme="hell" aria-pressed="false">Hell</button>
+  <button data-theme="dunkel" aria-pressed="false">Dunkel</button>
+</div>
+
+<div class="sheet">
+  <header class="kopf">
+    <div class="marke">Tourenplaner · München</div>
+    <h1>
+      <span class="zweitdruck" aria-hidden="true">Biergarten<em>Freunde</em></span>
+      Biergarten<em>Freunde</em>
+    </h1>
+    <p>Sag, wo du losgehst und wie lange du Zeit hast. Die Tour baut sich selbst,
+       samt Alternativen.</p>
+    <div class="schaumkante" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </header>
+
+  <div class="rechts">
+    <div class="spalten">
+      <section class="deckel tour">
+        <span class="kennung">Dienstag · ab Candidplatz · 15:00</span>
+        <div class="ring" aria-hidden="true"></div>
+
+        <div class="etappe"><span>ÖPNV</span><span class="dauer">≈28 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Augustiner Schützengarten</h3><span class="uhr">15:28–16:53</span></div>
+          <p>Früher Sitz der Königlichen Schützengesellschaft, heute 2.500 Plätze unter
+             großen Kastanien. Kaum jemand kennt ihn.</p>
+          <div class="stempel"><span>Augustiner</span><span>2.500 Plätze</span>
+            <span>Selbstbedienung</span><span>11:30–23:00</span></div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈20 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Gasthof Hinterbrühl</h3><span class="uhr">17:13–18:38</span></div>
+          <p>Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei.
+             Mehrfach zum schönsten Biergarten Oberbayerns gewählt.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.000 Plätze</span>
+            <span class="wasser">Am Wasser</span></div>
+          <div class="hinweis">Selbstbedienungs-Biergarten läuft derzeit vor allem
+            Samstag und Sonntag.</div>
+        </article>
+
+        <div class="etappe"><span>zu Fuß</span><span class="dauer">≈23 min</span>
+          <a class="prueft" href="#">Verbindung prüfen</a></div>
+
+        <article class="station">
+          <div class="zeile"><h3>Gutshof Menterschwaige</h3><span class="uhr">19:01–20:26</span></div>
+          <p>Gutshof von 1012, älter als München. Helles aus dem Holzfass,
+             Isarsteig in drei Minuten.</p>
+          <div class="stempel"><span>Augustiner</span><span>1.100 Plätze</span><span>Aussicht</span></div>
+        </article>
+
+        <div class="summe">
+          <div><div class="klein">Von Tür zu Tür</div><div class="gross">5 h 46 min</div></div>
+          <div class="klein">zurück 20:46 · 43 min zu Fuß<br>Sonnenuntergang 20:38</div>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="abschnitt">Alle Biergärten · Fahrzeit ab Candidplatz</h2>
+        <table class="liste"><tbody>
+          <tr><td class="min">17 min</td><td class="ort">Giesinger Bräustüberl</td><td class="wo">Obergiesing</td></tr>
+          <tr><td class="min">20 min</td><td class="ort">Gutshof Menterschwaige</td><td class="wo">Harlaching</td></tr>
+          <tr><td class="min">20 min</td><td class="ort">Paulaner am Nockherberg</td><td class="wo">Au</td></tr>
+          <tr><td class="min">21 min</td><td class="ort">Am Viktualienmarkt</td><td class="wo">Altstadt</td></tr>
+          <tr><td class="min">23 min</td><td class="ort">Hofbräukeller</td><td class="wo">Haidhausen</td></tr>
+          <tr><td class="min">24 min</td><td class="ort">Zum Flaucher</td><td class="wo">Isarauen</td></tr>
+        </tbody></table>
+
+        <div class="filter">
+          <button aria-pressed="true">Am Wasser</button>
+          <button aria-pressed="false">Wald &amp; Grün</button>
+          <button aria-pressed="false">Stadtfeeling</button>
+          <button aria-pressed="false">Bierkeller</button>
+          <button aria-pressed="false">Selbstbedienung</button>
+          <button aria-pressed="false">Eigene Brotzeit</button>
+        </div>
+
+        <p class="fuss">Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor.
+          Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const knoepfe = document.querySelectorAll('.licht button')
+const erzwungen = new URLSearchParams(location.search).get('theme')
+function setzen(wert){
+  if (wert) document.documentElement.dataset.theme = wert
+  else delete document.documentElement.dataset.theme
+  knoepfe.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === wert)))
+}
+if (erzwungen === 'hell' || erzwungen === 'dunkel') setzen(erzwungen)
+knoepfe.forEach(b => b.addEventListener('click', () => setzen(b.dataset.theme)))
+</script>
+</body>
+</html>

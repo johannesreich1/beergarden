@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Palette</title>
+<style>
+:root{
+  /* ---- Bier: die Farben kommen aus den Sorten, nicht aus einem Farbkreis ---- */
+  --schaum:#FBF5E6;        /* Schaumkrone */
+  --kellerstroh:#E9DDB4;   /* ungefiltertes Kellerbier, trüb */
+  --helles:#E3B23C;        /* Münchner Helles */
+  --gold:#BE8A12;          /* dasselbe Helles, gesättigt genug für Text */
+  --maerzen:#B4661A;       /* Märzen, kupfern */
+  --dunkles:#6E3B16;       /* Münchner Dunkel */
+  --malz:#2E1C0D;          /* Röstmalz, fast schwarz */
+
+  /* ---- Bayern: die Raute, nicht das Trachtenkostüm ---- */
+  --weissblau:#2C5697;
+  --enzian:#1B3F8B;
+  --himmel:#8FB4DF;
+
+  --linie:rgba(46,28,13,.18);
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--kellerstroh);color:var(--malz);
+  font:16px/1.6 Optima,"Segoe UI",Candara,sans-serif}
+.blatt{max-width:900px;margin:0 auto;padding:44px 20px 80px}
+h1{margin:0;font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--maerzen)}
+p{max-width:64ch}
+h2{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--dunkles);margin:44px 0 0;padding-bottom:8px;
+  border-bottom:1px solid var(--linie)}
+
+.reihe{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;margin-top:18px}
+.ton{padding:20px 14px 14px;min-height:132px;display:flex;flex-direction:column;
+  justify-content:flex-end}
+.ton b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:600}
+.ton span{font-family:var(--mono);font-size:10px;letter-spacing:.1em;opacity:.75;margin-top:4px}
+.ton em{font-style:normal;font-size:12.5px;margin-top:7px;line-height:1.4;opacity:.85}
+
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14.5px}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  text-align:left;font-weight:400;color:var(--dunkles);padding:0 10px 8px 0}
+td{padding:11px 10px 11px 0;border-top:1px solid var(--linie);vertical-align:baseline}
+td b{font-weight:600}
+.punkt{display:inline-block;width:11px;height:11px;margin-right:7px;vertical-align:-1px}
+
+.regel{margin-top:30px;padding:16px 18px;background:rgba(46,28,13,.06);
+  border-top:2px solid var(--maerzen)}
+.regel b{display:block;margin-bottom:5px}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+<h1>Biergarten Freunde · Palette</h1>
+<p style="margin-top:18px">
+  Jede Farbe hat eine Herkunft. Bier liefert die warmen Töne, die bayerische Raute die
+  kalten. Es gibt keinen Ton, der nur da ist, weil er hübsch aussieht — und keinen
+  Grünton, kein Salbei, kein Violett, wie ich sie in den ersten Entwürfen benutzt hatte.
+</p>
+
+<h2>Bier · die warmen Töne</h2>
+<div class="reihe">
+  <div class="ton" style="background:#FBF5E6;color:#2E1C0D">
+    <b>Schaum</b><span>#FBF5E6</span><em>Schaumkrone. Der hellste Ton, nur für Kanten und Flächen.</em>
+  </div>
+  <div class="ton" style="background:#E9DDB4;color:#2E1C0D">
+    <b>Kellerstroh</b><span>#E9DDB4</span><em>Ungefiltertes Kellerbier, trüb. Der Untergrund der hellen Fassung.</em>
+  </div>
+  <div class="ton" style="background:#E3B23C;color:#2E1C0D">
+    <b>Helles</b><span>#E3B23C</span><em>Münchner Helles. Flächen, aktive Zustände.</em>
+  </div>
+  <div class="ton" style="background:#BE8A12;color:#FBF5E6">
+    <b>Gold</b><span>#BE8A12</span><em>Dasselbe Helles, dunkel genug für Text auf hellem Grund.</em>
+  </div>
+  <div class="ton" style="background:#B4661A;color:#FBF5E6">
+    <b>Märzen</b><span>#B4661A</span><em>Oktoberfestbier, kupfern. Einschränkungen und Warnungen.</em>
+  </div>
+  <div class="ton" style="background:#6E3B16;color:#FBF5E6">
+    <b>Dunkles</b><span>#6E3B16</span><em>Münchner Dunkel. Zwischentöne, Beschriftungen.</em>
+  </div>
+  <div class="ton" style="background:#2E1C0D;color:#E9DDB4">
+    <b>Malz</b><span>#2E1C0D</span><em>Röstmalz. Die Schrift auf hell, der Grund auf dunkel.</em>
+  </div>
+</div>
+
+<h2>Bayern · die kalten Töne</h2>
+<div class="reihe">
+  <div class="ton" style="background:#1B3F8B;color:#FBF5E6">
+    <b>Enzian</b><span>#1B3F8B</span><em>Das tiefe Blau. Zweite Druckfarbe, Etappen, Verkehrsmittel.</em>
+  </div>
+  <div class="ton" style="background:#2C5697;color:#FBF5E6">
+    <b>Weißblau</b><span>#2C5697</span><em>Das Blau der Raute. Flächen und Rahmen.</em>
+  </div>
+  <div class="ton" style="background:#8FB4DF;color:#14213D">
+    <b>Himmel</b><span>#8FB4DF</span><em>Der helle Anteil der Raute. Auf dunklem Grund die Rolle von Enzian.</em>
+  </div>
+</div>
+
+<h2>Wofür welcher Ton steht</h2>
+<table>
+  <thead><tr><th>Bedeutung</th><th>Hell</th><th>Dunkel</th></tr></thead>
+  <tbody>
+    <tr><td>Untergrund</td>
+        <td><span class="punkt" style="background:#E9DDB4"></span>Kellerstroh</td>
+        <td><span class="punkt" style="background:#1B120A"></span>Malz, abgedunkelt</td></tr>
+    <tr><td>Schrift</td>
+        <td><span class="punkt" style="background:#2E1C0D"></span>Malz</td>
+        <td><span class="punkt" style="background:#F0E3C4"></span>Schaum, gedämpft</td></tr>
+    <tr><td><b>Uhrzeiten und Fahrzeiten</b></td>
+        <td><span class="punkt" style="background:#BE8A12"></span>Gold</td>
+        <td><span class="punkt" style="background:#E8B647"></span>Helles, aufgehellt</td></tr>
+    <tr><td>Etappen und Verkehrsmittel</td>
+        <td><span class="punkt" style="background:#1B3F8B"></span>Enzian</td>
+        <td><span class="punkt" style="background:#8FB4DF"></span>Himmel</td></tr>
+    <tr><td>Am Wasser</td>
+        <td><span class="punkt" style="background:#2C5697"></span>Weißblau</td>
+        <td><span class="punkt" style="background:#8FB4DF"></span>Himmel</td></tr>
+    <tr><td>Einschränkung</td>
+        <td><span class="punkt" style="background:#B4661A"></span>Märzen</td>
+        <td><span class="punkt" style="background:#E09A55"></span>Märzen, aufgehellt</td></tr>
+    <tr><td>Nicht verifiziert</td>
+        <td><span class="punkt" style="background:#8A7A55"></span>Malz, entsättigt</td>
+        <td><span class="punkt" style="background:#A08F68"></span>dito</td></tr>
+  </tbody>
+</table>
+
+<div class="regel">
+  <b>Die eine Regel</b>
+  Gold ist für Zeiten reserviert, Märzen für Einschränkungen. Wer beides für Dekoration
+  benutzt, nimmt der Seite ihre einzige Farbcodierung — und dann ist die Palette wieder
+  nur Geschmack.
+</div>
+
+<p style="margin-top:34px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+   line-height:1.9;color:var(--dunkles)">
+  Diese Palette liegt allen sieben Ausprägungen zugrunde ·
+  <a href="01-varianten.html" style="color:var(--maerzen)">zu den Ausprägungen</a> ·
+  <a href="index.html" style="color:var(--maerzen)">zur Übersicht</a>
+</p>
+
+</div>
+</body>
+</html>

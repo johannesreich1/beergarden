@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile, acht Entwürfe</title>
+<style>
+:root{--bg:#121212;--linie:#2E2E2E;--text:#E9E6DF;--mute:#8F8C85;--akzent:#D2A63F;
+  --mono:ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 30px 26px;border-bottom:1px solid var(--linie)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--akzent)}
+header p{margin:15px 0 0;max-width:78ch;color:var(--mute)}
+header b{color:var(--text);font-weight:500}
+header a{color:var(--text)}
+.regel{margin:22px 30px 0;padding:17px 19px;border:1px solid var(--linie);max-width:78ch}
+.regel h2{margin:0 0 9px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--akzent);font-weight:500}
+.regel ol,.regel ul{margin:0;padding-left:20px;line-height:1.85;color:var(--mute)}
+.regel b{color:var(--text);font-weight:500}
+.regel p{color:var(--mute)}
+.regel code{font-family:var(--mono);color:var(--text)}
+.zahlen{width:100%;border-collapse:collapse;margin-top:4px;font-family:var(--mono);font-size:12.5px}
+.zahlen th,.zahlen td{text-align:right;padding:5px 9px;border-top:1px solid var(--linie);
+  color:var(--mute)}
+.zahlen th:first-child,.zahlen td:first-child{text-align:left;color:var(--text)}
+.zahlen .gut{color:var(--text)}
+.zahlen .schlecht{color:var(--akzent)}
+.row{padding:32px 30px;border-bottom:1px solid var(--linie)}
+.meta{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:5px}
+.num{font-family:var(--mono);font-size:12px;color:var(--akzent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--akzent)}
+.sig{color:var(--mute);max-width:80ch;margin:0 0 18px}
+.sig b{color:var(--text);font-weight:500}
+.frames{display:flex;gap:20px;overflow-x:auto;padding-bottom:6px;align-items:flex-start}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;display:flex;justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--linie)}
+.cap a:hover{color:var(--akzent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--linie)}
+/* A footer sits at the bottom of a page, so the frame is anchored at the
+   bottom: what gets cut off is the page above it, never the draft itself.
+   The iframe is given the page's real height at load, so nothing scrolls. */
+.shell iframe{border:0;position:absolute;bottom:0;left:0;transform-origin:bottom left}
+.d .shell{width:520px}
+.m .shell{width:212px}
+footer{padding:32px 30px 70px;color:var(--mute);max-width:82ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+@media(max-width:900px){header,.row,footer,.regel{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Fußzeile · acht Entwürfe</h1>
+  <p>
+    Von <b>ein Strich</b> bis <b>der ganze Giebel</b>. Alle acht tragen dasselbe: Impressum,
+    Datenschutz, Kontakt, die Kartenlizenz, die drei Ehrlichkeitshinweise — die heute noch auf
+    jeder Seite stehen und dorthin gehören — und die drei Wege durch die Seite.
+    Palette, Deckel, Kronkorken und aufgerissener Stempeldruck kommen unverändert aus
+    <a href="kombi.html">Deckel &amp; Korken</a>; geteilt wird per
+    <code>&lt;link&gt;</code>, nicht per Kopie.
+  </p>
+</header>
+
+<div class="regel">
+  <h2>Die eine Regel, aus der der Rest folgt</h2>
+  <p style="margin:0 0 10px">
+    <b>Farbe gehört auf eine Fläche, die blanke Pappe trägt nur Tinte.</b> Auf Kraftpappe
+    erreicht keine Farbe der Palette die 7:1, die Text braucht — Gold nicht einmal die 4,5:1
+    für Nebentext, und das bei jeder Abdunklung, die den Farbton überlebt. Auf dem Deckel
+    erreichen alle fünf die 7:1. Gemessen, in beiden Themen:
+  </p>
+  <table class="zahlen">
+    <tr><th>auf …</th><th>Schrift</th><th>weich</th><th>Enzian</th><th>Gold</th><th>Märzen</th></tr>
+    <tr><td>blanke Pappe, hell</td><td class="gut">7,48</td><td class="gut">4,79</td>
+        <td class="gut">5,12</td><td class="schlecht">4,43</td><td class="gut">4,55</td></tr>
+    <tr><td>Deckel, hell</td><td class="gut">12,65</td><td class="gut">8,10</td>
+        <td class="gut">8,66</td><td class="gut">7,50</td><td class="gut">7,70</td></tr>
+    <tr><td>blanke Pappe, dunkel</td><td class="gut">14,72</td><td class="gut">8,53</td>
+        <td class="gut">8,39</td><td class="gut">10,96</td><td class="gut">8,91</td></tr>
+    <tr><td>Deckel, dunkel</td><td class="gut">12,85</td><td class="gut">7,45</td>
+        <td class="gut">7,33</td><td class="gut">9,57</td><td class="gut">7,78</td></tr>
+  </table>
+  <p style="margin:12px 0 0">
+    Gold und Märzen stehen hier zwei Schritte dunkler als in <code>k-bestand</code>
+    (<code>#553A03</code> statt <code>#5E4004</code>, <code>#632F05</code> statt
+    <code>#7A3B06</code>): dort tragen sie Bildunterschriften und erreichen 6,76 und 6,08 —
+    Nebentext-Niveau. Hier tragen sie Überschriften, und eine Überschrift ist Text.
+    Märzen geht einen Schritt weiter als nötig, weil <code>basis.js</code> die zweite Zeile des
+    Schriftzugs damit auf die blanke Pappe setzt: <b>2,87:1 im Bestand, 4,55:1 hier</b>. Das ist
+    die eine Stelle, die sich nicht auf einen Deckel schieben lässt — also bewegt sich die Farbe.
+  </p>
+</div>
+
+<div class="regel">
+  <h2>Was in allen acht gleich ist</h2>
+  <ol>
+    <li><b>Der Aufriss läuft nie durch Schrift.</b> Nur Rahmen und Füllungen reißen auf —
+        der Riss liegt auf einem Pseudo-Element unter dem Text.</li>
+    <li><b>Der gefüllte Stempel ist anders gebaut als in <code>k-bestand</code>.</b> Dort ist
+        die Füllung die Tinte zu 62&nbsp;% in den Deckel gemischt, beschriftet in Schaum:
+        <b>4,48:1 hell, 3,50:1 dunkel</b>. Hier bleibt die Füllung die ganze Tinte, und nur ihr
+        Rand wird angefressen — 8,39:1 im schlechtesten Fall.</li>
+    <li><b>Der Stempel kippt zwischen den Themen, statt zu verblassen.</b> Hell füllt mit dunkler
+        Tinte und schreibt in Schaum; dunkel gibt es keine dunkle Farbe im Satz — dort bleibt die
+        Füllung die Farbe und die Schrift wird zum Grund.</li>
+    <li><b>Über jedem Entwurf steht dasselbe Stück Seite</b> — die letzten zwei Stationen einer
+        Tour. Eine Fußzeile beurteilt man dort, wo sie steht. Alles über der Risskante gehört
+        nicht zum Entwurf.</li>
+    <li><b>Der Schalter „Alle Regler" ist ausgeblendet.</b> Er gehört neben den Planer, nicht in
+        eine Fußzeile — versteckt statt abgespalten, damit <code>basis.js</code> die einzige
+        Stelle bleibt, an der ein Kopf gebaut wird.</li>
+  </ol>
+  <p style="margin:12px 0 0">
+    Nachgerechnet von <code>design/fuss/measure.py</code>: Kaskade, Farbauflösung und Schriftgrößen
+    aus <code>basis.css</code>, <code>fuss.css</code> und dem Entwurf selbst, für beide Themen.
+    Es prüft auch, dass alle acht denselben Wortlaut tragen — <b>dieselbe Aussage, dieselben
+    Wörter</b>. Stand: <b>0 Verstöße</b>, kleinste Schrift 15,0 px, Fließtext ab 7,33:1.
+  </p>
+</div>
+
+<div id="rows"></div>
+
+<footer>
+  <p>Nichts davon ist gebaut. Sag, welche Fußzeile es wird — oder welche Teile aus welcher.</p>
+</footer>
+
+<script>
+const L = [
+  ['a','Strich','fuss/a-strich.html',
+   'Ein Strich, dann Text. Keine Fläche, kein Rahmen — und deshalb <b>keine Farbe</b>: auf der blanken Pappe erreicht nur die Tinte 7:1. Die Hinweise stehen oben, die Papiere unten, weil die Hinweise der Grund für die Fußzeile sind.'],
+  ['b','Vier Spalten','fuss/b-spalten.html',
+   'Der gewöhnliche Fußzeilen-Aufbau, in diesem Material: ein Deckel, vier Spalten, Überschriften in Enzian. <b>Der Maßstab</b> — jeder andere Entwurf muss sich verdienen, was er darüber hinaus tut.'],
+  ['c','Wirtszettel','fuss/c-zettel.html',
+   'Die Rechnung: Posten links, Erklärung rechts, Punktlinie dazwischen, oben und unten die abgerissene Kante. <b>Die drei Hinweise sind die letzten drei Posten</b> — auf einer Rechnung liest man das Kleingedruckte zuletzt und merkt es sich.'],
+  ['d','Deckelreihe','fuss/d-deckelreihe.html',
+   'Vier Deckel, jeder anders gedreht, mit Schatten darunter — sie liegen auf dem Tisch, statt auf ihn gedruckt zu sein. <b>Die Neigung ist der ganze Zierrat</b>, und vier gleiche Winkel wären ein Fehler im Stylesheet.'],
+  ['e','Stempelblock','fuss/e-stempel.html',
+   'Die Hinweise bekommen die lauteste Form auf der Seite: drei Stempel, drei Tinten, aufgerissene Rahmen. <b>Ein Hinweis, der so gestaltet ist, dass man ihn übersieht, zählt nicht.</b>'],
+  ['f','Korkentafel','fuss/f-korkentafel.html',
+   'Jedes Zeichen der Seite — <b>≈</b> für geschätzt, <b>k. A.</b> für unbelegt, <b>☼</b> für „der Wirt entscheidet" — steckt in einem Kronkorken, der über die Deckelkante hängt. Man lernt die drei Zeichen hier einmal und erkennt sie überall sonst wieder.'],
+  ['g','Schankbrett','fuss/g-schankbrett.html',
+   'Zwei Etagen mit zwei Aufgaben: oben das emaillierte Brett mit den drei Wegen, unten die Arbeitsfläche — Hinweise links, wo Sätze Platz haben, Papiere rechts, wo drei Wörter hingehören. <b>Das Lauteste ist das, was man anklicken will.</b>'],
+  ['h','Wirtshausgiebel','fuss/h-wirtshaus.html',
+   'Alles, was das Haus hat: Schaumkrone, Emailleband, drei aufgefächerte Deckel mit ihren Korken, Papierschiene, Siegel als Spitze. <b>Es wird nach unten schmaler</b>, sonst wäre es ein Stapel statt eines Giebels — und es kostet Höhe, die der Mobilrahmen bezahlt.'],
+]
+const V = [['d','Desktop hell','light','1440',520,470],['d','Desktop dunkel','dark','1440',520,470],
+           ['m','Mobil hell','light','390',212,640],['m','Mobil dunkel','dark','390',212,640]]
+
+document.getElementById('rows').innerHTML = L.map(([n, name, datei, sig]) => `
+  <section class="row">
+    <div class="meta"><span class="num">${n}</span><span class="name"><a href="${datei}">${name}</a></span></div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${V.map(([cls, label, theme, br, schale, deckel]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${br} px</a></div>
+          <div class="shell" style="height:${deckel}px">
+            <iframe src="${datei}?theme=${theme}" title="${name} — ${label}" loading="lazy"
+              scrolling="no" style="width:${br}px;transform:scale(${schale / br})"
+              data-schale="${schale / br}" data-deckel="${deckel}"></iframe>
+          </div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+
+/* The frame is as tall as the page it shows, so nothing scrolls inside it and
+   the bottom edge is really the bottom of the page. Pages shorter than their
+   frame shrink the frame to fit instead of leaving a black band above them;
+   taller ones keep the frame and lose their top, which is the page, not the
+   footer. Same origin only — over file:// the fallback height stands. */
+for (const rahmen of document.querySelectorAll('.shell iframe')) {
+  // Per frame, not on window load: these load lazily, so most of them are not
+  // there yet when the gallery itself has finished loading.
+  rahmen.addEventListener('load', () => {
+    const skala = Number(rahmen.dataset.schale)
+    const deckel = Number(rahmen.dataset.deckel)
+    let hoehe = 1400
+    try { hoehe = rahmen.contentDocument.documentElement.scrollHeight } catch { /* fremder Ursprung */ }
+    rahmen.style.height = `${hoehe}px`
+    rahmen.parentElement.style.height = `${Math.min(Math.round(hoehe * skala), deckel)}px`
+  })
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Schankbrett</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   SCHANKBRETT — two storeys, and they mean different things
+
+   The upper plank is enamelled: full ink, foam lettering, edges
+   bitten. It carries the three ways on and nothing else, so the
+   loudest thing in the footer is the thing you might actually
+   want to click.
+
+   Under it the working surface: the caveats on the left where
+   there is room for sentences, the paperwork on the right where
+   a column of three words belongs. Two storeys, two jobs — and
+   the reader never has to decide which half is decoration.
+
+   The plank inverts between themes rather than dimming. Light
+   fills with dark ink and letters in foam; dark has no dark
+   accent at all — every accent there is a light one — so the
+   fill stays the accent and the lettering flips to the ground.
+   Both directions measured, both over 8:1.
+   ============================================================ */
+.fuss-g .brett{--farbe:var(--akzent);display:flex;flex-wrap:wrap;align-items:center;
+  gap:12px 30px;padding:19px 24px}
+.fuss-g .brett a{font-family:var(--display);font-size:17px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.045em;text-decoration:none}
+.fuss-g .brett a:hover{text-decoration:underline;text-underline-offset:4px}
+/* The house name sits at the far end of the plank, the way it does on a sign. */
+.fuss-g .brett .haus{margin-left:auto;font-size:15.5px}
+
+.fuss-g .werkbank{margin-top:16px;padding:22px 24px}
+.fuss-g .gitter{display:grid;gap:24px 34px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:820px){
+  .fuss-g .gitter{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
+}
+.fuss-g .fuss-titel{color:var(--maerzen)}
+
+/* Each caveat keeps its sign in a hanging column, so the three read as one
+   family of marks rather than as three paragraphs that happen to be small. */
+.fuss-g .ehrlich li{display:flex;gap:14px;margin-bottom:13px;line-height:1.5}
+.fuss-g .zeichen{flex:none;width:54px;font-family:var(--display);font-weight:900;
+  font-size:15.5px;color:var(--gold)}
+
+.fuss-g li{margin-bottom:9px}
+.fuss-g .papiere a{color:var(--akzent)}
+.fuss-g .karte{margin-top:14px;font-size:15.5px;color:var(--weich);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-g">
+    <nav class="brett aufriss satt" aria-label="Seitenbereiche">
+      <a href="#">Tour bauen</a>
+      <a href="#">Alle Biergärten</a>
+      <a href="#">Informationen</a>
+      <span class="haus">Biergarten Freunde · München</span>
+    </nav>
+
+    <div class="werkbank deckel">
+      <div class="gitter">
+        <div>
+          <h2 class="fuss-titel">Ehrlich gesagt</h2>
+          <ul class="ehrlich">
+            <li><span class="zeichen">≈</span><span>Fahrzeiten sind Schätzungen aus Luftlinie plus
+              Umwegfaktor — für die echte Verbindung auf die Modus-Angabe tippen.</span></li>
+            <li><span class="zeichen">k.&nbsp;A.</span><span>Wo beim Ausschank k.&nbsp;A. steht, war die
+              Brauerei nicht sicher zu verifizieren.</span></li>
+            <li><span class="zeichen">☼</span><span>Bei schönem Wetter heißt: der Wirt entscheidet
+              morgens um neun.</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="fuss-titel">Rechtliches</h2>
+          <nav class="papiere" aria-label="Rechtliches">
+            <ul>
+              <li><a href="#">Impressum</a></li>
+              <li><a href="#">Datenschutz</a></li>
+              <li><a href="#">Kontakt</a></li>
+            </ul>
+          </nav>
+          <p class="karte">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

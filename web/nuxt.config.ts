@@ -35,9 +35,14 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // The planner computes in the client and reads localStorage. Prerendered on
-    // the server it would be an empty shell plus a hydration flash.
-    '/planer': { ssr: false },
+    // The planner computes in the client and reads localStorage, so its body
+    // waits for the browser — see the `ClientOnly` in the page. What is
+    // prerendered is the head and the frame around it: with `ssr: false` the
+    // route shipped 944 bytes without a title, and a shared link then showed
+    // the bare URL in every messenger. It stays out of the sitemap and out of
+    // the index; a head is worth having even for a page nobody should find
+    // through a search.
+    '/planer': { prerender: true },
 
     // Landing page, directory and detail pages are the SEO-relevant part. They
     // are built at build time and served statically afterwards — no Node runs
@@ -45,6 +50,10 @@ export default defineNuxtConfig({
     '/': { prerender: true },
     '/verzeichnis': { prerender: true },
     '/biergarten/**': { prerender: true },
+    // Pure prose, identical for everyone — and legally required to be reachable
+    // even when nothing else works.
+    '/impressum': { prerender: true },
+    '/datenschutz': { prerender: true },
   },
 
   nitro: {

@@ -24,6 +24,7 @@ export function useMap(
 ) {
   const map = shallowRef<MapLibreMap | null>(null)
   let resize: ResizeObserver | null = null
+  let unmounted = false
 
   onMounted(async () => {
     if (!container.value) return
@@ -33,6 +34,14 @@ export function useMap(
       import('pmtiles'),
       import('maplibre-gl/dist/maplibre-gl.css'),
     ])
+
+    // The component can be gone before these land — MapLibre is a megabyte and
+    // the first visit fetches it over the wire. By then Vue has run the unmount
+    // hook, so a map built now is one nothing ever removes: it holds a WebGL
+    // context for the life of the page. Once the browser starts reclaiming
+    // contexts, the map that is still on screen loses its style and stops
+    // asking for tiles without firing a single error.
+    if (unmounted || !container.value) return
 
     // Registered once for the whole page: the protocol belongs to the library,
     // not to a map. Registering it twice would replace the handler while the
@@ -57,15 +66,30 @@ export function useMap(
 
     instance.touchZoomRotate.disableRotation()
 
-    // The first framing does not animate: there is nothing to follow yet, and
-    // a map that flies in from the world view on load looks like a bug.
-    if (options.fit) fitTo(instance, options.fit, false)
-
     // Without a listener MapLibre swallows source and style failures. A map
     // that stays grey without saying why costs an hour every single time.
     instance.on('error', (event) => console.error('[map]', event.error ?? event))
 
-    instance.on('load', () => draw?.(instance))
+    // Before debugging a map that shows nothing: MapLibre 6 hangs the whole
+    // style load on one requestAnimationFrame, so a map built while the tab is
+    // hidden stays completely inert — no layers, no tile request, and not one
+    // error event. Measured on 6.3.0: in a background tab `_order` is 0 and
+    // `isStyleLoaded()` false; bring the tab to the front and the same instance
+    // finishes on its own. A map inspected from a detached devtools window or a
+    // covered window therefore always looks dead — check `visibilityState`
+    // before believing it.
+    instance.on('load', () => {
+      // Framing happens after load, not at construction, and after a resize. A
+      // map built inside a column that is still laying out has no size yet, and
+      // `fitBounds` works off that size: framing the same tour at 0×0 and at
+      // 330×337 gave zoom 10.15 against 10.39 — the tour ends up cut off rather
+      // than filling the map. Measured, because the camera survives it; it is
+      // the framing that is wrong, not the map.
+      // The first framing does not animate — there is nothing to follow yet.
+      instance.resize()
+      if (options.fit) fitTo(instance, options.fit, false)
+      draw?.(instance)
+    })
 
     // A map that is built while its column is still zero wide stays grey
     // forever: MapLibre measures once, at construction. The observer is not
@@ -89,6 +113,7 @@ export function useMap(
   })
 
   onBeforeUnmount(() => {
+    unmounted = true
     resize?.disconnect()
     resize = null
     map.value?.remove()

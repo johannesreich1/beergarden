@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Korkentafel</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   KORKENTAFEL — every caveat gets its own cap
+
+   The three signs the site uses in running text — ≈ for an
+   estimated time, k. A. for a fact that could not be verified,
+   ☼ for the landlord's nine o'clock decision — are pressed into
+   three bottle caps and hang over the left edge of the mat.
+
+   That is the point of the draft: the reader meets the sign here
+   once, in full, with its sentence next to it, and recognises it
+   everywhere else on the site without a second explanation.
+   Nothing else on the page is round, so a cap is never mistaken
+   for a control.
+
+   The caps overhang, so the mat keeps padding on that side for
+   the text to clear them, and the whole block keeps a left
+   margin for the caps to hang into.
+   ============================================================ */
+.fuss-f .tafel{margin-left:44px}
+.fuss-f .deckel{padding:22px 24px 20px 62px}
+
+/* Navigation first, on the mat, in blue — 8.66:1 there. */
+.fuss-f .wege{display:flex;flex-wrap:wrap;gap:9px 26px;margin:0 0 6px;
+  padding-bottom:16px;border-bottom:2px solid var(--kante)}
+.fuss-f .wege a{color:var(--akzent);font-family:var(--display);font-size:16.5px;
+  font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+
+/* The cap straddles the left edge of the mat: half on the paper, half on the
+   board, the way one actually lies there. Its inner disc carries its own
+   surface, so the sign on it reads the same over either half. */
+.fuss-f .zeile{position:relative;padding:18px 0 2px;min-height:92px}
+.fuss-f .korken{position:absolute;left:-102px;top:10px}
+.fuss-f .wort-titel{display:block;font-family:var(--display);font-size:16px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--maerzen);margin-bottom:5px}
+.fuss-f .zeile p{font-size:16px;line-height:1.5}
+
+.fuss-f .unten{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:baseline;
+  margin:18px 0 0 44px;font-size:15.5px}
+.fuss-f .unten .quelle{color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-f">
+    <div class="riss-kante"></div>
+    <div class="tafel">
+      <div class="deckel">
+        <nav class="wege" aria-label="Seitenbereiche">
+          <a href="#">Tour bauen</a>
+          <a href="#">Alle Biergärten</a>
+          <a href="#">Informationen</a>
+        </nav>
+
+        <div class="zeile">
+          <span class="korken" style="--gr:80px;--farbe:var(--akzent)" aria-hidden="true">
+            <span class="rand"></span><span class="mitte"><span class="zahl">≈</span></span></span>
+          <span class="wort-titel">Fahrzeiten</span>
+          <p>Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte Verbindung
+            auf die Modus-Angabe tippen.</p>
+        </div>
+
+        <div class="zeile">
+          <span class="korken" style="--gr:80px;--farbe:var(--maerzen)" aria-hidden="true">
+            <span class="rand"></span><span class="mitte">
+            <span class="zahl" style="font-size:17px">k.&nbsp;A.</span></span></span>
+          <span class="wort-titel">Ausschank</span>
+          <p>Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</p>
+        </div>
+
+        <div class="zeile">
+          <span class="korken" style="--gr:80px;--farbe:var(--gold)" aria-hidden="true">
+            <span class="rand"></span><span class="mitte"><span class="zahl">☼</span></span></span>
+          <span class="wort-titel">Wetter</span>
+          <p>Bei schönem Wetter heißt: der Wirt entscheidet morgens um neun.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="unten">
+      <nav aria-label="Rechtliches">
+        <a href="#">Impressum</a> · <a href="#">Datenschutz</a> · <a href="#">Kontakt</a>
+      </nav>
+      <p class="quelle">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+    </div>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

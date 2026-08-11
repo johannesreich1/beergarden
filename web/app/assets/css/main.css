@@ -20,21 +20,33 @@
   --foam:#FBF5E6;
   --kraft:#CBA469;
   --kraft-deep:#BE9354;
-  --gold:#7E5606;          /* Helles, dark enough for text on kraft */
-  --amber:#A8560F;
+  /* Gold carries the times, amber the caveats — so both have to be readable,
+     and on kraft board neither ever gets there: even this dark they only reach
+     3.99 and 3.60 against it. They reach 6.8 and 6.1 against --surface. Hence
+     the rule that goes with them: anything that means something in colour sits
+     on a surface, never on the bare board. */
+  --gold:#5E4004;
+  --amber:#7A3B06;
   --brown:#6E3B16;
   --ink-deep:#2E1C0D;
 
   /* ---- Bavaria ---- */
-  --blue:#1B3F8B;
+  --blue:#12336E;
   --blue-soft:#2C5697;
 
   /* ---- Roles ---- */
   --ground:var(--kraft);
-  --surface:var(--kraft-deep);
+  /* Lighter than the board, not darker. A panel used to be --kraft-deep, and
+     every accent colour on it failed: gold 3.4, amber 3.1, blue 4.3. This is
+     the surface those colours were mixed for. --kraft-deep stays where it
+     belongs, under the map. */
+  --surface:#E8D8B7;
   --text:var(--ink-deep);
   --text-soft:#4E3417;
-  --muted:#7A5F35;
+  /* There used to be a third, lighter grey here at 2.5:1 against the board —
+     unreadable, and used for travel times and meta lines. Two text weights are
+     enough; this is the second one. */
+  --muted:var(--text-soft);
   --edge:rgba(46,28,13,.32);
   --edge-soft:rgba(46,28,13,.18);
   --ring:rgba(46,28,13,.16);
@@ -70,6 +82,15 @@
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
 }
 
+/*
+ * The dark palette.
+ *
+ * Written twice on purpose. The media query covers the device setting; the
+ * attribute covers an explicit choice, and without it "Dunkel" on a light
+ * system changes nothing at all — which is exactly what it did before. CSS has
+ * no way to share one declaration list between a media query and a selector,
+ * so the price of a working switch is this duplication. Change one, change both.
+ */
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --foam:#F0E3C4;
@@ -79,12 +100,19 @@
     --amber:#E09A55;
     --brown:#C9A97A;
     --ink-deep:#EBDCBB;
+    /* Lighter than the ground here too, only in the other direction — a panel
+       is a mat lying on the board. Without this line --surface keeps the light
+       theme's beige and every panel glows. */
+    --surface:#342714;
     --blue:#8FB4DF;
     --blue-soft:#8FB4DF;
 
     --text:#EBDCBB;
     --text-soft:#C4AF88;
-    --muted:#94805C;
+    /* Same rule as in the light theme: two text weights, not three.
+       The third grey sat at 3.8:1 on a panel — below the line, and it
+       carried the travel times. */
+    --muted:var(--text-soft);
     --edge:rgba(235,220,187,.28);
     --edge-soft:rgba(235,220,187,.15);
     --ring:rgba(235,220,187,.14);
@@ -106,6 +134,47 @@
   }
 }
 
+:root[data-theme="dark"]{
+    --foam:#F0E3C4;
+    --kraft:#241A0E;
+    --kraft-deep:#31240F;
+    --gold:#E8B647;
+    --amber:#E09A55;
+    --brown:#C9A97A;
+    --ink-deep:#EBDCBB;
+    /* Lighter than the ground here too, only in the other direction — a panel
+       is a mat lying on the board. Without this line --surface keeps the light
+       theme's beige and every panel glows. */
+    --surface:#342714;
+    --blue:#8FB4DF;
+    --blue-soft:#8FB4DF;
+
+    --text:#EBDCBB;
+    --text-soft:#C4AF88;
+    /* Same rule as in the light theme: two text weights, not three.
+       The third grey sat at 3.8:1 on a panel — below the line, and it
+       carried the travel times. */
+    --muted:var(--text-soft);
+    --edge:rgba(235,220,187,.28);
+    --edge-soft:rgba(235,220,187,.15);
+    --ring:rgba(235,220,187,.14);
+    --warn-bg:rgba(224,154,85,.16);
+    --on-accent:#241A0E;
+
+    --map-ground:#1B1409;
+    --map-park:rgba(143,180,223,.12);
+    --map-water:#8FB4DF;
+    --map-label:rgba(235,220,187,.34);
+    --leg-walk:#E8B647;
+    --leg-bike:#8FB4DF;
+    --leg-transit:#E09A55;
+
+    /* Brewery colours are brand colours and stay as they are. On dark board
+       they only need lifting, otherwise nobody can read them — the hue stays,
+       the lightness changes. */
+    --bc-readable:color-mix(in srgb, var(--bc, #EBDCBB) 52%, #EBDCBB);
+}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
@@ -122,8 +191,12 @@ body{
   -webkit-font-smoothing:antialiased;
   padding-bottom:calc(52px + env(safe-area-inset-bottom));
 }
-.wrap{max-width:620px;margin:0 auto;padding:0 18px}
-.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;
+/* The gutter is a variable because two things need it: the padding itself and
+   anything that has to line up with the content edge from outside the flow —
+   the theme switch, for one. Written twice they drift apart at the next
+   breakpoint. */
+.wrap{--gutter:18px;max-width:620px;margin:0 auto;padding:0 var(--gutter)}
+.eyebrow{font-family:var(--mono);font-size:14.5px;letter-spacing:.3em;
   text-transform:uppercase;color:var(--muted)}
 
 /* Every imprint shares the same broken ink. */
@@ -133,15 +206,85 @@ body{
 }
 
 /* --------------------------------------------------------- Theme switch */
-.theme-switch{display:flex;gap:7px;margin:0 0 16px}
-.theme-switch button{font-family:var(--mono);font-size:9px;letter-spacing:.16em;
-  text-transform:uppercase;padding:6px 10px;border:0;background:transparent;
-  color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--edge);cursor:pointer}
-.theme-switch button[aria-pressed="true"]{color:var(--on-accent);background:var(--gold);
-  box-shadow:inset 0 0 0 1.5px var(--gold)}
+/*
+ * One switch, top right, icon only.
+ *
+ * It is a bottle cap: the one round thing in the head, so it reads as an
+ * object to press rather than as a label. 44px, because that is the smallest
+ * target a thumb hits reliably — an icon-only control has no text edge to
+ * forgive a near miss.
+ */
+.theme-switch{position:relative;width:44px;height:44px;flex:none;padding:0;border:0;
+  background:transparent;cursor:pointer;color:var(--gold);
+  display:grid;place-items:center;justify-self:end}
+.theme-switch::before{content:'';position:absolute;inset:0;border-radius:50%;
+  background:var(--gold);
+  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%)}
+.theme-switch::after{content:'';position:absolute;inset:5px;border-radius:50%;
+  background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--gold)}
+.theme-switch svg{position:relative;z-index:1;width:21px;height:21px;
+  fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
+.theme-switch svg .fill{fill:currentColor;stroke:none}
+.theme-switch:hover{color:var(--amber)}
+.theme-switch:hover::before{background:var(--amber)}
+.theme-switch:hover::after{box-shadow:inset 0 0 0 1.5px var(--amber)}
+.theme-switch:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+/* ------------------------------------------------------------- Long prose */
+/* Imprint and privacy notice: one column at reading width, because these are
+   read from top to bottom and by exactly the person who needs them. */
+.prosa{max-width:70ch;margin:0 auto;padding-top:8px}
+.prosa h2{font-family:var(--display);font-size:17px;font-weight:900;letter-spacing:.03em;
+  text-transform:uppercase;color:var(--text);margin:30px 0 8px}
+.prosa p,.prosa li{font-size:16.5px;color:var(--text-soft)}
+.prosa p{margin:0 0 12px}
+.prosa ul{margin:0 0 12px;padding-left:20px}
+.prosa li{margin-bottom:7px}
+.prosa b{color:var(--text);font-weight:400}
+.prosa a{color:var(--blue)}
+.prosa code{font-family:var(--mono);font-size:15px;background:var(--surface);padding:1px 5px}
+.prosa .lead{font-size:18px;color:var(--text)}
+
+/* ---------------------------------------------------------------- Foot */
+/* Plain until one of the drafts in design/fuss/ is chosen. What matters now is
+   that the caveats, the imprint and the map attribution stand in one place
+   instead of under every page. */
+.fuss{margin:44px 0 0;padding:20px 0 0;
+  border-top:3px solid transparent;
+  border-image:repeating-linear-gradient(93deg,var(--edge) 0 3px,transparent 3px 9px) 3}
+.fuss-wege{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:14px}
+.fuss-wege a{font-family:var(--display);font-size:14.5px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--blue);text-decoration:none}
+.fuss-wege a:hover{text-decoration:underline;text-underline-offset:3px}
+.fuss-genau{margin:0;font-size:15px;color:var(--text-soft);max-width:78ch}
+.fuss-quelle{margin:10px 0 0;font-size:14.5px;color:var(--text-soft)}
+.fuss-quelle a{color:inherit}
+
+/* The current segment on a detail page is a span, not a link — same look. */
+.seg span[aria-current="page"]{flex:1;padding:13px 8px;text-align:center;display:block;
+  font-family:var(--display);font-size:15px;font-weight:900;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--on-accent);transform:rotate(-.6deg);
+  position:relative;isolation:isolate;
+  background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
+.seg span[aria-current="page"]::before{content:'';position:absolute;inset:0;z-index:-1;
+  background:var(--blue);
+  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
 
 /* -------------------------------------------------------------- Header */
+/* The switch sits in the top right corner of the head at every width; the
+   eyebrow keeps room for it so the date never runs underneath. */
 .head{padding:calc(24px + env(safe-area-inset-top)) 0 20px}
+/* Anchored to the content column, not to the band: the band runs the full
+   width of the window, so `right:0` there parks the switch against the glass. */
+.head .wrap{position:relative}
+.head .theme-switch{position:absolute;right:var(--gutter);
+  top:calc(18px + env(safe-area-inset-top))}
+.head .eyebrow{padding-right:60px}
 /*
  * Seal on the left, wordmark on the right.
  *
@@ -157,7 +300,7 @@ body{
   transform:rotate(-6.5deg);color:var(--blue)}
 .seal .ringlinie{fill:none;stroke:currentColor}
 .seal text{font-family:var(--display);font-weight:900;fill:currentColor;letter-spacing:.14em}
-.seal .ort{font-family:var(--mono);font-weight:400;letter-spacing:.22em}
+.seal .ort{font-family:var(--mono);font-weight:400;letter-spacing:.06em}
 .seal .raute{fill:currentColor}
 
 /*
@@ -188,15 +331,18 @@ body{
 
 /* ------------------------------------------------------------ Navigation */
 .seg{display:flex;gap:10px;margin:26px 0 0}
-.seg a{flex:1;padding:12px 8px;text-align:center;text-decoration:none;display:block;
-  font-family:var(--display);font-size:12px;font-weight:900;letter-spacing:.12em;
+.seg a{flex:1;padding:13px 8px;text-align:center;text-decoration:none;display:block;
+  font-family:var(--display);font-size:15px;font-weight:900;letter-spacing:.06em;
   text-transform:uppercase;color:var(--blue);background:transparent;
-  box-shadow:inset 0 0 0 2.5px var(--blue);transform:rotate(-1deg);
+  --tilt:-1deg;transform:rotate(var(--tilt));position:relative;isolation:isolate}
+.seg a::before{content:'';position:absolute;inset:0;z-index:-1;
+  box-shadow:inset 0 0 0 2.5px var(--blue);
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
   mask-image:var(--ink-break);mask-composite:intersect}
-.seg a:nth-child(2){transform:rotate(.8deg)}
-.seg a[aria-current="page"]{background:var(--blue);color:var(--on-accent);
-  -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
+.seg a:nth-child(2){--tilt:.8deg}
+.seg a[aria-current="page"]{color:var(--on-accent);
+  background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
+.seg a[aria-current="page"]::before{background:var(--blue);box-shadow:none}
 
 .section-title{display:flex;align-items:center;gap:11px;margin:32px 0 4px}
 /* In the wide view every column starts at the top — otherwise the first
@@ -208,23 +354,42 @@ body{
 /* A section heading is a signpost, not a footnote: display face, full weight,
    text colour. The mono whisper it used to be read as a caption for the block
    above it rather than as the title of the block below. */
-.section-title h2{margin:0;font-size:12px;font-family:var(--display);letter-spacing:.16em;
+.section-title h2{margin:0;font-size:15px;font-family:var(--display);letter-spacing:.16em;
   text-transform:uppercase;color:var(--text);font-weight:900}
 .section-title .rule{flex:1;height:2px;background:var(--edge)}
+/* A heading may carry a cap when the number belongs to the whole section
+   rather than to one item in it — the stop count above the suggestions. Only
+   the size changes; the object itself stays as it is. */
+.section-title .cap{--cap-size:56px}
 .note{margin:9px 0 0;color:var(--text-soft);font-size:14px}
 
 /* -------------------------------------------------------------- Buttons */
-.btn{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.12em;
+/*
+ * A stamp keeps its lettering.
+ *
+ * These used to wear `--ink-break` on the element itself, which cut the words
+ * apart along with the frame. The break now lives on a pseudo-element beneath:
+ * the frame and the fill tear, the text does not. Filled stamps get a muted
+ * version of their own colour underneath, so a gap reads as ink run thin
+ * instead of a hole in the page — the same trick the hero plate uses.
+ */
+.btn{--stempel:var(--blue);
+  font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.08em;
   text-transform:uppercase;padding:10px 14px;cursor:pointer;border:0;
-  background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2.5px var(--blue);
-  text-decoration:none;display:inline-block;transform:rotate(-1.2deg);
+  background:transparent;color:var(--stempel);
+  text-decoration:none;display:inline-block;--tilt:-1.2deg;transform:rotate(var(--tilt));
+  position:relative;isolation:isolate}
+.btn::before{content:'';position:absolute;inset:0;z-index:-1;
+  box-shadow:inset 0 0 0 2.5px var(--stempel);
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
   mask-image:var(--ink-break);mask-composite:intersect}
-.btn.gold{color:var(--gold);box-shadow:inset 0 0 0 2.5px var(--gold)}
-.btn.on{background:var(--blue);color:var(--on-accent);transform:rotate(1.1deg);
-  -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
+.btn.gold{--stempel:var(--gold)}
+.btn.warn{--stempel:var(--amber)}
+.btn.on{--tilt:1.1deg;color:var(--on-accent);
+  background:color-mix(in srgb, var(--stempel) 62%, var(--surface))}
+.btn.on::before{background:var(--stempel);box-shadow:none}
 .btn.warn{color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber)}
-.btn.big{padding:12px 17px;font-size:12.5px}
+.btn.big{padding:12px 17px;font-size:15px}
 
 /* --------------------------------------------------------------- Panels */
 .panel{margin:20px 0 0;padding:16px;background:var(--surface);
@@ -236,23 +401,25 @@ body{
   box-shadow:inset 0 0 0 1px var(--edge);color:var(--text);
   font-family:var(--body);font-size:16px;min-width:0}
 .inp::placeholder{color:var(--muted)}
-.startmeta{margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.startmeta{margin-top:10px;font-family:var(--mono);font-size:14.5px;color:var(--muted)}
 .startmeta b{color:var(--blue);font-weight:400}
 .grid{display:flex;flex-wrap:wrap;gap:8px}
 
 /* Chips are stamp imprints, not pills. The rotation comes from their position
-   so nobody has to maintain angles one by one. */
-.chip{padding:9px 13px;font-family:var(--display);font-size:10.5px;font-weight:900;
+   so nobody has to maintain angles one by one. Only `--tilt` varies by position;
+   the `transform` itself stays in one place, which is what lets the hover state
+   further down read the angle instead of fighting these rules for it. */
+.chip{padding:9px 13px;font-family:var(--display);font-size:14.5px;font-weight:900;
   letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:0;
   background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue);
-  white-space:nowrap;transform:rotate(-1.4deg);
+  white-space:nowrap;--tilt:-1.4deg;transform:rotate(var(--tilt));
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
   mask-image:var(--ink-break);mask-composite:intersect}
-.chip:nth-child(2n){transform:rotate(1deg)}
-.chip:nth-child(3n){transform:rotate(-.5deg)}
+.chip:nth-child(2n){--tilt:1deg}
+.chip:nth-child(3n){--tilt:-.5deg}
 .chip[aria-pressed="true"]{background:var(--blue);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
-.chip:nth-child(2n)[aria-pressed="true"]{transform:rotate(-1.7deg)}
+.chip:nth-child(2n)[aria-pressed="true"]{--tilt:-1.7deg}
 .chip.gold{color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
 .chip.gold[aria-pressed="true"]{background:var(--gold);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
@@ -272,8 +439,8 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   box-shadow:inset 0 0 0 2px var(--blue);font-size:19px;font-family:var(--mono);
   display:flex;align-items:center;justify-content:center;cursor:pointer}
 .stepper .lbl{flex:1;text-align:center}
-.stepper .lbl small{display:block;font-family:var(--mono);font-size:9.5px;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.stepper .lbl small{display:block;font-family:var(--mono);font-size:14px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .stepper .lbl strong{font-family:var(--mono);font-size:18px;color:var(--gold);font-weight:700}
 
 /* Brewery tiles: imprints in the brewery's own colour */
@@ -282,7 +449,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .mat{flex:0 0 auto;width:74px;height:74px;cursor:pointer;background:transparent;border:0;
   box-shadow:inset 0 0 0 2.5px var(--bc-readable,var(--bc,var(--edge)));
   color:var(--bc-readable,var(--bc,var(--text-soft)));
-  font-family:var(--display);font-size:10px;font-weight:900;line-height:1.15;
+  font-family:var(--display);font-size:14.5px;font-weight:900;line-height:1.15;
   display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;
   transform:rotate(-1.6deg);
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
@@ -290,12 +457,41 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .mat:nth-child(2n){transform:rotate(1.2deg)}
 .mat[aria-pressed="true"]{background:var(--bc);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
-.mat small{display:block;font-family:var(--mono);font-size:8.5px;font-weight:400;
+.mat small{display:block;font-family:var(--mono);font-size:14px;font-weight:400;
   opacity:.75;margin-top:3px}
 
+/* ==========================================================================
+   The bottle cap
+
+   A count that is worth reading twice deserves an object rather than a label:
+   how many stops a suggestion has, and which stop you are looking at. The
+   crimped edge is a clip-path with 21 teeth, and the cap is the only round
+   thing on the page — so where it appears, it is never mistaken for a button
+   frame or a chip.
+   ========================================================================== */
+.cap{--cap-colour:var(--blue);--cap-size:60px;
+  position:relative;display:inline-block;vertical-align:middle;flex:none;
+  width:var(--cap-size);height:var(--cap-size)}
+.cap i{position:absolute;inset:0;border-radius:50%;background:var(--cap-colour);
+  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%)}
+.cap b{position:absolute;inset:8px;border-radius:50%;background:var(--surface);
+  box-shadow:inset 0 0 0 2px var(--cap-colour);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;line-height:1.02;
+  font-family:var(--display);font-weight:900;font-size:calc(var(--cap-size) * .32);
+  color:var(--cap-colour)}
+.cap b span{font-family:var(--body);font-weight:400;font-size:14px;color:var(--text-soft)}
+.cap.off{--cap-colour:var(--edge)}
+.cap.off b{color:var(--text-soft)}
+
 /* ------------------------------------------------------------ Suggestions */
-.plan{padding:15px;background:transparent;margin-bottom:10px;
-  box-shadow:inset 0 0 0 1px var(--edge-soft)}
+/* The extra room on the left is gone with the cap that used to hang there —
+   the cards are even on all four sides now. */
+.plan{padding:15px;background:var(--surface);margin:0 0 14px;
+  box-shadow:inset 0 0 0 2px var(--edge-soft)}
 /* Only the suggestions are clickable. The dropped tour below wears the same
    class and keeps its own button, so the pointer is tied to the role rather
    than to the look. */
@@ -306,17 +502,19 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
    swapping the frame for the hover one reads as losing the selection. */
 .plan[role="button"].active:hover{box-shadow:inset 0 0 0 2.5px var(--gold)}
 .plan .ptop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.plan .rank{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--amber)}
-.plan .tot{font-family:var(--mono);font-size:13px;color:var(--gold)}
+.plan .ptop{align-items:baseline;gap:6px 12px}
+.plan .rank{font-family:var(--mono);font-size:14.5px;letter-spacing:.02em;
+  text-transform:uppercase;color:var(--amber);white-space:nowrap}
+.plan .tot{white-space:nowrap}
+.plan .tot{font-family:var(--mono);font-size:15px;color:var(--gold)}
 .chain{margin:10px 0 0;font-family:var(--display);font-size:16px;font-weight:900;
   letter-spacing:-.024em;text-transform:uppercase;color:var(--text);line-height:1.24}
 .chain span{color:var(--blue);font-weight:900}
 
-.plan .pmeta{margin-top:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+.plan .pmeta{margin-top:8px;font-family:var(--mono);font-size:14.5px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted)}
 .plan .ptags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.ptag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+.ptag{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;
   padding:4px 9px;color:var(--text-soft);box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .ptag.w{color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
 .plan .pact{margin-top:12px}
@@ -326,7 +524,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 /* Dropped tour: the notice explaining why it is gone */
 .dropped{margin:0 0 14px;padding:13px 15px;background:var(--warn-bg);
   border-top:3px solid var(--amber)}
-.dropped strong{display:block;font-family:var(--display);font-size:12px;font-weight:900;
+.dropped strong{display:block;font-family:var(--display);font-size:15px;font-weight:900;
   letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
 .dropped p{margin:0;font-size:14.5px;color:var(--text-soft)}
 
@@ -335,7 +533,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .plan.stale{opacity:.75;box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .plan.stale .rank{color:var(--amber)}
 .plan.stale .chain,.plan.stale .chain span{color:var(--muted)}
-.plan.stale .reason{margin:10px 0 0;font-size:13.5px;color:var(--amber)}
+.plan.stale .reason{margin:10px 0 0;font-size:15px;color:var(--amber)}
 /* Once the settings fit again, "dropped" is the wrong message. */
 .plan.stale.works-again{opacity:1;box-shadow:inset 0 0 0 2px var(--gold)}
 .plan.stale.works-again .rank{color:var(--gold)}
@@ -345,7 +543,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .visited-filter{margin-top:15px}
 .visited-filter .pair{display:flex;gap:8px}
 .visited-filter .pair button{flex:1}
-.visited-filter .tally{margin-top:8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
+.visited-filter .tally{margin-top:8px;font-family:var(--mono);font-size:14.5px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted)}
 
 /* ----------------------------------------------------------- Light rail */
@@ -356,12 +554,12 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .rail-sunset{position:absolute;top:-7px;bottom:-7px;width:1.5px;
   background:var(--foam);border-radius:0}
 .rail-sunset em{position:absolute;top:-15px;left:50%;transform:translateX(-50%);
-  font-style:normal;font-family:var(--mono);font-size:9px;color:var(--foam);white-space:nowrap}
+  font-style:normal;font-family:var(--mono);font-size:14px;color:var(--foam);white-space:nowrap}
 .pip{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;
   transform:rotate(45deg);background:var(--ink-deep);
   box-shadow:inset 0 0 0 2px var(--foam);transition:left .4s cubic-bezier(.2,.8,.25,1)}
 .rail-scale{display:flex;justify-content:space-between;margin-top:9px}
-.rail-scale span{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.rail-scale span{font-family:var(--mono);font-size:14.5px;color:var(--muted)}
 
 /* ------------------------------------------------------------------ Map */
 .map-shell{margin:16px 0 0;overflow:hidden;background:var(--map-ground);
@@ -372,7 +570,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 /* The legend and MapLibre's attribution share the bottom edge, so the legend
    sits left and the attribution stays where MapLibre puts it, on the right. */
 .map-legend{position:absolute;left:11px;bottom:10px;display:flex;flex-direction:column;
-  gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--muted);
+  gap:4px;font-family:var(--mono);font-size:14px;letter-spacing:.08em;color:var(--muted);
   text-transform:uppercase;pointer-events:none;z-index:2}
 .map-legend i{display:inline-block;width:16px;height:0;border-top:2px solid;
   margin-right:6px;vertical-align:3px}
@@ -385,7 +583,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .pin{display:flex;align-items:center;gap:6px;cursor:pointer}
 .pin i{width:13px;height:13px;flex:none;transform:rotate(45deg);
   background:var(--gold);box-shadow:0 0 0 1.5px var(--map-ground)}
-.pin b{font-family:var(--display);font-size:10px;font-weight:900;letter-spacing:.04em;
+.pin b{font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.04em;
   text-transform:uppercase;color:var(--text);background:var(--map-ground);
   padding:2px 5px;white-space:nowrap;box-shadow:0 0 0 1px var(--edge-soft)}
 .pin.off i{background:var(--edge)}
@@ -399,29 +597,58 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 
 /* MapLibre's own chrome, brought into the palette. The attribution stays — the
    OpenStreetMap licence asks for it and this is where it belongs. */
-.maplibregl-ctrl-attrib{font-family:var(--mono);font-size:8.5px;
+.maplibregl-ctrl-attrib{font-family:var(--mono);font-size:14px;
   background:color-mix(in srgb, var(--map-ground) 84%, transparent)}
 .maplibregl-ctrl-attrib a{color:var(--muted)}
 .maplibregl-ctrl-attrib-button{background-color:var(--map-ground)}
 
 /* -------------------------------------------------------------- Timeline */
-.tl{margin:18px 0 0;position:relative;padding-left:26px}
-.tl::before{content:"";position:absolute;left:5.5px;top:8px;bottom:34px;width:1px;
-  background:var(--edge-soft)}
-.node{position:relative;margin:0 0 12px}
-.node::before{content:"";position:absolute;left:-26px;top:6px;width:12px;height:12px;
-  transform:rotate(45deg);background:var(--ground);box-shadow:inset 0 0 0 1.5px var(--muted)}
-.node.stop::before{background:var(--gold);box-shadow:inset 0 0 0 1.5px var(--gold)}
-.node.skipped::before{background:var(--ground);box-shadow:inset 0 0 0 1.5px var(--edge)}
-.node.term::before{box-shadow:inset 0 0 0 1.5px var(--blue)}
-.leg{color:var(--text-soft);font-size:13.5px;padding:2px 0 12px}
-.leg .mode{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+/*
+ * The timeline. Each stop is a bottle cap with its number in it.
+ *
+ * The number comes from a CSS counter rather than a prop: it is the position
+ * in the list and nothing else, and the list already knows that. A skipped
+ * stop does not count — the second cap of a three-stop tour with the middle
+ * one dropped reads "2", which is what the evening actually looks like.
+ *
+ * Two pseudo-elements: ::before is the crimped edge, ::after the inner disc
+ * carrying the digit. The crimp is the same 21-tooth path as `.cap`.
+ */
+.tl{margin:18px 0 0;position:relative;padding-left:46px;counter-reset:halt}
+.tl::before{content:"";position:absolute;left:16px;top:12px;bottom:34px;width:2px;
+  background:repeating-linear-gradient(var(--edge) 0 5px,transparent 5px 10px)}
+.node{position:relative;margin:0 0 14px;--cap-colour:var(--gold)}
+.node::before{content:"";position:absolute;left:-46px;top:2px;width:34px;height:34px;
+  border-radius:50%;background:var(--cap-colour);
+  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%)}
+.node::after{content:counter(halt);position:absolute;left:-41px;top:7px;width:24px;height:24px;
+  border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--cap-colour);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:900;font-size:14px;color:var(--cap-colour)}
+.node.stop{counter-increment:halt}
+/* Only a stop is a cap. Start, legs and the way home are points on the line —
+   they carry no number, and a cap with the counter's current value in it would
+   print "0" three times before the evening even begins. */
+.node:not(.stop):not(.skipped)::before{left:-38px;top:8px;width:18px;height:18px;
+  clip-path:none;background:var(--surface);box-shadow:inset 0 0 0 2px var(--edge)}
+.node:not(.stop):not(.skipped)::after{content:"";left:-32px;top:14px;width:6px;height:6px;
+  background:var(--text-soft);box-shadow:none}
+.node.skipped{--cap-colour:var(--edge)}
+.node.skipped::after{content:"aus";font-size:14px;letter-spacing:-.02em;color:var(--text-soft)}
+.node.term::before{background:var(--blue)}
+.node.term::after{background:var(--blue)}
+.leg{color:var(--text-soft);font-size:15px;padding:2px 0 12px}
+.leg .mode{font-family:var(--mono);font-size:14.5px;letter-spacing:.06em;text-transform:uppercase;
   color:var(--gold);margin-right:8px}
 .leg.bike .mode{color:var(--blue)}
 .leg.transit .mode{color:var(--amber)}
 .leg a{color:var(--text-soft);text-decoration:underline;text-underline-offset:2px}
 .legmodes{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap}
-.lm{font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:4px 9px;
+.lm{font-family:var(--mono);font-size:14.5px;letter-spacing:.05em;padding:4px 9px;
   color:var(--muted);text-decoration:none;display:inline-block;
   box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .lm b{font-weight:700}
@@ -439,14 +666,14 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .card h3 a:hover{text-decoration:underline;text-underline-offset:3px}
 .time{font-family:var(--mono);font-size:14px;color:var(--gold);white-space:nowrap;
   text-align:right;line-height:1.35;font-weight:700}
-.time em{display:block;font-style:normal;font-size:10px;letter-spacing:.1em;
+.time em{display:block;font-style:normal;font-size:14.5px;letter-spacing:.1em;
   color:var(--muted);text-transform:uppercase;font-weight:400}
 .time.gone{color:var(--muted)}
-.water{display:inline-flex;margin-top:8px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--blue)}
+.water{display:inline-flex;margin-top:8px;font-family:var(--mono);font-size:14.5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--blue)}
 
 /* The visit stamp — the loyalty card in miniature */
-.seen{display:inline-block;margin-left:9px;font-family:var(--display);font-size:9px;
+.seen{display:inline-block;margin-left:9px;font-family:var(--display);font-size:14px;
   font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);
   box-shadow:inset 0 0 0 2px var(--amber);padding:2px 6px;vertical-align:3px;
   transform:rotate(-4deg);
@@ -455,12 +682,12 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 /* The same stamp, smaller — for the chain in a suggestion, where it sits next
    to a stop's name rather than a heading. A second label for the same thing
    would be a mistake, even if it fitted better. */
-.seen.small{font-size:7.5px;padding:2px 4px;margin-left:6px;vertical-align:2px;
+.seen.small{font-size:14px;padding:2px 4px;margin-left:6px;vertical-align:2px;
   transform:rotate(-5deg)}
 
 .desc{margin:11px 0 0;font-size:15px;color:var(--text-soft)}
 .facts{display:flex;flex-wrap:wrap;gap:6px;margin:13px 0 0}
-.fact{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+.fact{font-family:var(--mono);font-size:14.5px;letter-spacing:.06em;text-transform:uppercase;
   padding:5px 10px;color:var(--text-soft);box-shadow:inset 0 0 0 1px var(--edge)}
 .warnbox{margin:13px 0 0;padding:11px 13px;font-size:14px;background:var(--warn-bg);
   border-top:2px solid var(--amber);color:var(--amber)}
@@ -468,23 +695,32 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .dur{display:flex;align-items:center;margin-left:auto;box-shadow:inset 0 0 0 1px var(--edge)}
 .dur button{width:32px;height:30px;border:0;background:transparent;color:var(--gold);
   font-family:var(--mono);font-size:16px;cursor:pointer}
-.dur span{font-family:var(--mono);font-size:12px;color:var(--text-soft);
+.dur span{font-family:var(--mono);font-size:15px;color:var(--text-soft);
   min-width:48px;text-align:center}
 .total{margin:10px 0 0;padding:15px 16px;background:var(--surface);
   box-shadow:inset 0 0 0 2px var(--edge)}
 .total .row{display:flex;justify-content:space-between;align-items:baseline}
 .total strong{font-family:var(--display);font-size:26px;font-weight:900;
   letter-spacing:-.032em;color:var(--gold)}
-.total .hint{margin-top:8px;font-size:13.5px;color:var(--text-soft)}
+.total .hint{margin-top:8px;font-size:15px;color:var(--text-soft)}
 .total .hint.over{color:var(--amber)}
 
 /* ------------------------------------------------------------- Directory */
-.count{margin:20px 0 0;font-family:var(--mono);font-size:10px;letter-spacing:.2em;
+.count{margin:20px 0 0;font-family:var(--mono);font-size:14.5px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--amber)}
 .glist{margin:12px 0 0;display:flex;flex-direction:column;gap:10px}
-.g{padding:14px 15px;background:transparent;box-shadow:inset 0 0 0 1px var(--edge-soft);
+/*
+ * A directory entry is a mat, like a suggestion is.
+ *
+ * It used to sit on the bare board behind a hairline — which is why the travel
+ * time in gold and the caveat in amber were unreadable there. Same rule as
+ * everywhere: colour goes on a surface, never on the board.
+ */
+.g{padding:15px 16px;background:var(--surface);box-shadow:inset 0 0 0 2px var(--edge-soft);
   position:relative}
-.g.seenrow{background:var(--surface)}
+/* A visited garden is not a different card, it is a stamped one. The seen mark
+   next to the name says it; the card itself stays a card. */
+.g.seenrow{box-shadow:inset 0 0 0 2px var(--gold)}
 .g .gtop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 /* h4 in the directory, h3 in the landing page's prose — same row, and the
    heading level follows the page's outline rather than the look. */
@@ -492,13 +728,14 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   letter-spacing:-.024em;text-transform:uppercase;color:var(--text)}
 .g h4 a,.g h3 a{color:inherit;text-decoration:none}
 .g h4 a:hover,.g h3 a:hover{text-decoration:underline;text-underline-offset:3px}
-.g .away{font-family:var(--mono);font-size:11.5px;color:var(--gold);white-space:nowrap;
+.g .away{font-family:var(--mono);font-size:14.5px;color:var(--gold);white-space:nowrap;
   font-weight:700}
-.g .gmeta{margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted)}
+/* Sentence case, not capitals. This line is read, not scanned — "Löwenbräu ·
+   Isarauen · 1.700 Plätze" in letterspaced capitals is a sign, not a fact. */
+.g .gmeta{margin-top:6px;font-size:15px;color:var(--text-soft)}
 .g .gmeta b{color:var(--bc-readable,var(--bc,var(--brown)));font-weight:700}
-.g p{margin:9px 0 0;font-size:14px;color:var(--text-soft)}
-.g .gnote{margin:9px 0 0;font-size:13px;color:var(--amber)}
+.g p{margin:10px 0 0;font-size:15.5px;color:var(--text-soft)}
+.g .gnote{margin:9px 0 0;font-size:15px;color:var(--amber)}
 .g .gtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .g .gact{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
 
@@ -507,7 +744,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .tip{padding:14px 15px;box-shadow:inset 0 0 0 1px var(--edge-soft)}
 /* `strong` for the practical notes, `h3` for the FAQ — a question is part of
    the outline, a note is not. */
-.tip strong,.tip h3{display:block;font-family:var(--display);font-size:13px;font-weight:900;
+.tip strong,.tip h3{display:block;font-family:var(--display);font-size:15px;font-weight:900;
   letter-spacing:-.01em;text-transform:uppercase;color:var(--text);margin-bottom:5px}
 .tip span{font-size:14px;color:var(--text-soft)}
 
@@ -543,13 +780,38 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   text-decoration-thickness:1.5px}
 
 footer{margin:38px 0 0;padding:18px 0 0;border-top:1px solid var(--edge-soft);
-  color:var(--muted);font-family:var(--mono);font-size:10.5px;line-height:1.9;
+  color:var(--muted);font-family:var(--mono);font-size:14.5px;line-height:1.9;
   letter-spacing:.06em}
 footer b{color:var(--text-soft);font-weight:400}
 
 [hidden]{display:none!important}
 :focus-visible{outline:2.5px solid var(--amber);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.pip{transition:none}}
+
+/* ------------------------------------------------- Hover: the stamp tips */
+/*
+ * Touch a stamp and it tips out of its resting angle into the opposite one,
+ * overshoots and settles. The overshoot is in the curve — the third control
+ * point runs past 1 — not in the end value.
+ *
+ * That end value is the mirror of `--tilt`, the angle each element rests at.
+ * A fixed hover angle would flatten the handwriting: every chip in a row would
+ * end up parallel, and `.btn.on`, which rests to the right, would tip the same
+ * way as a plain `.btn`, which rests to the left. Mirroring instead means each
+ * stamp swings out of ITS own lie, and the uneven `:nth-child` angles survive
+ * the hover. It also keeps the rotated box exactly as large as it was — only
+ * the 3% lift grows it, which fits inside the padding of the scrolling rows.
+ *
+ * One rule for the three of them: they wear the same imprint, so they move
+ * alike. Guarded twice. `hover:hover` keeps a phone from leaving a tapped
+ * button stuck in the state, and `no-preference` drops the movement instead of
+ * undoing it in a later block — an undo would have to name the resting angle a
+ * second time, and that angle has one home.
+ */
+@media (hover:hover) and (prefers-reduced-motion:no-preference){
+  .btn,.chip,.seg a{transition:transform .34s cubic-bezier(.34,1.56,.64,1)}
+  .btn:hover,.chip:hover,.seg a:hover{transform:rotate(calc(var(--tilt) * -1)) scale(1.03)}
+}
 
 /* ---------------------------------------------------- Entity view: image */
 /*
@@ -595,12 +857,12 @@ footer b{color:var(--text-soft);font-weight:400}
 .photo{position:relative;background:var(--surface);overflow:hidden;
   box-shadow:inset 0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
-.photo .placeholder{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.16em;
+.photo .placeholder{font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.16em;
   text-transform:uppercase;color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber);
   padding:10px 14px;transform:rotate(-6deg);text-align:center;line-height:1.5}
 .photo .credit{position:absolute;left:0;right:0;bottom:0;padding:6px 10px;
   background:rgba(46,28,13,.66);color:var(--foam);text-decoration:none;
-  font-family:var(--mono);font-size:9px;letter-spacing:.1em}
+  font-family:var(--mono);font-size:14px;letter-spacing:.1em}
 
 /* The Maß price: the one number people ask for. */
 .price-hero{margin-top:12px;padding:15px 16px;background:var(--surface);
@@ -609,24 +871,24 @@ footer b{color:var(--text-soft);font-weight:400}
 .price-hero .amount{font-family:var(--display);font-weight:900;font-size:30px;
   letter-spacing:-.03em;color:var(--gold)}
 table.prices{width:100%;border-collapse:collapse;margin-top:8px;
-  font-family:var(--mono);font-size:12.5px}
+  font-family:var(--mono);font-size:15px}
 table.prices td{padding:8px 0;border-top:1px solid var(--edge-soft);color:var(--text-soft)}
-table.prices .size{color:var(--muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+table.prices .size{color:var(--muted);font-size:14.5px;letter-spacing:.14em;text-transform:uppercase}
 table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-space:nowrap}
 
 /* ------------------------------------------------------------ Detail page */
-.back{display:inline-block;margin:22px 0 0;font-family:var(--mono);font-size:10.5px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back{display:inline-block;margin:22px 0 0;font-family:var(--mono);font-size:14.5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
 .back:hover{color:var(--amber)}
 .detail-head{margin:16px 0 0}
 .detail-head h2{margin:0;font-family:var(--display);font-size:clamp(23px,6vw,32px);
   font-weight:900;letter-spacing:-.03em;text-transform:uppercase;color:var(--text);
   line-height:1.08}
-.detail-head .gmeta{margin-top:9px;font-family:var(--mono);font-size:10.5px;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.hours{width:100%;border-collapse:collapse;margin-top:14px;font-family:var(--mono);font-size:12.5px}
+.detail-head .gmeta{margin-top:9px;font-family:var(--mono);font-size:14.5px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hours{width:100%;border-collapse:collapse;margin-top:14px;font-family:var(--mono);font-size:15px}
 .hours th{text-align:left;font-weight:400;color:var(--muted);padding:0 0 8px;
-  letter-spacing:.14em;text-transform:uppercase;font-size:9.5px}
+  letter-spacing:.14em;text-transform:uppercase;font-size:14px}
 .hours td{padding:7px 0;color:var(--text-soft);border-top:1px solid var(--edge-soft)}
 .hours td.closed{color:var(--muted)}
 /* Today is the row people opened the page for. Gold, because gold carries the
@@ -634,7 +896,7 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
    findable at a glance, not win against the price beside it. */
 .hours tr.today td{background:color-mix(in srgb, var(--gold) 15%, transparent);
   color:var(--gold);font-weight:700;border-top-color:var(--gold)}
-.unverified{margin-top:12px;font-size:13px;color:var(--muted)}
+.unverified{margin-top:12px;font-size:15px;color:var(--muted)}
 
 /* ============================================================
    Wide view — deliberately at the end of the file
@@ -669,7 +931,7 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 .setup-go .note{margin-top:10px}
 
 @media (min-width:1000px){
-  .wrap{max-width:1180px;padding:0 30px}
+  .wrap{--gutter:30px;max-width:1180px}
 
   /* Header: seal and title on the left, the introductory sentence beside them.
      Stacked, it would leave an empty area on the right as wide as the sentence
@@ -683,14 +945,12 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
     grid-template-columns:max-content minmax(280px,44ch);
     justify-content:start;
     grid-template-areas:
-      "switch  switch"
       "eyebrow eyebrow"
       "seal    text"
       "title   text";
     gap:0 48px;
     align-items:start;
   }
-  .head .theme-switch{grid-area:switch}
   .head .eyebrow{grid-area:eyebrow}
   .head .seal{grid-area:seal}
   .head h1{grid-area:title}
@@ -707,7 +967,7 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 }
 
 @media (min-width:1400px){
-  .wrap{max-width:1460px;padding:0 40px}
+  .wrap{--gutter:40px;max-width:1460px}
   /* Stretching two switches across 1400 px does not make them more important,
      only harder to hit — the mouse has further to travel. */
   .seg{max-width:640px}

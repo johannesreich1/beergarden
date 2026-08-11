@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Wirtshausgiebel</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   WIRTSHAUSGIEBEL — everything the house owns, in one gable
+
+   The fullest of the eight, on purpose: foam along the top edge,
+   an enamelled band with the three ways on, three mats fanned
+   for the three caveats, each with its own cap and sign, the
+   paperwork on a rail below, and the seal at the bottom point of
+   the gable. It is a signboard, and it is the only place on the
+   site where the house is allowed to introduce itself twice.
+
+   The gable is the reason it holds together rather than piling
+   up: the band is full width, the mats sit inside it, the rail
+   is narrower, and the seal is a point. Everything narrows
+   downward, so the eye is led out of the page instead of being
+   handed one more thing to look at.
+
+   The price of all this is height, and the mobile view pays it —
+   check the narrow frames before choosing this one.
+   ============================================================ */
+.fuss-h{position:relative;margin-top:56px}
+
+/* Foam sits on the top edge of the footer, so the footer reads as the poured
+   part of the page. It needs room above it, hence the margin. */
+.fuss-h .krone{position:relative;height:0}
+
+.fuss-h .band{--farbe:var(--akzent);margin-top:14px;padding:22px 24px;text-align:center}
+.fuss-h .band .wege{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 34px}
+.fuss-h .band a{font-family:var(--display);font-size:18px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.045em;text-decoration:none}
+.fuss-h .band a:hover{text-decoration:underline;text-underline-offset:5px}
+.fuss-h .band .spruch{margin-top:11px;font-size:15.5px}
+
+/* Three mats, fanned. The caps hang over the left edge, so each mat keeps the
+   padding its cap needs, and the row keeps the margin the caps hang into. */
+.fuss-h .faecher{display:grid;gap:22px;grid-template-columns:minmax(0,1fr);
+  margin:26px 0 0 46px;padding:6px 8px 10px}
+@media(min-width:940px){.fuss-h .faecher{grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}}
+.fuss-h .faecher .deckel{height:100%;padding:20px 22px 20px 40px;
+  box-shadow:inset 0 0 0 2px var(--kante),0 8px 22px rgba(0,0,0,.18)}
+.fuss-h .faecher > *:nth-child(1) .deckel{transform:rotate(-1.3deg)}
+.fuss-h .faecher > *:nth-child(2) .deckel{transform:rotate(.6deg)}
+.fuss-h .faecher > *:nth-child(3) .deckel{transform:rotate(-.7deg)}
+.fuss-h .fach{position:relative}
+.fuss-h .korken{position:absolute;left:-46px;top:14px;z-index:1}
+.fuss-h .fuss-titel{color:var(--maerzen)}
+.fuss-h .fach p{font-size:16px;line-height:1.5}
+
+/* The rail: narrower than the mats above it, which is what makes the gable. */
+.fuss-h .schiene{max-width:70ch;margin:26px auto 0;padding:16px 20px;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:9px 26px;text-align:center}
+.fuss-h .schiene a{color:var(--akzent);font-size:16px}
+.fuss-h .quelle{max-width:64ch;margin:14px auto 0;text-align:center;font-size:15.5px;
+  color:var(--weich);line-height:1.5}
+
+/* The point of the gable: the seal, then one line, then the torn edge. */
+.fuss-h .spitze{margin-top:20px;text-align:center}
+.fuss-h .spitze .siegel{--gr:74px;display:inline-block;transform:rotate(-4deg)}
+.fuss-h .spitze p{margin-top:6px;font-size:15.5px;color:var(--weich)}
+.fuss-h .schluss{max-width:220px;margin:16px auto 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-h">
+    <div class="krone"><span class="schaumkrone oben" aria-hidden="true"></span></div>
+
+    <nav class="band aufriss satt" aria-label="Seitenbereiche">
+      <div class="wege">
+        <a href="#">Tour bauen</a>
+        <a href="#">Alle Biergärten</a>
+        <a href="#">Informationen</a>
+      </div>
+      <p class="spruch">München zuerst, Deutschland später. Kein Login, keine Konten.</p>
+    </nav>
+
+    <div class="faecher">
+      <div class="fach">
+        <span class="korken" style="--gr:76px;--farbe:var(--akzent)" aria-hidden="true">
+          <span class="rand"></span><span class="mitte"><span class="zahl">≈</span></span></span>
+        <div class="deckel">
+          <h2 class="fuss-titel">Fahrzeiten</h2>
+          <p>Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte Verbindung
+            auf die Modus-Angabe tippen.</p>
+        </div>
+      </div>
+
+      <div class="fach">
+        <span class="korken" style="--gr:76px;--farbe:var(--maerzen)" aria-hidden="true">
+          <span class="rand"></span><span class="mitte">
+          <span class="zahl" style="font-size:16px">k.&nbsp;A.</span></span></span>
+        <div class="deckel">
+          <h2 class="fuss-titel">Ausschank</h2>
+          <p>Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</p>
+        </div>
+      </div>
+
+      <div class="fach">
+        <span class="korken" style="--gr:76px;--farbe:var(--gold)" aria-hidden="true">
+          <span class="rand"></span><span class="mitte"><span class="zahl">☼</span></span></span>
+        <div class="deckel">
+          <h2 class="fuss-titel">Wetter</h2>
+          <p>Bei schönem Wetter heißt: der Wirt entscheidet morgens um neun.</p>
+        </div>
+      </div>
+    </div>
+
+    <nav class="schiene deckel" aria-label="Rechtliches">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">Kontakt</a>
+    </nav>
+    <p class="quelle">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+
+    <div class="spitze">
+      <span data-siegel></span>
+      <p>Gebaut in München, aus offenen Daten.</p>
+    </div>
+    <div class="riss-kante schluss"></div>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+<script>
+/* The seal is drawn once, in basis.js. The point of the gable wants a second,
+   smaller one — cloned from the head rather than copied into this file, so the
+   two can never drift apart. basis.js registers its DOMContentLoaded listener
+   first, so the head is already built when this one runs. */
+addEventListener('DOMContentLoaded', () => {
+  const siegel = document.querySelector('.kopf .siegel')?.cloneNode(true)
+  if (siegel) document.querySelector('[data-siegel]')?.append(siegel)
+})
+</script>
+</body>
+</html>

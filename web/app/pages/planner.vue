@@ -17,15 +17,24 @@ import {
 definePageMeta({ path: '/planer' })
 
 /*
- * The planner runs in the client (`ssr: false`), so a crawler sees an empty
- * shell here no matter what. Title and description are still worth setting:
- * they are what shows up when somebody shares the link.
+ * The head is prerendered, the body is not.
+ *
+ * The planner needs localStorage and computes per keystroke, so it stays a
+ * client-side page — but that used to mean the route shipped an empty document
+ * with no title at all, and a link shared into WhatsApp or Slack showed the
+ * bare URL. Title, description and Open Graph now come off the shelf like on
+ * every other page; only the tool itself waits for the browser.
+ *
+ * Not indexable, for the same reason it is not in the sitemap: what a crawler
+ * gets here is the frame and nothing else, and an empty page under a good
+ * title is worse than no result. The landing page is what should be found.
  */
 usePageSeo({
   title: 'Tour bauen',
   description:
     'Biergarten-Tour für München planen: Startpunkt, Zeitfenster und Verkehrsmittel '
     + 'wählen — der Planer schlägt Touren vor und rechnet Öffnungszeiten mit.',
+  indexable: false,
 })
 
 const { data: gardens } = await useGardens()
@@ -424,7 +433,20 @@ function setMode(mode: typeof state.value.mode): void {
     </div>
 
     <div v-if="started" class="results">
-    <div class="section-title"><h2>Vorschläge</h2><div class="rule" /></div>
+    <!--
+      The cap counts what stands under it: how many suggestions there are. It
+      sits directly before the word "Vorschläge", so that is how it reads — and
+      a number that reads as something other than what it counts is worse than
+      no number. It used to show the number of stops, which is a setting and
+      already has its own control on the left.
+    -->
+    <div class="section-title">
+      <!-- Hidden from assistive tech: the list below it is the count, and a
+           screen reader announcing "4" before "Vorschläge" says it twice. -->
+      <span class="cap" aria-hidden="true"><i /><b>{{ suggestions.routes.length }}</b></span>
+      <h2>Vorschläge</h2>
+      <div class="rule" />
+    </div>
     <p class="note">
       Aus {{ countGardens(poolSize) }}, {{ WEEKDAY_NAMES[state.weekday] }} geöffnet,
       Öffnungszeiten berücksichtigt.

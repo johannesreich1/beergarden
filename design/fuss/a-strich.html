@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Strich</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   STRICH — the least a footer can be and still carry everything
+
+   One torn rule, then flow: no mat, no frame, no box. That is
+   also the constraint it accepts, because on the bare board only
+   the ink reaches 7:1 — so this draft has no colour at all. What
+   is a blue heading elsewhere is a run of small capitals here,
+   and the honesty notes are plain ink, which is the one thing on
+   the board that reads at 7.48:1.
+
+   The order is the argument: the notes come first, the paperwork
+   last, because the notes are the reason the footer exists.
+   ============================================================ */
+.fuss-a{max-width:66ch}
+
+/* Navigation reads as one line of stamped words, separated by the rule above
+   it rather than by boxes. Uppercase is safe on three words; it is information
+   set in spaced capitals that k-bestand found unreadable, not a signpost. */
+.fuss-a .wege{display:flex;flex-wrap:wrap;gap:8px 24px;margin:0 0 20px}
+.fuss-a .wege a{font-family:var(--display);font-size:16.5px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em}
+
+.fuss-a .ehrlich li{margin-bottom:9px;max-width:62ch}
+/* A hanging sign instead of a bullet: the reader sees which caveat is which
+   before reading it, and it costs no colour. */
+/* The column is as wide as the widest sign — "k. A." is a token from the data,
+   not a symbol, so it sets the measure rather than being squeezed to fit. */
+.fuss-a .ehrlich li{padding-left:52px;text-indent:-52px}
+.fuss-a .zeichen{display:inline-block;width:52px;text-indent:0;font-size:15.5px;
+  font-family:var(--display);font-weight:900}
+
+.fuss-a .papiere{display:flex;flex-wrap:wrap;gap:6px 20px;margin:20px 0 0;font-size:15.5px}
+.fuss-a .karte{margin:11px 0 0;font-size:15px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-a">
+    <div class="riss-kante"></div>
+    <nav class="wege" aria-label="Seitenbereiche">
+      <a href="#">Tour bauen</a>
+      <a href="#">Alle Biergärten</a>
+      <a href="#">Informationen</a>
+    </nav>
+
+    <ul class="ehrlich">
+      <li><span class="zeichen">≈</span>Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die
+        echte Verbindung auf die Modus-Angabe tippen.</li>
+      <li><span class="zeichen">k.&nbsp;A.</span>Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht
+        sicher zu verifizieren.</li>
+      <li><span class="zeichen">☼</span>Bei schönem Wetter heißt: der Wirt entscheidet morgens um neun.</li>
+    </ul>
+
+    <nav class="papiere" aria-label="Rechtliches">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">Kontakt</a>
+    </nav>
+    <p class="karte">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Wirtszettel</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   WIRTSZETTEL — the footer as the bill
+
+   A beer garden hands you a slip: item on the left, what it costs
+   on the right, dotted leaders in between. That form is the whole
+   idea, and it happens to fit the content exactly — every line of
+   a footer is a name and a gloss.
+
+   The typewriter face is already the body face of the site, so
+   nothing has to be borrowed to make it read as a docket. The
+   torn edges top and bottom are the pad it was ripped from.
+
+   The three notes are the last three items, numbered, because on
+   a bill the small print is what you read last and remember.
+   ============================================================ */
+.fuss-c{max-width:56rem}
+.fuss-c .zettel{background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);
+  padding:8px 26px 22px}
+
+.fuss-c .block{padding:15px 0 4px;border-top:1px solid var(--kante)}
+.fuss-c .block:first-of-type{border-top:0}
+.fuss-c .fuss-titel{color:var(--weich);margin-bottom:8px}
+
+/* Item, leader, gloss. The leader is a background rather than a row of dots,
+   so it stretches to whatever is left and never wraps to its own line. */
+.fuss-c .zeile{display:flex;align-items:baseline;gap:11px;padding:7px 0}
+.fuss-c .posten{font-size:16.5px}
+.fuss-c .fuellung{flex:1;height:0;align-self:center;
+  border-bottom:2px dotted var(--kante)}
+.fuss-c .dazu{font-size:15.5px;color:var(--weich);text-align:right}
+
+/* The notes carry a number instead of a price — the column on the right is
+   where the eye already goes, so the sign sits there. */
+.fuss-c .ehrlich .zeile{align-items:flex-start;gap:14px}
+.fuss-c .nr{flex:none;width:2ch;font-family:var(--display);font-weight:900;font-size:16.5px;
+  color:var(--gold)}
+.fuss-c .satz{flex:1;font-size:16px;line-height:1.5}
+
+/* The total: what the whole slip rests on, and the only stamped line on it.
+   Filled rather than tinted — a --schaum strip would invert in the dark theme,
+   where foam is the lightest colour in the palette and gold is light too. */
+.fuss-c .summe{margin-top:16px;font-size:15.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-c">
+    <div class="riss-kante"></div>
+    <div class="zettel">
+
+      <div class="block">
+        <h2 class="fuss-titel">Wege</h2>
+        <nav aria-label="Seitenbereiche">
+          <p class="zeile"><a class="posten" href="#">Tour bauen</a><span class="fuellung"></span>
+            <span class="dazu">der Planer</span></p>
+          <p class="zeile"><a class="posten" href="#">Alle Biergärten</a><span class="fuellung"></span>
+            <span class="dazu">33 in München</span></p>
+          <p class="zeile"><a class="posten" href="#">Informationen</a><span class="fuellung"></span>
+            <span class="dazu">woher die Daten kommen</span></p>
+        </nav>
+      </div>
+
+      <div class="block">
+        <h2 class="fuss-titel">Papiere</h2>
+        <nav aria-label="Rechtliches">
+          <p class="zeile"><a class="posten" href="#">Impressum</a><span class="fuellung"></span>
+            <span class="dazu">wer hier verantwortlich ist</span></p>
+          <p class="zeile"><a class="posten" href="#">Datenschutz</a><span class="fuellung"></span>
+            <span class="dazu">kein Login, keine Konten</span></p>
+          <p class="zeile"><a class="posten" href="#">Kontakt</a><span class="fuellung"></span>
+            <span class="dazu">E-Mail und Postanschrift</span></p>
+        </nav>
+      </div>
+
+      <div class="block ehrlich">
+        <h2 class="fuss-titel">Kleingedrucktes</h2>
+        <p class="zeile"><span class="nr">1</span><span class="satz">Fahrzeiten sind Schätzungen aus
+          Luftlinie plus Umwegfaktor — für die echte Verbindung auf die Modus-Angabe tippen.</span></p>
+        <p class="zeile"><span class="nr">2</span><span class="satz">Wo beim Ausschank k.&nbsp;A. steht,
+          war die Brauerei nicht sicher zu verifizieren.</span></p>
+        <p class="zeile"><span class="nr">3</span><span class="satz">Bei schönem Wetter heißt: der Wirt
+          entscheidet morgens um neun.</span></p>
+      </div>
+
+      <p class="summe aufriss satt" style="--farbe:var(--gold)">Kartendaten © OpenStreetMap-Mitwirkende
+        (ODbL) · Kacheln: Protomaps</p>
+    </div>
+    <div class="riss-kante"></div>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

@@ -33,11 +33,28 @@ export function useTheme() {
     }
   }
 
+  /**
+   * The order the single switch walks through.
+   *
+   * System first, because it is the right answer for most people and the one
+   * the page starts on: dark in the evening, light in the beer garden, without
+   * anyone touching a setting. The other two are the exceptions, and they come
+   * after the rule.
+   */
+  const ORDER: ThemeChoice[] = ['system', 'light', 'dark']
+
+  /** The next setting — what one press of the switch will do. */
+  const next = computed(() => ORDER[(ORDER.indexOf(theme.value) + 1) % ORDER.length])
+
+  function cycle(): void {
+    choose(next.value)
+  }
+
   /** Call in the browser only. The head script already set the attribute. */
   function hydrate(): void {
     const stored = document.documentElement.dataset.theme
     theme.value = stored === 'light' || stored === 'dark' ? stored : 'system'
   }
 
-  return { theme, choose, hydrate }
+  return { theme, next, choose, cycle, hydrate }
 }

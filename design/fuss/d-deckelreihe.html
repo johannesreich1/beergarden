@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Deckelreihe</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   DECKELREIHE — four mats collected on the table
+
+   Nothing here is a column: it is four mats, each turned a
+   little the way a mat lands when it is put down, with a shadow
+   under it so it lies on the board rather than being printed on
+   it. The tilt is the whole ornament, and it is also the whole
+   risk — a rotated box clips its neighbour and its own shadow,
+   so the row keeps the room the angle needs.
+
+   Angles are small and unequal. Four mats at the same 2° read as
+   a mistake in the stylesheet; four at 1.4°, 0.8°, 1.1° and 0.5°
+   read as four mats.
+   ============================================================ */
+.fuss-d .reihe{display:grid;gap:20px;grid-template-columns:minmax(0,1fr);
+  padding:16px 8px 22px}
+@media(min-width:900px){
+  .fuss-d .reihe{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.4fr);gap:24px}
+}
+
+/* A mat lies on the board: the inset frame keeps it a mat, the drop shadow
+   lifts it off. Full height so four unequal texts still line up as a row. */
+.fuss-d .deckel{height:100%;padding:20px 22px;
+  box-shadow:inset 0 0 0 2px var(--kante),0 7px 20px rgba(0,0,0,.17)}
+.fuss-d .reihe > *:nth-child(1) .deckel{transform:rotate(-1.4deg)}
+.fuss-d .reihe > *:nth-child(2) .deckel{transform:rotate(.8deg)}
+.fuss-d .reihe > *:nth-child(3) .deckel{transform:rotate(-1.1deg)}
+.fuss-d .reihe > *:nth-child(4) .deckel{transform:rotate(.5deg)}
+
+.fuss-d .fuss-titel{color:var(--maerzen)}
+.fuss-d li{margin-bottom:9px}
+.fuss-d a{color:var(--akzent)}
+.fuss-d .ehrlich li{margin-bottom:12px;line-height:1.5}
+.fuss-d .karte{font-size:15.5px;color:var(--weich);line-height:1.5}
+
+/* The credit line lies loose under the mats, on the board, in ink — the one
+   thing here that is printed on the table rather than lying on it. */
+.fuss-d .unten{margin-top:6px;font-size:15.5px;color:var(--weich)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-d">
+    <div class="riss-kante"></div>
+    <div class="reihe">
+      <nav aria-label="Seitenbereiche">
+        <div class="deckel">
+          <h2 class="fuss-titel">Los geht's</h2>
+          <ul>
+            <li><a href="#">Tour bauen</a></li>
+            <li><a href="#">Alle Biergärten</a></li>
+            <li><a href="#">Informationen</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <nav aria-label="Rechtliches">
+        <div class="deckel">
+          <h2 class="fuss-titel">Rechtliches</h2>
+          <ul>
+            <li><a href="#">Impressum</a></li>
+            <li><a href="#">Datenschutz</a></li>
+            <li><a href="#">Kontakt</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div>
+        <div class="deckel">
+          <h2 class="fuss-titel">Karte</h2>
+          <p class="karte">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="deckel">
+          <h2 class="fuss-titel">Ehrlich gesagt</h2>
+          <ul class="ehrlich">
+            <li>Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte
+              Verbindung auf die Modus-Angabe tippen.</li>
+            <li>Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</li>
+            <li>Bei schönem Wetter heißt: der Wirt entscheidet morgens um neun.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="unten">München zuerst, Deutschland später. Kein Login, keine Konten.</p>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

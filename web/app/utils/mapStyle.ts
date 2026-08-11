@@ -67,7 +67,7 @@ export function mapStyle(): StyleSpecification {
         type: 'fill',
         source: 'protomaps',
         'source-layer': 'water',
-        paint: { 'fill-color': water, 'fill-opacity': 0.42 },
+        paint: { 'fill-color': water, 'fill-opacity': 0.55 },
       },
 
       // Buildings only from close up, and only as a texture. Any stronger and
@@ -82,17 +82,19 @@ export function mapStyle(): StyleSpecification {
       },
 
       // Three road weights, not seven. This is a locator map, not a road atlas.
+      // The widths start heavier than looks right at z16, because the tour map
+      // shows the whole city at z11 — and a 0.5px line there is a blank page.
       {
         id: 'roads-minor',
         type: 'line',
         source: 'protomaps',
         'source-layer': 'roads',
         filter: ['in', ['get', 'kind'], ['literal', ['minor_road', 'path']]],
-        minzoom: 13,
+        minzoom: 12,
         paint: {
           'line-color': line,
           'line-opacity': 0.5,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 13, 0.4, 16, 1.6],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.6, 16, 1.6],
         },
       },
       {
@@ -104,7 +106,7 @@ export function mapStyle(): StyleSpecification {
         paint: {
           'line-color': line,
           'line-opacity': 0.7,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 16, 3],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1, 16, 3],
         },
       },
       {
@@ -115,7 +117,7 @@ export function mapStyle(): StyleSpecification {
         filter: ['in', ['get', 'kind'], ['literal', ['major_road', 'highway']]],
         paint: {
           'line-color': line,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.7, 16, 4.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.5, 16, 4.5],
         },
       },
 
@@ -129,7 +131,7 @@ export function mapStyle(): StyleSpecification {
         paint: {
           'line-color': water,
           'line-opacity': 0.55,
-          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.6, 16, 2.5],
+          'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.4, 16, 2.5],
         },
       },
     ],

@@ -1,0 +1,113 @@
+/* ============================================================
+   FUSS — the ground the eight footer drafts stand on
+
+   basis.css already carries the palette, the mat, the cap and the
+   torn ink. This file adds only what a footer needs and what none
+   of the eight may differ in: two colours pushed to text grade, a
+   filled stamp that keeps its lettering readable, the link, and
+   the two headings that sit on the bare board.
+
+   Everything here follows from one measurement. On kraft board
+   gold reaches 3.26:1 and Märzen 2.87:1; darkened as far as
+   k-bestand dares (#5E4004 / #7A3B06) they still only reach
+   3.99 and 3.60. They cannot be made to work there at all. On the
+   lighter mat they can. So the rule is a placement rule:
+
+     COLOUR SITS ON A MAT. THE BARE BOARD CARRIES ONLY STRUCTURE
+     AND INK.
+
+   measure.py checks every number in this comment against every
+   draft, in both themes.
+   ============================================================ */
+
+/* k-bestand darkens gold and Märzen to 6.76:1 and 6.08:1 on the mat, which is
+   secondary grade — enough for a caption, not for a heading. A footer sets its
+   section headings and its markers in these two, and a heading is text, so they
+   go two steps further: 7.50:1 and 7.70:1 on the mat. Dark keeps the mirror
+   image: 9.57:1 and 7.78:1. Neither is used on the bare board.
+
+   Märzen goes one step further still, to 4.55:1 on the board. Not because
+   anything here sets text on the board in it, but because the wordmark does:
+   basis.js paints the second line of "Biergarten Freunde" in --akzent-2, on
+   the bare board, where basis.css leaves it at 2.87:1. This is the one mark
+   these drafts cannot move onto a mat, so the colour moves instead. */
+:root{
+  --gold:#553A03;
+  --maerzen:#632F05;
+
+  /* Lettering for a filled stamp. Light has dark ink to fill with and letters
+     it in foam; dark has no dark accent at all — every accent there is a light
+     one — so the fill stays the accent and the lettering flips to the ground. */
+  --voll-schrift:var(--schaum);
+}
+[data-theme="dark"]{
+  --gold:#EFC463;
+  --maerzen:#EDA771;
+  --voll-schrift:var(--kraft);
+}
+
+/* One trap worth naming, because it looks harmless: --schaum is not a light
+   surface. It is foam, and foam stays the lightest colour in the palette in
+   both themes — a strip painted in it inverts in the dark theme and takes any
+   light lettering with it. Surfaces are --flaeche or a filled accent. */
+
+/* ------------------------------------------------------------ The torn ink
+   From k-bestand: the break lives on a pseudo-element underneath the words,
+   never on the element itself — a masked element loses its lettering with it.
+   Two crossed stripe grids, intersected; without mask-composite they add up
+   and each fills the other's gaps. */
+.aufriss{position:relative;isolation:isolate;background:var(--flaeche);padding:15px 17px}
+.aufriss::before{content:'';position:absolute;inset:0;z-index:-1;
+  box-shadow:inset 0 0 0 2.5px var(--farbe,var(--akzent));
+  -webkit-mask-image:var(--riss);-webkit-mask-composite:source-in;
+  mask-image:var(--riss);mask-composite:intersect}
+
+/* The filled stamp, and the one place this file departs from k-bestand.
+   There the fill is the ink mixed 62% into the mat, lettered in foam — which
+   measures 4.48:1 in light and 3.50:1 in dark, the very numbers these drafts
+   exist to fix. Here the fill stays the full ink and only its edge is bitten:
+   a masked halo of the same ink, painted 5px past the edge and underneath the
+   text. The lettering sits a padding away from it, so nothing that has to be
+   read ever meets the tear. */
+.aufriss.satt{background:var(--farbe,var(--akzent));color:var(--voll-schrift)}
+.aufriss.satt::before{inset:-5px;background:var(--farbe,var(--akzent));box-shadow:none}
+
+/* ---------------------------------------------------------------- The foot */
+/* basis.css sets `footer` to 15px in --weich, which is caption grade — right
+   for the one line it was written for, wrong for a footer that now carries the
+   honesty notes. Those are the reason the footer exists, so they are ink. */
+.fuss{margin-top:38px;font-size:16px;color:var(--schrift)}
+.fuss p{margin:0}
+.fuss ul{margin:0;padding:0;list-style:none}
+
+/* On the board --weich measures 4.79:1 — secondary grade. A heading is not
+   secondary, so headings that sit on the bare board are set in the ink.
+   On a mat --weich reaches 8.10:1 and needs no such help. */
+.stub h2,.fuss h2{color:var(--schrift)}
+
+.fuss-titel{margin:0 0 11px;font-family:var(--display);font-size:16px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.05em}
+
+/* A link is underlined, not coloured, because colour alone would tie every
+   link to a mat. Drafts whose links sit on a mat colour them there. */
+.fuss a{color:inherit;text-decoration:underline;text-underline-offset:3px;
+  text-decoration-thickness:1px}
+.fuss a:hover{text-decoration-thickness:2px}
+.fuss a:focus-visible{outline:3px solid var(--akzent);outline-offset:3px;
+  text-decoration:none}
+
+/* The cap's word is 14px in basis.css — under the 14.5px floor for secondary
+   text by half a pixel. Raised here rather than in every draft that uses one. */
+.korken .wort{font-size:14.5px}
+
+/* The advanced switch belongs beside the planner it opens. These pages are
+   footers, so the shared head keeps the mark and drops the switch — hidden
+   rather than forked, so basis.js stays the only place a head is built. */
+.profi-schalter{display:none}
+
+/* ------------------------------------------------------------- The page above
+   A footer is judged by where it stands, so every draft carries the tail of a
+   page over it: the last two stops of a tour, from basis.css unchanged. It is
+   page, not footer — nothing below the torn edge belongs to the draft. */
+.stub{padding-top:6px}
+.stub .halt:first-child{border-top:0;padding-top:0}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ThemeChoice } from '~/composables/useTheme'
 import { formatClock, sunsetMinutes } from '#core'
 
 const MUNICH = { lat: 48.1374, lon: 11.5755 }
@@ -12,7 +13,7 @@ const MUNICH = { lat: 48.1374, lon: 11.5755 }
  * explicitly forbids itself elsewhere.
  */
 const today = ref<Date | null>(null)
-const { theme, choose, hydrate } = useTheme()
+const { theme, next, cycle, hydrate } = useTheme()
 
 /*
  * Runs in the <head>, so before the first paint. Without it a prerendered page
@@ -28,11 +29,16 @@ useHead({
   }],
 })
 
-const THEMES = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Hell' },
-  { value: 'dark', label: 'Dunkel' },
-] as const
+/** What each setting is called, in one place — title, label and nothing else. */
+const THEME_LABELS: Record<ThemeChoice, string> = {
+  system: 'System',
+  light: 'Hell',
+  dark: 'Dunkel',
+}
+
+/** True on a garden's detail page — the only route with a third segment. */
+const route = useRoute()
+const onGarden = computed(() => route.path.startsWith('/biergarten/'))
 
 onMounted(() => {
   today.value = new Date()
@@ -58,14 +64,37 @@ const eyebrow = computed(() => {
   <div>
     <div class="head">
       <div class="wrap">
-        <div class="theme-switch" role="group" aria-label="ThemeChoice">
-          <button
-            v-for="option in THEMES"
-            :key="option.value"
-            :aria-pressed="theme === option.value"
-            @click="choose(option.value)"
-          >{{ option.label }}</button>
-        </div>
+        <!--
+          One switch, not three buttons.
+
+          Three labelled buttons cost a row of the head to say something almost
+          nobody changes. This says the same in one icon: what is set now, and
+          in its label what a press will do. The icon is the state, the label
+          is the action — mixing those up is how icon-only controls become
+          guesswork.
+        -->
+        <button
+          class="theme-switch"
+          type="button"
+          :title="`Ansicht: ${THEME_LABELS[theme]} — umschalten auf ${THEME_LABELS[next]}`"
+          :aria-label="`Ansicht: ${THEME_LABELS[theme]}. Umschalten auf ${THEME_LABELS[next]}`"
+          @click="cycle"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <!-- system: half sun, half moon — it follows the device -->
+            <template v-if="theme === 'system'">
+              <circle cx="12" cy="12" r="7" />
+              <path class="fill" d="M12 5a7 7 0 0 1 0 14z" />
+            </template>
+            <!-- light: the sun, rays as short strokes -->
+            <template v-else-if="theme === 'light'">
+              <circle class="fill" cx="12" cy="12" r="4.6" />
+              <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
+            </template>
+            <!-- dark: the crescent -->
+            <path v-else class="fill" d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" />
+          </svg>
+        </button>
 
         <div class="eyebrow">{{ eyebrow }}</div>
 
@@ -118,18 +147,51 @@ const eyebrow = computed(() => {
     <div class="torn-edge" aria-hidden="true" />
 
     <div class="wrap">
+      <!--
+        The detail page gets a third segment instead of a back link of its own.
+        A back link in its own row said "leave", and only that. As a segment it
+        says where you are while the other two stay one press away — which is
+        what somebody who landed on a garden from a search result needs.
+
+        It is a span, not a link: it points at the page you are already on.
+      -->
       <nav class="seg">
         <NuxtLink to="/planer">Tour bauen</NuxtLink>
         <NuxtLink to="/verzeichnis">Alle Biergärten</NuxtLink>
+        <span v-if="onGarden" aria-current="page">Informationen</span>
       </nav>
 
       <slot />
 
-      <footer>
-        Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte
-        Verbindung auf die Modus-Angabe tippen. Wo beim Ausschank <b>k.&nbsp;A.</b> steht,
-        war die Brauerei nicht sicher zu verifizieren. „Bei schönem Wetter“ heißt: der
-        Wirt entscheidet morgens um neun.
+      <!--
+        One foot for the whole site. The caveats used to sit here as a loose
+        paragraph under every page; they belong with the imprint and the map
+        attribution, which are required anyway — and a reader looking for "how
+        exact is this?" looks at the foot, not at the middle of a list.
+      -->
+      <footer class="fuss">
+        <nav class="fuss-wege" aria-label="Fußzeile">
+          <NuxtLink to="/planer">Tour bauen</NuxtLink>
+          <NuxtLink to="/verzeichnis">Alle Biergärten</NuxtLink>
+          <NuxtLink to="/impressum">Impressum</NuxtLink>
+          <NuxtLink to="/datenschutz">Datenschutz</NuxtLink>
+          <a href="mailto:servus@biergarten-freunde.de">Kontakt</a>
+        </nav>
+
+        <p class="fuss-genau">
+          Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte
+          Verbindung auf die Modus-Angabe tippen. Wo beim Ausschank <b>k.&nbsp;A.</b> steht,
+          war die Brauerei nicht sicher zu verifizieren. „Bei schönem Wetter“ heißt: der
+          Wirt entscheidet morgens um neun.
+        </p>
+
+        <p class="fuss-quelle">
+          Kartendaten
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
+            © OpenStreetMap-Mitwirkende
+          </a>
+          (ODbL) · Kacheln: Protomaps
+        </p>
       </footer>
     </div>
   </div>

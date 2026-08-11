@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Fußzeile — Vier Spalten</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="fuss.css">
+<style>
+/* ============================================================
+   VIER SPALTEN — the ordinary footer, done in this material
+
+   One mat, four columns, headings in blue. Nothing invented:
+   the whole draft is the type scale and the mat from basis.css,
+   which is exactly what makes it the yardstick — every other
+   draft has to earn what it adds over this one.
+
+   The fourth column is half again as wide as the other three,
+   because the notes are sentences and the rest are words. Below
+   760px the four stack in the same order, notes last, so the
+   thumb reaches the paperwork without scrolling past prose.
+   ============================================================ */
+.fuss-b .deckel{padding:26px 28px}
+.fuss-b .gitter{display:grid;gap:26px 32px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:760px){
+  .fuss-b .gitter{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.5fr)}
+}
+
+/* On a mat blue reaches 8.66:1 — heading grade, and the one place in the
+   footer where the site's accent gets to be an accent. */
+.fuss-b .fuss-titel{color:var(--akzent)}
+.fuss-b li{margin-bottom:9px}
+.fuss-b a{color:var(--akzent)}
+
+.fuss-b .ehrlich li{margin-bottom:12px;line-height:1.5}
+.fuss-b .karte{font-size:15.5px;color:var(--weich);line-height:1.5}
+
+/* The attribution column keeps a second, quieter line under the credit — it is
+   the only place on the page where the map licence has room to be a sentence. */
+.fuss-b .karte + .karte{margin-top:9px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+
+  <!-- The tail of a page, so the footer is seen where it stands. -->
+  <div class="stub">
+    <h2>Deine Tour</h2>
+    <div class="deckel">
+      <div class="halt"><span class="wann">16:30</span><span class="name">Zum Flaucher<small>18 min mit dem Radl ab Candidplatz · offen bis 23:00</small></span><span class="mass">10,80</span></div>
+      <div class="halt"><span class="wann">18:40</span><span class="name">Gasthof Hinterbrühl<small>12 min mit dem Radl · offen bis 23:00</small></span><span class="mass">10,40</span></div>
+    </div>
+  </div>
+
+  <footer class="fuss fuss-b">
+    <div class="deckel">
+      <div class="gitter">
+        <nav aria-label="Seitenbereiche">
+          <h2 class="fuss-titel">Los geht's</h2>
+          <ul>
+            <li><a href="#">Tour bauen</a></li>
+            <li><a href="#">Alle Biergärten</a></li>
+            <li><a href="#">Informationen</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Rechtliches">
+          <h2 class="fuss-titel">Rechtliches</h2>
+          <ul>
+            <li><a href="#">Impressum</a></li>
+            <li><a href="#">Datenschutz</a></li>
+            <li><a href="#">Kontakt</a></li>
+          </ul>
+        </nav>
+
+        <div>
+          <h2 class="fuss-titel">Karte</h2>
+          <p class="karte">Kartendaten © OpenStreetMap-Mitwirkende (ODbL) · Kacheln: Protomaps</p>
+          <p class="karte">Fuß- und Radwege routen wir selbst, ÖPNV kaufen wir zu.</p>
+        </div>
+
+        <div>
+          <h2 class="fuss-titel">Ehrlich gesagt</h2>
+          <ul class="ehrlich">
+            <li>Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte
+              Verbindung auf die Modus-Angabe tippen.</li>
+            <li>Wo beim Ausschank k.&nbsp;A. steht, war die Brauerei nicht sicher zu verifizieren.</li>
+            <li>Bei schönem Wetter heißt: der Wirt entscheidet morgens um neun.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

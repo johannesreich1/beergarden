@@ -26,9 +26,8 @@ class GardenEndpointTest extends TestCase
 
         $gardens = collect($this->getJson('/api/gardens')->json('data'));
 
-        // Neun Einträge ohne verifizierte Brauerei. Wenn diese Zahl kippt, ist
-        // entweder geraten worden oder der Datenstand hat sich geändert —
-        // beides will man sehen.
+        // Nine entries without a verified brewery. If that number moves, either
+        // somebody guessed or the data set changed — you want to see both.
         $this->assertSame(9, $gardens->whereNull('brewery')->count());
     }
 

@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Bierpreise, erweiterbar ohne Migration.
+     * Beer prices, extensible without a migration.
      *
-     * Eine Zeile ist ein Preis für eine Sorte in einer Größe. Neue Sorten
-     * (Radler, Dunkles, Bock) und neue Größen (0,3 l im Restaurantbereich)
-     * brauchen deshalb nur neue Zeilen — keine Spalte, keine Migration, kein
-     * Deployment. Das ist der ganze Grund für diesen Zuschnitt.
+     * One row is one price for one kind in one size. New kinds (Radler, dark
+     * lager, Bock) and new sizes (0.3 l in the restaurant area) therefore only
+     * need new rows — no column, no migration, no deployment. That is the
+     * entire reason for this shape.
      *
-     * Der Crawler füllt diese Tabelle. Bis dahin bleibt sie leer: ein
-     * geschätzter Bierpreis wäre schlimmer als keiner, weil ihn niemand als
-     * Schätzung liest.
+     * The crawler fills this table. Until then it stays empty: an estimated
+     * beer price would be worse than none, because nobody reads it as an
+     * estimate.
      */
     public function up(): void
     {
@@ -25,22 +25,22 @@ return new class extends Migration
             $table->foreignId('garden_id')->constrained()->cascadeOnDelete();
 
             /**
-             * Sorte. Freier String mit gepflegter Liste in App\Models\BeerPrice:
-             * hell, weizen, alkoholfrei, radler, dunkel. Kein enum — eine neue
-             * Sorte wäre sonst eine Migration, und genau das soll sie nicht sein.
+             * Kind. A free string with a curated list in App\Models\BeerPrice:
+             * hell, weizen, alkoholfrei, radler, dunkel. No enum — otherwise a
+             * new kind would be a migration, which is exactly what it must not be.
              */
             $table->string('kind', 32);
 
-            /** Ausschankgröße in Millilitern: 500 für die Halbe, 1000 für die Maß. */
+            /** Serving size in millilitres: 500 for a Halbe, 1000 for a Maß. */
             $table->unsignedSmallInteger('size_ml');
 
             /**
-             * Preis in Cent. Geld gehört nicht in eine Gleitkommazahl — 4,90 €
-             * ist als float nicht 4.90, und beim Summieren sieht man das.
+             * Price in cents. Money does not belong in a floating point number —
+             * €4.90 is not 4.90 as a float, and it shows once you start summing.
              */
             $table->unsignedInteger('cents');
 
-            /** Herkunft pro Zeile. Ein Preis ohne Quelle ist ein Gerücht. */
+            /** Provenance per row. A price without a source is a rumour. */
             $table->string('source_url')->nullable();
             $table->timestamp('verified_at')->nullable();
 

@@ -1,11 +1,11 @@
 import type { Garden, OpeningHour } from './types'
 
 /**
- * Der Selbstbedienungs-Biergarten. Restaurant und SB-Bereich im selben Haus
- * haben unterschiedliche Zeiten — deshalb ist `area` Teil des Schlüssels und
- * nicht optional.
+ * The self-service beer garden. A restaurant and the self-service area on the
+ * same premises keep different hours — which is why `area` is part of the key
+ * and not optional.
  */
-export const GARDEN_AREA = 'garden'
+const GARDEN_AREA = 'garden'
 
 export interface OpeningWindow {
   opensAt: number
@@ -21,11 +21,11 @@ export function hoursFor(
 }
 
 /**
- * Das Zeitfenster für einen Wochentag, oder null wenn geschlossen.
+ * The window for a weekday, or null when closed.
  *
- * null ist hier die ehrliche Antwort auf drei verschiedene Fälle: Ruhetag,
- * kein Eintrag, Eintrag ohne Zeiten. Der Aufrufer muss keinen davon
- * unterscheiden — er will nur wissen, ob er planen kann.
+ * null is the honest answer to three different cases here: closing day, no
+ * entry, entry without times. The caller need not tell them apart — it only
+ * wants to know whether it can plan.
  */
 export function openingWindow(
   garden: Garden,
@@ -46,8 +46,8 @@ export function isOpenOn(garden: Garden, weekday: number, area: string = GARDEN_
 }
 
 /**
- * Ob für diesen Tag überhaupt eine verifizierte Quelle hinterlegt ist.
- * Solange das nirgends true ist, gehört ein ≈ ins UI.
+ * Whether a verified source is on file for this day at all.
+ * As long as this is true nowhere, the UI owes the reader a ≈.
  */
 export function isVerified(garden: Garden, weekday: number, area: string = GARDEN_AREA): boolean {
   return hoursFor(garden, weekday, area)?.verifiedAt !== null

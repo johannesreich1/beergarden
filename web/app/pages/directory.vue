@@ -2,8 +2,8 @@
 import type { Garden } from '#core'
 import { brewerySlug, matchesDirectoryFilters, planLeg } from '#core'
 
-// Dateiname englisch, URL deutsch: die Seite lebt von organischem Traffic,
-// und danach sucht niemand auf Englisch.
+// English file name, German URL: the page lives on organic traffic, and nobody
+// searches for it in English.
 definePageMeta({ path: '/verzeichnis' })
 
 useHead({ title: 'Alle Biergärten · Biergarten Freunde' })
@@ -31,12 +31,12 @@ const matchesQuery = (garden: Garden): boolean => {
 }
 
 /**
- * Vor der Hydration nach Namen sortiert und ohne Fahrzeiten.
+ * Sorted by name and without travel times before hydration.
  *
- * Diese Seite wird vorgerendert. Startpunkt und visitedCount Gärten stehen im
- * localStorage — die gibt es zur Build-Zeit nicht. Erst nach `hydrate()`
- * kommen Fahrzeit und Sortierung dazu. Server und erster Client-Render
- * liefern damit dasselbe HTML, es gibt also keinen Hydration-Konflikt.
+ * This page is prerendered. Start point and visited gardens live in
+ * localStorage — which does not exist at build time. Travel time and sorting
+ * only arrive after `hydrate()`. Server and first client render therefore
+ * produce the same HTML, so there is no hydration mismatch.
  */
 const list = computed(() => {
   const filtered = gardens.value.filter(
@@ -95,8 +95,8 @@ const TIPS = [
 
     <FilterControls :gardens="gardens" water-label="Am Wasser" />
 
-    <!-- Die Praxishinweise stehen auf dem Desktop neben der Liste statt
-         darunter — dort liest sie jemand, unter 35 Einträgen niemand. -->
+    <!-- On desktop the practical notes sit beside the list rather than below
+         it — there somebody reads them; under 35 entries nobody does. -->
     <div class="section-title"><h2>Praxis</h2><div class="rule" /></div>
     <div class="tips">
       <div v-for="tip in TIPS" :key="tip[0]" class="tip">
@@ -123,7 +123,6 @@ const TIPS = [
         :max-leg-minutes="state.maxLegMinutes"
         :weekday="state.weekday"
         :visited="visitedSet.has(entry.garden.slug)"
-        @seen="planner.toggleVisited(entry.garden.slug)"
       />
     </div>
 

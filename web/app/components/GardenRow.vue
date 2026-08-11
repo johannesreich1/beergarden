@@ -4,7 +4,7 @@ import { brewerySlug, formatClock, isOpenOn, openingWindow } from '#core'
 
 const props = defineProps<{
   garden: Garden
-  /** Fehlt beim Vorrendern — dort gibt es noch keinen Startpunkt. */
+  /** Absent while prerendering — there is no start point yet. */
   leg: Leg | null
   start: StartPoint | null
   mode: PlanningMode
@@ -12,8 +12,6 @@ const props = defineProps<{
   weekday: number
   visited: boolean
 }>()
-
-defineEmits<{ seen: [] }>()
 
 const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
 const window = computed(() => openingWindow(props.garden, props.weekday))
@@ -63,10 +61,7 @@ const closedToday = computed(() => !isOpenOn(props.garden, props.weekday))
     </div>
 
     <div class="gact">
-      <a class="btn gold" :href="mapsSearchUrl(garden.name)" target="_blank" rel="noopener">Karte</a>
-      <button class="btn" :class="{ on: visited }" @click="$emit('seen')">
-        {{ visited ? 'Kennst du' : 'War ich schon' }}
-      </button>
+      <NuxtLink class="btn" :to="`/biergarten/${garden.slug}`">Details</NuxtLink>
     </div>
   </div>
 </template>

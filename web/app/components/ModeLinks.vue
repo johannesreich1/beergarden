@@ -3,11 +3,11 @@ import type { Mode, PlanningMode, Waypoint } from '#core'
 import { travelTimes } from '#core'
 
 /**
- * Alle drei Fahrzeiten pro Etappe, jede verlinkt auf die echte Verbindung.
+ * All three travel times per leg, each linking to the real connection.
  *
- * Das ist keine Spielerei, sondern die Konsequenz aus einem geschätzten
- * Modell: wer die Zahl anzweifelt, kommt mit einem Tipp zur belastbaren
- * Auskunft. Solange kein Valhalla dahintersteht, bleibt das so.
+ * Not a gimmick but the consequence of an estimated model: anyone doubting the
+ * number is one tap away from a reliable answer. That stays until Valhalla
+ * sits behind it.
  */
 const props = defineProps<{
   from: Waypoint & { name?: string }

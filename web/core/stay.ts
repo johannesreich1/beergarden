@@ -1,26 +1,26 @@
 import type { Garden } from './types'
 
 /**
- * Wie lange man sitzen bleibt.
+ * How long you stay.
  *
- * Die Regel steht hier und nur hier — Generator, Ablauf und Prüfung fragen
- * dieselbe Funktion. Sonst driften die drei auseinander, und der Planer
- * verspricht eine Sitzzeit, die der Zeitstrahl nicht einhält.
+ * The rule lives here and only here — generator, schedule and validation all
+ * ask the same function. Otherwise the three drift apart and the planner
+ * promises a sitting time the timeline does not keep.
  */
 
-/** Unter einer Dreiviertelstunde ist es kein Biergartenbesuch. */
+/** Under three quarters of an hour it is not a beer garden visit. */
 export const MIN_STAY_MINUTES = 45
-/** Darüber wird aus einer Tour ein Sitzenbleiben. */
-export const MAX_STAY_MINUTES = 150
-/** Sitzzeiten auf fünf Minuten runden. Alles andere täuscht Genauigkeit vor. */
-export const STAY_ROUNDING = 5
+/** Beyond that a tour turns into staying put. */
+const MAX_STAY_MINUTES = 150
+/** Round stays to five minutes. Anything finer fakes precision. */
+const STAY_ROUNDING = 5
 
 /**
- * Die Sitzzeit an diesem Garten: der Vorschlag, in seine Grenzen geklemmt.
+ * The stay at this garden: the suggestion, clamped into its bounds.
  *
- * Beide Grenzen sind optional. Wo keine hinterlegt ist, gilt die globale —
- * ein geratener Wert wäre schlechter als gar keiner, und ein Garten ohne
- * erhobene Grenzen soll sich verhalten wie bisher.
+ * Both bounds are optional. Where none is recorded the global one applies — a
+ * guessed value would be worse than none, and a garden without surveyed
+ * bounds should behave exactly as before.
  */
 export function stayAt(garden: Garden, suggested: number): number {
   const min = garden.minStayMinutes ?? MIN_STAY_MINUTES
@@ -29,6 +29,6 @@ export function stayAt(garden: Garden, suggested: number): number {
   return Math.min(Math.max(suggested, min), max)
 }
 
-/** Der Vorschlag vor dem Klemmen: verfügbare Sitzzeit auf die Stationen verteilt. */
+/** The suggestion before clamping: available sitting time spread across the stops. */
 export const suggestStay = (sitTotal: number, stops: number): number =>
   Math.floor(sitTotal / stops / STAY_ROUNDING) * STAY_ROUNDING

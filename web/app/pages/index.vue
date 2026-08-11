@@ -10,6 +10,7 @@ import {
   generateRoutes,
   planFromRoute,
   checkPlan,
+  countGardens,
 } from '#core'
 
 useHead({ title: 'Tour bauen · Biergarten Freunde' })
@@ -22,7 +23,7 @@ const { state, options, visitedSet, skippedSet, sunset, planEdited, droppedTour 
 
 onMounted(planner.hydrate)
 
-/* ---------- Vorschläge ---------- */
+/* ---------- Suggestions ---------- */
 
 const suggestions = computed(() => generateRoutes(gardens.value, options.value))
 
@@ -41,13 +42,12 @@ function takeRoute(route: Route): void {
   nextTick(() => document.getElementById('tour')?.scrollIntoView({ behavior: 'smooth' }))
 }
 
-/* ---------- Prüfung: hält die gewählte Tour noch? ---------- */
+/* ---------- Validation: does the chosen tour still hold? ---------- */
 
 /*
- * Der Generator prüft die Öffnungszeiten beim Erzeugen. Wer danach an der
- * Startzeit, am Wochentag, am Modus oder an einer Verweildauer dreht, kann
- * die Tour kippen — und eine Tour, die stillschweigend falsch dasteht, ist
- * schlimmer als gar keine. Also: nachrechnen und fallen lassen.
+ * The generator checks opening hours when it creates a tour. Anyone who then
+ * turns the start time, the weekday, the mode or a stay can break it — and a
+ * tour that is silently wrong is worse than none. So: recompute and drop.
  */
 watch(
   [options, () => state.value.durations],
@@ -56,7 +56,7 @@ watch(
     if (!plan || !gardens.value.length) return
 
     const problem = checkPlan(plan, gardens.value, options.value, state.value.durations)
-    if (problem) planner.dropTour(problem)
+    if (problem) planner.dropTour()
   },
   { deep: true },
 )
@@ -69,21 +69,35 @@ const droppedChain = computed(() =>
 )
 
 /**
- * Wieder aufnehmen.
+ * Take it back.
  *
- * Wer die Startzeit zurückdreht, will seine Tour zurück. Klappt es nicht,
- * fällt sie sofort wieder heraus — mit dem dann gültigen Grund. Deshalb
- * braucht es hier keine eigene Prüfung.
+ * Anyone turning the start time back wants their tour back. If it does not
+ * work, it drops out again immediately — with whatever reason applies then.
+ * So no separate check is needed here.
  */
 function retakeDropped(): void {
   if (droppedTour.value) planner.choosePlan(droppedTour.value.plan)
 }
 
-/** Warum die Tour nicht mehr geht — im Klartext, nicht als Fehlercode. */
-const droppedReason = computed(() => {
-  if (!droppedTour.value) return ''
+/**
+ * The reason is recomputed on every change rather than frozen when the tour is
+ * dropped. Otherwise a number from back then sits next to a setting from now —
+ * and the sentence contradicts itself.
+ */
+const droppedProblem = computed(() =>
+  droppedTour.value
+    ? checkPlan(droppedTour.value.plan, gardens.value, options.value, state.value.durations)
+    : null,
+)
 
-  const problem = droppedTour.value.problem
+/** Whether the dropped tour would work again under the current settings. */
+const droppedWorksAgain = computed(() => !!droppedTour.value && droppedProblem.value === null)
+
+/** Why the tour no longer works — in plain words, not as an error code. */
+const droppedReason = computed(() => {
+  const problem = droppedProblem.value
+  if (!problem) return ''
+
   const name = gardenName(problem.slug)
 
   switch (problem.kind) {
@@ -100,7 +114,7 @@ const droppedReason = computed(() => {
   }
 })
 
-/* ---------- Gewählte Tour ---------- */
+/* ---------- The chosen tour ---------- */
 
 const schedule = computed(() => {
   if (!state.value.plan) return null
@@ -140,10 +154,14 @@ const walkMinutes = computed(() => {
   return legs + (schedule.value.back.mode === 'walk' ? schedule.value.back.min : 0)
 })
 
-/* ---------- Bedienung ---------- */
+/* ---------- Controls ---------- */
 
-const currentDuration = (slug: string) =>
-  state.value.durations[slug] ?? state.value.plan?.each ?? 90
+const currentDuration = (slug: string) => {
+  const planned = state.value.plan
+  const index = planned?.slugs.indexOf(slug) ?? -1
+
+  return state.value.durations[slug] ?? (index >= 0 ? planned!.stays[index] : 90)
+}
 
 function changeDuration(slug: string, delta: number): void {
   const next = currentDuration(slug) + delta
@@ -206,8 +224,8 @@ function useGeolocation(): void {
         .map((point) => ({ point, distance: distanceKm(here, point) }))
         .sort((a, b) => a.distance - b.distance)[0]
 
-      // Unter 1,2 km den Haltestellennamen übernehmen — der sagt mehr als
-      // "Mein Standort" und ist auf dem Zeitstrahl wiedererkennbar.
+      // Under 1.2 km, adopt the stop's name — it says more than "my location"
+      // and is recognisable on the timeline.
       const near = nearest && nearest.distance < 1.2
 
       state.value.startPoint = near
@@ -241,16 +259,16 @@ const legLabel = computed(() =>
 
 function setMode(mode: typeof state.value.mode): void {
   state.value.mode = mode
-  // Fünf Minuten Radzeit sind kein Filter, sondern eine leere Ergebnisliste.
+  // Five minutes of cycling is not a filter but an empty result list.
   if (mode === 'bike' && state.value.maxLegMinutes < 20) state.value.maxLegMinutes = 25
   planner.persist()
 }
 </script>
 
 <template>
-  <!-- Drei Ströme nebeneinander, sobald Platz ist: woran man dreht,
-       was dabei herauskommt, und die Tour, die man gewählt hat. -->
-  <section class="stage" :class="{ three-column: !!schedule }">
+  <!-- Three streams side by side once there is room: what you turn, what
+       comes out of it, and the tour you picked. -->
+  <section class="stage" :class="{ 'three-column': !!schedule }">
     <div class="controls">
     <div class="panel">
       <span class="eyebrow">Start und Ziel</span>
@@ -375,14 +393,23 @@ function setMode(mode: typeof state.value.mode): void {
     <div class="results">
     <div class="section-title"><h2>Vorschläge</h2><div class="rule" /></div>
     <p class="note">
-      Aus {{ poolSize }} passenden Biergärten, {{ WEEKDAY_NAMES[state.weekday] }} geöffnet,
+      Aus {{ countGardens(poolSize) }}, {{ WEEKDAY_NAMES[state.weekday] }} geöffnet,
       Öffnungszeiten berücksichtigt.
     </p>
 
     <div style="margin-top: 14px">
       <div v-if="droppedTour" class="dropped" role="status">
-        <strong>Tour droppedTour</strong>
-        <p>{{ droppedReason }} Sie steht unten bei den Alternativen.</p>
+        <template v-if="droppedWorksAgain">
+          <strong>Tour geht wieder</strong>
+          <p>
+            Mit diesen Einstellungen passt sie erneut. Unten bei den Alternativen
+            kannst du sie zurückholen.
+          </p>
+        </template>
+        <template v-else>
+          <strong>Tour verworfen</strong>
+          <p>{{ droppedReason }} Sie steht unten bei den Alternativen.</p>
+        </template>
       </div>
 
       <div v-if="!suggestions.routes.length" class="empty">{{ suggestions.reason }}</div>
@@ -400,14 +427,16 @@ function setMode(mode: typeof state.value.mode): void {
         @take="takeRoute(route)"
       />
 
-      <div v-if="droppedTour" class="plan stale">
+      <div v-if="droppedTour" class="plan stale" :class="{ 'works-again': droppedWorksAgain }">
         <div class="ptop">
-          <span class="rank">Geht nicht mehr</span>
+          <span class="rank">{{ droppedWorksAgain ? 'Geht wieder' : 'Geht nicht mehr' }}</span>
         </div>
         <div class="chain">{{ droppedChain }}</div>
-        <p class="reason">{{ droppedReason }}</p>
+        <p v-if="!droppedWorksAgain" class="reason">{{ droppedReason }}</p>
         <div class="pact">
-          <button class="btn" @click="retakeDropped">Wieder aufnehmen</button>
+          <button class="btn" :class="{ on: droppedWorksAgain }" @click="retakeDropped">
+            Wieder aufnehmen
+          </button>
         </div>
       </div>
     </div>

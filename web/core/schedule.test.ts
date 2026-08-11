@@ -42,9 +42,9 @@ describe('buildSchedule', () => {
     expect(schedule.rows[0].garden.slug).toBe(plan.slugs[1])
     expect(schedule.rows[0].legMinutes).toBe(plan.legs[0].min + plan.legs[1].min)
 
-    // Der ursprüngliche Modus gilt für die ursprüngliche Etappe. Wer eine
-    // Station auslässt, fährt eine andere Strecke — ÖPNV ist dann die
-    // vorsichtige Annahme.
+    // The original mode applies to the original leg. Skipping a stop means
+    // travelling a different route — public transport is then the cautious
+    // assumption.
     expect(schedule.rows[0].legMode).toBe('transit')
     expect(schedule.modified).toBe(true)
   })
@@ -66,8 +66,8 @@ describe('buildSchedule', () => {
   })
 
   it('gibt null zurück, wenn der gespeicherte Plan auf einen unbekannten Garten zeigt', () => {
-    // Passiert, sobald ein Garten aus den Daten verschwindet und im
-    // localStorage noch ein Plan von gestern liegt.
+    // Happens as soon as a garden disappears from the data while yesterday's
+    // plan is still sitting in localStorage.
     const stale = { ...plan, slugs: [...plan.slugs.slice(0, -1), 'gibt-es-nicht'] }
 
     expect(buildSchedule(stale, GARDENS, scheduleOptions())).toBeNull()

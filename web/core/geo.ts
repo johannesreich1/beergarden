@@ -3,7 +3,7 @@ import type { Coordinates } from './types'
 const EARTH_RADIUS_KM = 6371
 const toRadians = (degrees: number) => (degrees * Math.PI) / 180
 
-/** Luftlinie in Kilometern. Haversine, für Stadtdistanzen mehr als genau genug. */
+/** Straight-line distance in kilometres. Haversine, more than accurate enough for city distances. */
 export function distanceKm(a: Coordinates, b: Coordinates): number {
   const dLat = toRadians(b.lat - a.lat)
   const dLon = toRadians(b.lon - a.lon)

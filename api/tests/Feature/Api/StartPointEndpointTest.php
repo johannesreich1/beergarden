@@ -18,8 +18,8 @@ class StartPointEndpointTest extends TestCase
         $response->assertOk();
         $this->assertCount(63, $response->json('data'));
 
-        // Die Liste ist redaktionell sortiert, nicht alphabetisch. Candidplatz
-        // steht vorn, weil dort die ganze Sache angefangen hat.
+        // The list is sorted editorially, not alphabetically. Candidplatz comes
+        // first because that is where the whole thing started.
         $this->assertSame('Candidplatz', $response->json('data.0.name'));
     }
 }

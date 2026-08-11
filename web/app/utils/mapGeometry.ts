@@ -1,15 +1,15 @@
 import type { Coordinates } from '#core'
 
 /**
- * Die selbstgezeichnete Karte.
+ * The hand-drawn map.
  *
- * Bewusst keine echte Kartenbibliothek: in der Vorschlagsliste ist diese
- * Skizze charmanter als ein Kachelkartenausschnitt, sie rendert sofort und
- * braucht kein Netz. MapLibre und Protomaps kommen später dort dazu, wo man
- * wirklich navigieren will — nicht hier.
+ * Deliberately not a real mapping library: in the suggestion list this sketch
+ * has more charm than a tile-map crop, it renders instantly and needs no
+ * network. MapLibre and Protomaps come later where people actually navigate —
+ * not here.
  *
- * Projektion: gleichabständig um München, mit Breitengrad-Korrektur. Für einen
- * Ausschnitt von zwanzig Kilometern ist der Fehler nicht sichtbar.
+ * Projection: equidistant around Munich, with a latitude correction. Across a
+ * twenty-kilometre crop the error is invisible.
  */
 
 const LAT0 = 48.14
@@ -17,7 +17,7 @@ const LON0 = 11.575
 const SCALE = 3400
 const COS_LAT = Math.cos((LAT0 * Math.PI) / 180)
 
-/** Seitenverhältnis des Kartenausschnitts, passend zu `svg.map` im Stylesheet. */
+/** Aspect ratio of the map crop, matching `svg.map` in the stylesheet. */
 const ASPECT = 1 / 1.02
 
 export type Point = [number, number]
@@ -27,7 +27,7 @@ export const project = ({ lat, lon }: Coordinates): Point => [
   (LAT0 - lat) * SCALE,
 ]
 
-/** Halbachsen eines Sees in Grad zu Bildschirmeinheiten. */
+/** A lake's semi-axes, from degrees into screen units. */
 export const projectRadius = (radii: { rx: number, ry: number }): Point => [
   radii.rx * COS_LAT * SCALE,
   radii.ry * SCALE,
@@ -76,7 +76,7 @@ export const HOODS = [
 export const polygonPoints = (points: Coordinates[]): string =>
   points.map((point) => project(point).join(',')).join(' ')
 
-/** Ecken zu einem Flusslauf runden — quadratische Béziers durch die Mitten. */
+/** Round corners into a river course — quadratic Béziers through the midpoints. */
 export function smoothPath(points: Coordinates[]): string {
   const projected = points.map(project)
   const fixed = (value: number) => value.toFixed(1)
@@ -95,9 +95,9 @@ export function smoothPath(points: Coordinates[]): string {
 }
 
 /**
- * Ein leicht gebogener Bogen zwischen zwei Punkten. Gerade Linien sähen aus
- * wie Luftlinien — und genau das sind die Etappen ja auch, nur soll die Karte
- * das nicht behaupten.
+ * A slightly curved arc between two points. Straight lines would look like
+ * straight-line distances — which is exactly what the legs are, but the map
+ * should not claim it.
  */
 export function arcBetween(from: Coordinates, to: Coordinates): string {
   const [ax, ay] = project(from)
@@ -110,7 +110,7 @@ export function arcBetween(from: Coordinates, to: Coordinates): string {
   return `M${fixed(ax)},${fixed(ay)} Q${fixed(midX)},${fixed(midY)} ${fixed(bx)},${fixed(by)}`
 }
 
-/** Ausschnitt so wählen, dass alle Punkte mit Rand hineinpassen. */
+/** Choose the viewport so every point fits with a margin. */
 export function viewBoxFor(points: Coordinates[]): string {
   const projected = points.map(project)
   const xs = projected.map(([x]) => x)
@@ -147,12 +147,12 @@ export function viewBoxFor(points: Coordinates[]): string {
 }
 
 /**
- * Die Etappenfarben kommen aus dem Stylesheet, nicht aus dieser Datei.
+ * Leg colours come from the stylesheet, not from this file.
  *
- * Sonst müsste die Karte für hell und dunkel zwei Farbtabellen führen und
- * jemand müsste daran denken, beide zu pflegen. SVG-Präsentationsattribute
- * verstehen kein `var()` — deshalb werden diese Werte im Template als
- * `style`-Bindung gesetzt, nicht als `stroke`-Attribut.
+ * Otherwise the map would carry two colour tables for light and dark, and
+ * somebody would have to remember to maintain both. SVG presentation
+ * attributes do not understand `var()` — which is why these values are applied
+ * as a `style` binding in the template rather than as a `stroke` attribute.
  */
 export const LEG_COLOURS: Record<string, string> = {
   walk: 'var(--leg-walk)',

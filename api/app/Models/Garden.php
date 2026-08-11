@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Garden extends Model
 {
-    // Es gibt in v1 keinen einzigen schreibenden HTTP-Endpunkt. Alles, was
-    // schreibt, ist Seeder oder Artisan-Command — Mass Assignment ist hier
-    // kein Angriffsvektor, sondern nur Tipparbeit.
+    // There is not a single writing HTTP endpoint in v1. Everything that
+    // writes is a seeder or an artisan command — mass assignment is not an
+    // attack surface here, only typing.
     protected $guarded = [];
 
     protected function casts(): array
@@ -20,10 +20,10 @@ class Garden extends Model
             'seats' => 'integer',
             'station_walk_min' => 'integer',
             'charm' => 'integer',
-            // null heisst: es gilt die globale Grenze aus dem Generator.
+            // null means the generator's global bound applies.
             'min_stay_minutes' => 'integer',
             'max_stay_minutes' => 'integer',
-            // Nullable und dreiwertig: der Cast lässt null in Ruhe.
+            // Nullable and three-valued: the cast leaves null alone.
             'self_service' => 'boolean',
             'own_food_allowed' => 'boolean',
             'lat' => 'float',

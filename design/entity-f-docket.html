@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gasthof Hinterbrühl · Laufzettel</title>
+<style>
+:root{
+  --foam:#FBF5E6; --kraft:#CBA469; --kraft-deep:#BE9354;
+  --gold:#7E5606; --amber:#A8560F; --brown:#6E3B16; --ink-deep:#2E1C0D;
+  --blue:#1B3F8B; --blue-soft:#2C5697;
+
+  --ground:var(--kraft); --surface:var(--kraft-deep);
+  --text:var(--ink-deep); --text-soft:#4E3417; --muted:#7A5F35;
+  --edge:rgba(46,28,13,.32); --edge-soft:rgba(46,28,13,.18);
+  --warn-bg:rgba(168,86,15,.16); --on-accent:var(--foam);
+
+  --ink-break:
+    repeating-linear-gradient(81deg, #000 0 9px, rgba(0,0,0,.46) 9px 10px, #000 10px 21px),
+    repeating-linear-gradient(9deg, #000 0 13px, rgba(0,0,0,.42) 13px 14px, #000 14px 28px);
+  --ink-break-soft:
+    repeating-linear-gradient(81deg, #000 0 11px, rgba(0,0,0,.80) 11px 12px, #000 12px 25px),
+    repeating-linear-gradient(9deg, #000 0 15px, rgba(0,0,0,.78) 15px 16px, #000 16px 33px);
+
+  --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
+  --body:"American Typewriter","Courier New",serif;
+  --mono:ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --foam:#F0E3C4; --kraft:#241A0E; --kraft-deep:#31240F;
+  --gold:#E8B647; --amber:#E09A55; --brown:#C9A97A; --ink-deep:#EBDCBB;
+  --blue:#8FB4DF; --blue-soft:#8FB4DF;
+  --text:#EBDCBB; --text-soft:#C4AF88; --muted:#94805C;
+  --edge:rgba(235,220,187,.28); --edge-soft:rgba(235,220,187,.15);
+  --warn-bg:rgba(224,154,85,.16); --on-accent:#241A0E;
+}}
+:root[data-theme="dark"]{
+  --foam:#F0E3C4; --kraft:#241A0E; --kraft-deep:#31240F;
+  --gold:#E8B647; --amber:#E09A55; --brown:#C9A97A; --ink-deep:#EBDCBB;
+  --blue:#8FB4DF; --blue-soft:#8FB4DF;
+  --text:#EBDCBB; --text-soft:#C4AF88; --muted:#94805C;
+  --edge:rgba(235,220,187,.28); --edge-soft:rgba(235,220,187,.15);
+  --warn-bg:rgba(224,154,85,.16); --on-accent:#241A0E;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--ground);
+  background-image:
+    repeating-linear-gradient(94deg, rgba(0,0,0,.026) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(2deg, rgba(255,255,255,.05) 0 1px, transparent 1px 6px);
+  color:var(--text);font:16.5px/1.66 var(--body);-webkit-font-smoothing:antialiased}
+
+.stamped{-webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
+
+.theme-switch{position:fixed;top:12px;right:12px;z-index:9;display:flex;gap:6px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+.theme-switch button{font:inherit;padding:6px 10px;border:0;background:var(--ground);
+  color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--edge);cursor:pointer}
+.theme-switch button[aria-pressed="true"]{background:var(--gold);color:var(--on-accent)}
+
+.back{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--amber)}
+
+/* Bildplatz. Solange kein lizenziertes Foto da ist, steht hier ein Stempel —
+   kein grauer Kasten, der so tut, als fehle nur die Datei. */
+.photo{position:relative;background:var(--surface);overflow:hidden;
+  box-shadow:inset 0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center}
+.photo .placeholder{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber);
+  padding:10px 14px;transform:rotate(-6deg);text-align:center;line-height:1.4;
+  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
+.photo .credit{position:absolute;left:0;right:0;bottom:0;padding:6px 9px;
+  background:rgba(46,28,13,.62);color:var(--foam);
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em}
+
+.btn{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.12em;
+  text-transform:uppercase;padding:11px 15px;border:0;background:transparent;color:var(--blue);
+  box-shadow:inset 0 0 0 2.5px var(--blue);cursor:pointer;text-decoration:none;
+  display:inline-block;transform:rotate(-1.2deg);
+  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
+.btn.on{background:var(--blue);color:var(--on-accent);transform:rotate(1deg);
+  -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
+.btn.gold{color:var(--gold);box-shadow:inset 0 0 0 2.5px var(--gold)}
+
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--muted)}
+.warn{padding:11px 13px;background:var(--warn-bg);border-top:2px solid var(--amber);
+  font-size:14px;color:var(--amber)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-soft);padding:5px 10px;box-shadow:inset 0 0 0 1px var(--edge)}
+.tags .water{color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+
+table.hours{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px}
+table.hours td{padding:6px 0;color:var(--text-soft);border-top:1px solid var(--edge-soft)}
+table.hours tr.today td{color:var(--gold)}
+.unverified{margin-top:10px;font-size:12.5px;color:var(--muted)}
+
+table.prices{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px}
+table.prices td{padding:8px 0;border-top:1px solid var(--edge-soft)}
+table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-space:nowrap}
+table.prices .size{color:var(--muted);font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+:focus-visible{outline:2.5px solid var(--amber);outline-offset:3px}
+
+.sheet{max-width:720px;margin:0 auto;padding:26px 18px 80px}
+.block{background:var(--surface);box-shadow:inset 0 0 0 2px var(--edge);padding:18px;
+  margin-top:12px;position:relative}
+.block > .eyebrow{display:block;margin-bottom:12px}
+/* Jeder Block trägt oben rechts seine Nummer, wie ein Formularfeld. */
+.block .no{position:absolute;right:12px;top:12px;font-family:var(--mono);font-size:9px;
+  letter-spacing:.2em;color:var(--muted)}
+h1{margin:0;font-family:var(--display);font-weight:900;
+  font-size:clamp(23px,6vw,38px);line-height:1.04;letter-spacing:-.03em;text-transform:uppercase;
+  color:var(--blue);transform:rotate(-1deg);transform-origin:left center}
+.meta{margin-top:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.photo{aspect-ratio:16/9}
+p.desc{margin:0;font-size:15.5px;color:var(--text-soft)}
+.mass{display:flex;justify-content:space-between;align-items:baseline;gap:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--edge-soft);margin-bottom:6px}
+.mass .big{font-family:var(--display);font-weight:900;font-size:30px;letter-spacing:-.03em;
+  color:var(--gold)}
+.actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+@media (min-width:900px){
+  .sheet{max-width:900px;padding:44px 24px 100px}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .pair .block{margin-top:0}
+}
+</style>
+</head>
+<body>
+
+<div class="theme-switch" role="group" aria-label="Lichtstimmung">
+  <button data-theme="light" aria-pressed="false">Hell</button>
+  <button data-theme="dark" aria-pressed="false">Dunkel</button>
+</div>
+
+
+<div class="sheet">
+  <a class="back" href="entity-views.html">← Alle Entwürfe</a>
+
+  <div class="block">
+    <span class="no">01</span>
+    <span class="eyebrow">Biergarten · Thalkirchen</span>
+    <h1 class="stamped">Gasthof Hinterbrühl</h1>
+    <div class="meta">Augustiner · 1.000 Plätze · ≈35 min ab Candidplatz</div>
+  </div>
+
+  <div class="block" style="padding:0">
+    <div class="photo">
+        <span class="placeholder">Bild folgt<br>Places-Foto<br>mit Credit</span>
+      </div>
+  </div>
+
+  <div class="block">
+    <span class="no">02</span>
+    <span class="eyebrow">Was dich erwartet</span>
+    <p class="desc">Kastanien zwischen Hinterbrühler See und Isar, Flöße fahren vorbei. Mehrfach zum schönsten Biergarten Oberbayerns gewählt.</p>
+    <div class="tags" style="margin-top:14px"><span class="water">Am Wasser</span><span>Spielplatz</span><span>Selbstbedienung</span><span>Eigene Brotzeit</span><span>15 min von der Haltestelle</span></div>
+    <div class="warn" style="margin-top:14px">Selbstbedienungs-Biergarten läuft derzeit vor allem Sa/So. Dienstags Restaurant und Terrasse ab 11:30.</div>
+  </div>
+
+  <div class="pair" style="margin-top:12px">
+    <div class="block">
+      <span class="no">03</span>
+      <span class="eyebrow">Bierpreise</span>
+      <div class="mass"><span>Helles, Maß</span><span class="big">10,90 €</span></div>
+      <table class="prices"><tbody><tr><td>Helles</td><td class="size">Maß</td><td class="amount">10,90 €</td></tr><tr><td>Helles</td><td class="size">Halbe</td><td class="amount">5,90 €</td></tr><tr><td>Weißbier</td><td class="size">Halbe</td><td class="amount">6,40 €</td></tr><tr><td>Alkoholfrei</td><td class="size">Halbe</td><td class="amount">5,60 €</td></tr></tbody></table>
+      <p class="unverified">Beispielwerte.</p>
+    </div>
+
+    <div class="block">
+      <span class="no">04</span>
+      <span class="eyebrow">Öffnungszeiten</span>
+      <table class="hours"><tbody><tr><td>Montag</td><td>11:30–23:00</td></tr><tr class="today"><td>Dienstag</td><td>11:30–23:00</td></tr><tr><td>Mittwoch</td><td>11:30–23:00</td></tr><tr><td>Donnerstag</td><td>11:30–23:00</td></tr><tr><td>Freitag</td><td>11:30–23:00</td></tr><tr><td>Samstag</td><td>11:30–23:00</td></tr><tr><td>Sonntag</td><td>11:30–23:00</td></tr></tbody></table>
+      <p class="unverified">Gegen keine Quelle verifiziert.</p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <a class="btn on" href="#">Tour hierhin bauen</a>
+    <a class="btn gold" href="#">Auf Google Maps</a>
+  </div>
+</div>
+
+
+<script>
+const buttons = document.querySelectorAll('.theme-switch button')
+const forced = new URLSearchParams(location.search).get('theme')
+function set(choice){
+  if (choice) document.documentElement.dataset.theme = choice
+  else delete document.documentElement.dataset.theme
+  buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.theme === choice)))
+}
+if (forced === 'light' || forced === 'dark') set(forced)
+buttons.forEach(b => b.addEventListener('click', () => set(b.dataset.theme)))
+</script>
+
+</body>
+</html>

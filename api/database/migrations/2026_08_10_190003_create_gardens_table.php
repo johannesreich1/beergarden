@@ -14,20 +14,20 @@ return new class extends Migration
             $table->string('name');
             $table->string('district')->nullable();
 
-            // null heißt "nicht sicher verifiziert", nicht "keine Brauerei".
-            // Betrifft aktuell 9 von 35 Einträgen.
+            // null means "not reliably verified", not "no brewery".
+            // Currently affects 9 of 35 entries.
             $table->foreignId('brewery_id')->nullable()->constrained()->nullOnDelete();
 
             $table->unsignedInteger('seats')->nullable();
 
-            // Ebenfalls dreiwertig: null = unbekannt, nicht false.
+            // Three-valued as well: null = unknown, not false.
             $table->boolean('self_service')->nullable();
             $table->boolean('own_food_allowed')->nullable();
 
             $table->unsignedTinyInteger('station_walk_min')->nullable();
 
-            // Redaktionelle Einschätzung 1–5. Treibt das Ranking, skaliert aber
-            // nicht auf Deutschland — siehe docs/PROJECT.md, Datenqualität.
+            // Editorial judgement, 1–5. Drives the ranking, but does not scale
+            // to all of Germany — see docs/PROJECT.md, Datenqualität.
             $table->unsignedTinyInteger('charm')->nullable();
 
             $table->decimal('lat', 9, 6);
@@ -37,14 +37,14 @@ return new class extends Migration
             $table->text('caveat')->nullable();
             $table->text('description')->nullable();
 
-            // Datenherkunft gehört zu den Daten. Beides null, solange nichts
-            // gegen eine Quelle verifiziert wurde.
+            // Provenance is part of the data. Both null as long as nothing has
+            // been verified against a source.
             $table->string('source_url')->nullable();
             $table->timestamp('verified_at')->nullable();
 
             $table->timestamps();
 
-            // Trägt den Bounding-Box-Vorfilter in GardenRepository::near().
+            // Carries the bounding-box pre-filter in GardenRepository::near().
             $table->index(['lat', 'lon']);
         });
     }

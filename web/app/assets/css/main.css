@@ -1,35 +1,35 @@
 /*
- * Biergarten Freunde — Stempel auf Kraftpappe
+ * Biergarten Freunde — rubber stamp on kraft board
  *
- * Rohe Pappe, Gummistempel, trockenes Kissen. Die Farbe reißt auf, der
- * Abdruck sitzt schief. Entstanden in design/01e-stempel.html, die Palette
- * steht in design/palette.html.
+ * Raw board, a rubber stamp, a dry ink pad. The ink breaks up, the imprint
+ * sits askew. Came out of design/01e-stempel.html; the palette lives in
+ * design/palette.html.
  *
- * Drei Regeln, an denen sich alles ausrichtet:
+ * Three rules everything aligns to:
  *
- *   1. Jede Farbe hat eine Herkunft. Bier liefert die warmen Töne, die
- *      bayerische Raute die kalten. Keine Farbe nur zur Zierde.
- *   2. Gold trägt die Zeiten, Märzen die Einschränkungen. Wer beides für
- *      Dekoration benutzt, nimmt der Seite ihre einzige Farbcodierung.
- *   3. Der Aufriss ist eine einzige Maske. Siegel, Titel, Schalter und
- *      Stempel teilen sie sich — wer sie ändert, ändert alles gleichzeitig.
+ *   1. Every colour has a provenance. Beer supplies the warm tones, the
+ *      Bavarian lozenge the cold ones. No colour purely for decoration.
+ *   2. Gold carries the times, amber the caveats. Using either for decoration
+ *      strips the page of its only colour coding.
+ *   3. The ink break is a single mask. Seal, title, switches and stamps all
+ *      share it — change it and everything changes at once.
  */
 
 :root{
-  /* ---- Bier ---- */
+  /* ---- Beer ---- */
   --foam:#FBF5E6;
   --kraft:#CBA469;
   --kraft-deep:#BE9354;
-  --gold:#7E5606;          /* Helles, auf Kraft dunkel genug für Text */
+  --gold:#7E5606;          /* Helles, dark enough for text on kraft */
   --amber:#A8560F;
   --brown:#6E3B16;
   --ink-deep:#2E1C0D;
 
-  /* ---- Bayern ---- */
+  /* ---- Bavaria ---- */
   --blue:#1B3F8B;
   --blue-soft:#2C5697;
 
-  /* ---- Rollen ---- */
+  /* ---- Roles ---- */
   --ground:var(--kraft);
   --surface:var(--kraft-deep);
   --text:var(--ink-deep);
@@ -41,7 +41,7 @@
   --warn-bg:rgba(168,86,15,.16);
   --on-accent:var(--foam);
 
-  /* ---- Karte: zweifarbig gedruckt, nicht eingefärbt ---- */
+  /* ---- Map: printed in two colours, not tinted ---- */
   --map-ground:#BE9354;
   --map-park:rgba(27,63,139,.13);
   --map-water:#1B3F8B;
@@ -50,9 +50,9 @@
   --leg-bike:#1B3F8B;
   --leg-transit:#A8560F;
 
-  /* Aufgerissene Stempelfarbe, zwei gekreuzte Streifenmasken — in zwei Stärken.
-     Auf einer Umrisslinie darf die Farbe kräftig aussetzen. Auf einer gefüllten
-     Fläche, in der Text steht, frisst derselbe Aufriss die Lesbarkeit. */
+  /* Broken stamp ink, two crossed stripe masks — in two strengths. On an
+     outline the ink may drop out hard. On a filled surface with text in it the
+     same break eats the legibility. */
   --ink-break:
     repeating-linear-gradient(81deg, #000 0 9px, rgba(0,0,0,.46) 9px 10px, #000 10px 21px),
     repeating-linear-gradient(9deg, #000 0 13px, rgba(0,0,0,.42) 13px 14px, #000 14px 28px);
@@ -60,9 +60,9 @@
     repeating-linear-gradient(81deg, #000 0 11px, rgba(0,0,0,.80) 11px 12px, #000 12px 25px),
     repeating-linear-gradient(9deg, #000 0 15px, rgba(0,0,0,.78) 15px 16px, #000 16px 33px);
 
-  /* Markenfarben auf Kraftpappe: Spaten-Gelb und Ayinger-Blau sind zu hell
-     für diesen Untergrund. Der Ton bleibt, die Helligkeit wird nachgezogen —
-     dieselbe Mechanik wie im Dunklen, nur in die andere Richtung. */
+  /* Brand colours on kraft board: Spaten's yellow and Ayinger's blue are too
+     light for this ground. The hue stays, the lightness is pulled along — the
+     same mechanism as in dark mode, only in the other direction. */
   --bc-readable:color-mix(in srgb, var(--bc, #2E1C0D) 74%, #2E1C0D);
 
   --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
@@ -99,9 +99,9 @@
     --leg-bike:#8FB4DF;
     --leg-transit:#E09A55;
 
-    /* Die Brauereifarben sind Markenfarben und bleiben, wie sie sind.
-       Auf dunkler Pappe müssen sie nur angehoben werden, sonst liest
-       sie niemand — der Ton bleibt, die Helligkeit ändert sich. */
+    /* Brewery colours are brand colours and stay as they are. On dark board
+       they only need lifting, otherwise nobody can read them — the hue stays,
+       the lightness changes. */
     --bc-readable:color-mix(in srgb, var(--bc, #EBDCBB) 52%, #EBDCBB);
   }
 }
@@ -110,9 +110,9 @@
 html,body{margin:0;padding:0}
 body{
   background:var(--ground);
-  /* Pappfaser: grobe, ungleichmäßige Rillen. Kraftpappe ist nicht glatt. */
-  /* Pappfaser. Halb so kräftig wie im Entwurf und weiter auseinander —
-     sie soll den Untergrund andeuten, nicht gegen den Text arbeiten. */
+  /* Board fibre: coarse, uneven grooves. Kraft board is not smooth. */
+  /* Board fibre. Half as strong as in the draft and further apart — it should
+     suggest the ground, not work against the text. */
   background-image:
     repeating-linear-gradient(94deg, rgba(0,0,0,.026) 0 1px, transparent 1px 7px),
     repeating-linear-gradient(2deg, rgba(255,255,255,.05) 0 1px, transparent 1px 6px);
@@ -126,13 +126,13 @@ body{
 .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.3em;
   text-transform:uppercase;color:var(--muted)}
 
-/* Jeder Abdruck teilt sich dieselbe aufgerissene Farbe. */
+/* Every imprint shares the same broken ink. */
 .stamped{
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
   mask-image:var(--ink-break);mask-composite:intersect;
 }
 
-/* -------------------------------------------------------- Lichtschalter */
+/* --------------------------------------------------------- Theme switch */
 .theme-switch{display:flex;gap:7px;margin:0 0 16px}
 .theme-switch button{font-family:var(--mono);font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;padding:6px 10px;border:0;background:transparent;
@@ -140,10 +140,20 @@ body{
 .theme-switch button[aria-pressed="true"]{color:var(--on-accent);background:var(--gold);
   box-shadow:inset 0 0 0 1.5px var(--gold)}
 
-/* ---------------------------------------------------------------- Kopf */
+/* -------------------------------------------------------------- Header */
 .head{padding:calc(24px + env(safe-area-inset-top)) 0 20px}
-.seal{width:112px;height:112px;display:block;transform:rotate(-6.5deg);
-  color:var(--blue);margin-bottom:14px}
+/*
+ * Siegel links, Schriftzug rechts.
+ *
+ * Das Siegel ist genau so hoch wie der Schriftzug: zwei Zeilen mal
+ * `line-height:.98` sind 1.96 × Schriftgrad, also dieselbe Kurve wie in
+ * `h1 .l1` — nur mit 1.96 multipliziert. Eine feste Breite ginge auf schmalen
+ * Geräten nicht auf; bei 320px braucht "BIERGARTEN" allein schon 209px.
+ */
+.wordmark{display:flex;align-items:center;gap:clamp(12px,3.5vw,18px)}
+.seal{--seal-size:clamp(59px,16.5vw,102px);
+  width:var(--seal-size);height:var(--seal-size);flex:none;
+  transform:rotate(-6.5deg);color:var(--blue)}
 .seal .ringlinie{fill:none;stroke:currentColor}
 .seal text{font-family:var(--display);font-weight:900;fill:currentColor;letter-spacing:.14em}
 .seal .ort{font-family:var(--mono);font-weight:400;letter-spacing:.22em}
@@ -159,7 +169,7 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
 .head p{margin:18px 0 0;font-size:15.5px;color:var(--text-soft);max-width:44ch}
 .head p b{color:var(--text);font-weight:400}
 
-/* Abgerissene Pappkante statt Schaumrand */
+/* A torn board edge instead of a foam rim */
 .torn-edge{height:9px;margin:0;
   background:repeating-linear-gradient(94deg, var(--edge) 0 3px, transparent 3px 9px)}
 
@@ -176,8 +186,8 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
 
 .section-title{display:flex;align-items:center;gap:11px;margin:32px 0 4px}
-/* In der breiten Ansicht beginnt jede Spalte oben — sonst verschiebt der
-   Abstand des ersten Elements die Spalten gegeneinander. */
+/* In the wide view every column starts at the top — otherwise the first
+   element's margin offsets the columns against each other. */
 @media (min-width:1000px){
   .stage > * > .panel:first-child,
   .stage > * > .section-title:first-child{margin-top:0}
@@ -187,7 +197,7 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
 .section-title .rule{flex:1;height:1px;background:var(--edge-soft)}
 .note{margin:9px 0 0;color:var(--text-soft);font-size:14px}
 
-/* --------------------------------------------------------------- Knöpfe */
+/* -------------------------------------------------------------- Buttons */
 .btn{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.12em;
   text-transform:uppercase;padding:10px 14px;cursor:pointer;border:0;
   background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2.5px var(--blue);
@@ -214,8 +224,8 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
 .startmeta b{color:var(--blue);font-weight:400}
 .grid{display:flex;flex-wrap:wrap;gap:8px}
 
-/* Chips sind Stempelabdrücke, keine Pillen. Die Drehung kommt aus der
-   Position, damit niemand einzeln Winkel pflegen muss. */
+/* Chips are stamp imprints, not pills. The rotation comes from their position
+   so nobody has to maintain angles one by one. */
 .chip{padding:9px 13px;font-family:var(--display);font-size:10.5px;font-weight:900;
   letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:0;
   background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue);
@@ -232,8 +242,8 @@ h1 .l2{display:block;font-size:clamp(30px,8.4vw,52px);color:var(--amber);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
 
 .frow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:3px 0}
-/* Am Zeigegerät sieht eine waagerecht scrollbare Zeile wie eine
-   abgeschnittene aus. Ab Desktopbreite deshalb umbrechen statt scrollen. */
+/* With a pointing device a horizontally scrollable row looks like a truncated
+   one. From desktop width on, wrap instead of scrolling. */
 @media (min-width:1000px){
   .frow,.mats{flex-wrap:wrap;overflow-x:visible}
 }
@@ -250,7 +260,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .stepper .lbl strong{font-family:var(--mono);font-size:18px;color:var(--gold);font-weight:700}
 
-/* Brauereikacheln: Abdrücke in der Farbe der Brauerei */
+/* Brewery tiles: imprints in the brewery's own colour */
 .mats{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding:4px 0}
 .mats::-webkit-scrollbar{display:none}
 .mat{flex:0 0 auto;width:74px;height:74px;cursor:pointer;background:transparent;border:0;
@@ -267,7 +277,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .mat small{display:block;font-family:var(--mono);font-size:8.5px;font-weight:400;
   opacity:.75;margin-top:3px}
 
-/* ---------------------------------------------------------- Vorschläge */
+/* ------------------------------------------------------------ Suggestions */
 .plan{padding:15px;background:transparent;margin-bottom:10px;
   box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .plan.active{box-shadow:inset 0 0 0 2.5px var(--gold);background:var(--surface)}
@@ -289,28 +299,32 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .empty{padding:18px 15px;color:var(--text-soft);font-size:14.5px;
   box-shadow:inset 0 0 0 2px var(--edge-soft)}
 
-/* Verworfene Tour: der Hinweis, warum sie weg ist */
+/* Dropped tour: the notice explaining why it is gone */
 .dropped{margin:0 0 14px;padding:13px 15px;background:var(--warn-bg);
   border-top:3px solid var(--amber)}
 .dropped strong{display:block;font-family:var(--display);font-size:12px;font-weight:900;
   letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
 .dropped p{margin:0;font-size:14.5px;color:var(--text-soft)}
 
-/* Und die Tour selbst, unten bei den Alternativen — blass, aber lesbar.
-   Wer wissen will, was er verloren hat, soll es sehen. */
+/* And the tour itself, down among the alternatives — faint but legible.
+   Anyone wanting to know what they lost should be able to see it. */
 .plan.stale{opacity:.75;box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .plan.stale .rank{color:var(--amber)}
 .plan.stale .chain,.plan.stale .chain span{color:var(--muted)}
 .plan.stale .reason{margin:10px 0 0;font-size:13.5px;color:var(--amber)}
+/* Once the settings fit again, "dropped" is the wrong message. */
+.plan.stale.works-again{opacity:1;box-shadow:inset 0 0 0 2px var(--gold)}
+.plan.stale.works-again .rank{color:var(--gold)}
+.plan.stale.works-again .chain{color:var(--text)}
 
-/* Besuchte ein- oder ausschliessen — eigener Schalter, nicht noch ein Chip */
+/* Include or exclude visited gardens — its own switch, not another chip */
 .visited-filter{margin-top:15px}
 .visited-filter .pair{display:flex;gap:8px}
 .visited-filter .pair button{flex:1}
 .visited-filter .tally{margin-top:8px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted)}
 
-/* -------------------------------------------------------- Lichtleiste */
+/* ----------------------------------------------------------- Light rail */
 .rail-track{position:relative;height:12px;margin-top:4px;
   background:linear-gradient(90deg,#F6E7C0 0%,#E8C070 34%,#C98A33 62%,#A8560F 74%,
     #4B3F6E 88%,#221A2E 100%);
@@ -325,7 +339,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .rail-scale{display:flex;justify-content:space-between;margin-top:9px}
 .rail-scale span{font-family:var(--mono);font-size:10px;color:var(--muted)}
 
-/* -------------------------------------------------------------- Karte */
+/* ------------------------------------------------------------------ Map */
 .map-shell{margin:16px 0 0;overflow:hidden;background:var(--map-ground);
   position:relative;box-shadow:inset 0 0 0 2px var(--edge)}
 svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
@@ -335,7 +349,7 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 .map-legend i{display:inline-block;width:16px;height:0;border-top:2px solid;
   margin-right:6px;vertical-align:3px}
 
-/* ----------------------------------------------------------- Zeitstrahl */
+/* -------------------------------------------------------------- Timeline */
 .tl{margin:18px 0 0;position:relative;padding-left:26px}
 .tl::before{content:"";position:absolute;left:5.5px;top:8px;bottom:34px;width:1px;
   background:var(--edge-soft)}
@@ -359,7 +373,7 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 .lm.sel{color:var(--gold);box-shadow:inset 0 0 0 1.5px var(--gold)}
 .lm.over{opacity:.42}
 
-/* ------------------------------------------------------------- Station */
+/* ---------------------------------------------------------------- Stop */
 .card{background:var(--surface);padding:16px 16px 14px;position:relative;
   box-shadow:inset 0 0 0 2px var(--edge)}
 .card.off{opacity:.45}
@@ -376,16 +390,16 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 .water{display:inline-flex;margin-top:8px;font-family:var(--mono);font-size:10px;
   letter-spacing:.13em;text-transform:uppercase;color:var(--blue)}
 
-/* Der Besuchsstempel — die Stempelkarte im Kleinen */
+/* The visit stamp — the loyalty card in miniature */
 .seen{display:inline-block;margin-left:9px;font-family:var(--display);font-size:9px;
   font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);
   box-shadow:inset 0 0 0 2px var(--amber);padding:2px 6px;vertical-align:3px;
   transform:rotate(-4deg);
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
   mask-image:var(--ink-break);mask-composite:intersect}
-/* Derselbe Stempel, kleiner — für die Kette im Vorschlag, wo er neben einem
-   Stationsnamen sitzt statt neben einer Überschrift. Eine zweite Beschriftung
-   für dieselbe Sache wäre ein Fehler, auch wenn sie besser passte. */
+/* The same stamp, smaller — for the chain in a suggestion, where it sits next
+   to a stop's name rather than a heading. A second label for the same thing
+   would be a mistake, even if it fitted better. */
 .seen.small{font-size:7.5px;padding:2px 4px;margin-left:6px;vertical-align:2px;
   transform:rotate(-5deg)}
 
@@ -409,7 +423,7 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 .total .hint{margin-top:8px;font-size:13.5px;color:var(--text-soft)}
 .total .hint.over{color:var(--amber)}
 
-/* --------------------------------------------------------- Verzeichnis */
+/* ------------------------------------------------------------- Directory */
 .count{margin:20px 0 0;font-family:var(--mono);font-size:10px;letter-spacing:.2em;
   text-transform:uppercase;color:var(--amber)}
 .glist{margin:12px 0 0;display:flex;flex-direction:column;gap:10px}
@@ -431,7 +445,7 @@ svg.map{display:block;width:100%;height:auto;aspect-ratio:1/1.02}
 .g .gtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .g .gact{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
 
-/* -------------------------------------------------------------- Praxis */
+/* ------------------------------------------------------- Practical notes */
 .tips{margin:16px 0 0;display:flex;flex-direction:column;gap:10px}
 .tip{padding:14px 15px;box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .tip strong{display:block;font-family:var(--display);font-size:13px;font-weight:900;
@@ -447,7 +461,50 @@ footer b{color:var(--text-soft);font-weight:400}
 :focus-visible{outline:2.5px solid var(--amber);outline-offset:3px}
 @media (prefers-reduced-motion:reduce){.pip{transition:none}}
 
-/* --------------------------------------------------------- Detailseite */
+/* ---------------------------------------------------- Entity view: image */
+/*
+ * The hero. The image runs the full width of the content, the name sits as a
+ * stamp half over it — an imprint does not respect margins.
+ */
+.entity{padding-top:22px}
+/* The way back sits at the top and as a button. At the bottom and faint,
+   nobody found it — and whoever lands on a detail page wants to know first
+   how to get back. */
+.entity-top{margin:0 0 16px}
+.hero{position:relative;margin-bottom:34px}
+.hero .photo{aspect-ratio:16/7}
+.hero-plate{position:absolute;left:0;right:0;bottom:-18px;pointer-events:none;
+  display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.hero-plate h2{display:inline-block;margin:0;font-family:var(--display);font-weight:900;
+  font-size:clamp(20px,5.2vw,38px);line-height:1;letter-spacing:-.032em;text-transform:uppercase;
+  background:var(--blue);color:var(--on-accent);padding:13px 17px;transform:rotate(-1.4deg);
+  max-width:calc(100% - 24px)}
+
+/* Image slot. As long as no licensed photo exists, a stamp stands here — not
+   a grey box pretending only the file is missing. */
+.photo{position:relative;background:var(--surface);overflow:hidden;
+  box-shadow:inset 0 0 0 2px var(--edge);display:flex;align-items:center;justify-content:center}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.photo .placeholder{font-family:var(--display);font-size:11px;font-weight:900;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber);
+  padding:10px 14px;transform:rotate(-6deg);text-align:center;line-height:1.5}
+.photo .credit{position:absolute;left:0;right:0;bottom:0;padding:6px 10px;
+  background:rgba(46,28,13,.66);color:var(--foam);text-decoration:none;
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em}
+
+/* The Maß price: the one number people ask for. */
+.price-hero{margin-top:12px;padding:15px 16px;background:var(--surface);
+  box-shadow:inset 0 0 0 2px var(--edge);display:flex;justify-content:space-between;
+  align-items:baseline;gap:14px}
+.price-hero .amount{font-family:var(--display);font-weight:900;font-size:30px;
+  letter-spacing:-.03em;color:var(--gold)}
+table.prices{width:100%;border-collapse:collapse;margin-top:8px;
+  font-family:var(--mono);font-size:12.5px}
+table.prices td{padding:8px 0;border-top:1px solid var(--edge-soft);color:var(--text-soft)}
+table.prices .size{color:var(--muted);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-space:nowrap}
+
+/* ------------------------------------------------------------ Detail page */
 .back{display:inline-block;margin:22px 0 0;font-family:var(--mono);font-size:10.5px;
   letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
 .back:hover{color:var(--amber)}
@@ -466,47 +523,74 @@ footer b{color:var(--text-soft);font-weight:400}
 .unverified{margin-top:12px;font-size:13px;color:var(--muted)}
 
 /* ============================================================
-   Breite Ansicht — steht bewusst am Dateiende
-   Diese Regeln haben dieselbe Spezifitaet wie die Basisregeln oben.
-   Weiter oben wuerden sie still ueberschrieben.
+   Wide view — deliberately at the end of the file
+   These rules have the same specificity as the base rules above.
+   Placed higher up they would be silently overridden.
    ============================================================ */
 
 /*
- * Breite Ansicht
+ * Wide view
  *
- * Auf dem Telefon ist alles eine Spalte, und man scrollt. Auf dem Desktop ist
- * genau das die Schwäche: man dreht am Regler und muss nach unten scrollen, um
- * zu sehen, was er bewirkt hat. Nebeneinander sieht man Ursache und Wirkung
- * gleichzeitig — das ist der Grund für die breite Ansicht, nicht der freie Platz.
+ * On a phone everything is one column and you scroll. On a desktop that is
+ * exactly the weakness: you turn a dial and have to scroll down to see what it
+ * did. Side by side you see cause and effect at once — that is the reason for
+ * the wide view, not the empty space.
  *
- * Bewusst kein `position:sticky` auf den Spalten. Sie sind höher als der
- * Bildschirm, und eine klebende Spalte, deren Unterkante man nie erreicht,
- * ist schlimmer als eine, die mitscrollt.
+ * Deliberately no `position:sticky` on the columns. They are taller than the
+ * screen, and a sticky column whose bottom edge you never reach is worse than
+ * one that scrolls along.
  */
 .stage{margin-top:22px}
 .stage > *{min-width:0}
 
 @media (min-width:1000px){
   .wrap{max-width:1180px;padding:0 30px}
+
+  /* Header: seal and title on the left, the introductory sentence beside them.
+     Stacked, it would leave an empty area on the right as wide as the sentence
+     itself. It sits on the title's baseline, not at the top — otherwise it
+     floats next to the seal. */
+  .head .wrap{
+    display:grid;
+    /* max-content, not auto: otherwise the title column stretches across the
+       full width and pushes the sentence to the far end. It should stand beside
+       the title, not opposite it. */
+    grid-template-columns:max-content minmax(280px,44ch);
+    justify-content:start;
+    grid-template-areas:
+      "switch  switch"
+      "eyebrow eyebrow"
+      "seal    text"
+      "title   text";
+    gap:0 48px;
+    align-items:start;
+  }
+  .head .theme-switch{grid-area:switch}
+  .head .eyebrow{grid-area:eyebrow}
+  .head .seal{grid-area:seal}
+  .head h1{grid-area:title}
+  .head p{grid-area:text;align-self:end;margin:0 0 8px}
   .stage{display:grid;grid-template-columns:minmax(290px,330px) minmax(0,1fr);
     gap:30px;align-items:start}
-  /* Fließtext bleibt schmal — eine Zeile über 1400 px liest niemand gern. */
+  /* Body text stays narrow — nobody enjoys a line over 1400 px. */
   .head p,.note{max-width:52ch}
 }
 
 @media (min-width:1400px){
   .wrap{max-width:1460px;padding:0 40px}
-  /* Zwei Umschalter über 1400 px zu ziehen macht sie nicht wichtiger,
-     nur schwerer zu treffen — der Weg zur Maus wird länger. */
+  /* Stretching two switches across 1400 px does not make them more important,
+     only harder to hit — the mouse has further to travel. */
   .seg{max-width:640px}
-  /* Erst wenn eine Tour gewählt ist, gibt es eine dritte Spalte. Sonst stünde
-     dort eine leere Rinne und das Raster sähe kaputt aus. */
-  .stage.dreispaltig{grid-template-columns:330px minmax(0,.85fr) minmax(0,1.2fr)}
+  /* Only once a tour is chosen is there a third column. Otherwise an empty
+     gutter would sit there and the grid would look broken. */
+  .stage.three-column{grid-template-columns:330px minmax(0,.85fr) minmax(0,1.2fr)}
   .glist{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 }
 
-/* Detailseite: Text links, Öffnungszeiten rechts */
+/* Entity view "hero": below the image, text left, prices and hours right */
 @media (min-width:1000px){
-  .detailseite{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(270px,.85fr);
-    gap:44px;align-items:start}
+  .entity-body{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.9fr);
+    gap:48px;align-items:start}
+  .entity-main > .gmeta{margin-top:0}
+  .entity-side > .section-title:first-child{margin-top:0}
 }

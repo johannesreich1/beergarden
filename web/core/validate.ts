@@ -4,42 +4,40 @@ import { planLeg } from './travel'
 import type { Garden, PlannerOptions, StartPoint } from './types'
 
 /**
- * Hält eine gewählte Tour noch?
+ * Does a chosen tour still hold?
  *
- * Der Generator prüft die Öffnungszeiten beim Erzeugen. Danach dreht der
- * Nutzer weiter: andere Startzeit, anderer Wochentag, längere Verweildauer,
- * eine Station ausgelassen. Jede dieser Änderungen kann die Tour kippen,
- * ohne dass sie neu erzeugt wird — und eine Tour, die stillschweigend falsch
- * dasteht, ist schlimmer als gar keine.
+ * The generator checks opening hours when it creates a tour. After that the
+ * user keeps turning dials: a different start time, a different weekday, a
+ * longer stay, a skipped stop. Any of these can break the tour without it
+ * being regenerated — and a tour that is silently wrong is worse than none.
  *
- * Diese Funktion rechnet die gewählte Tour mit den *aktuellen* Einstellungen
- * noch einmal durch und meldet die erste Stelle, an der es scheitert. Die
- * Etappen werden dabei neu berechnet und nicht aus dem Plan übernommen: wer
- * den Fortbewegungsmodus wechselt, hat andere Fahrzeiten.
+ * This function reruns the chosen tour against the *current* settings and
+ * reports the first place where it fails. Legs are recomputed rather than
+ * taken from the plan: changing the mode of travel changes the times.
  */
 
 export type PlanProblemKind =
-  /** Der Garten steht nicht mehr im Bestand. */
+  /** The garden is no longer in the data set. */
   | 'missing'
-  /** An diesem Wochentag geschlossen. */
+  /** Closed on this weekday. */
   | 'closed'
-  /** Man wäre vor dem Aufsperren da. */
+  /** You would arrive before they unlock. */
   | 'too-early'
-  /** Die Sitzzeit ragt über die Sperrstunde hinaus. */
+  /** The stay would run past closing time. */
   | 'too-late'
-  /** Die Tour passt nicht mehr ins Zeitfenster. */
+  /** The tour no longer fits the time budget. */
   | 'over-budget'
 
 export interface PlanProblem {
   kind: PlanProblemKind
-  /** Der Garten, an dem es scheitert. Bei 'over-budget' der letzte. */
+  /** The garden it fails at. For 'over-budget', the last one. */
   slug: string
-  /** Ankunft dort nach aktueller Planung. */
+  /** Arrival there under the current plan. */
   arrival: number
-  /** Bei 'too-early' und 'too-late': das Fenster, das nicht passt. */
+  /** For 'too-early' and 'too-late': the window that does not fit. */
   opensAt?: number
   closesAt?: number
-  /** Bei 'over-budget': wie lange die Tour tatsächlich dauert. */
+  /** For 'over-budget': how long the tour actually takes. */
   totalMinutes?: number
 }
 
@@ -47,7 +45,7 @@ export function checkPlan(
   plan: Plan,
   gardens: Garden[],
   options: PlannerOptions,
-  /** Abweichende Verweildauern. Auch die können eine Tour kippen. */
+  /** Overridden stays. Those can break a tour too. */
   durations: Readonly<Record<string, number>> = {},
 ): PlanProblem | null {
   const bySlug = new Map(gardens.map((garden) => [garden.slug, garden]))

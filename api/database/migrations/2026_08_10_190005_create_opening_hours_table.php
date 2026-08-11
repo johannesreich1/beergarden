@@ -12,30 +12,30 @@ return new class extends Migration
             $table->id();
             $table->foreignId('garden_id')->constrained()->cascadeOnDelete();
 
-            // Restaurant und Selbstbedienungs-Biergarten im selben Haus haben
-            // unterschiedliche Zeiten (Hinterbrühl, Nockherberg). Ohne area
-            // baut man das später zweimal.
+            // A restaurant and a self-service beer garden on the same premises
+            // keep different hours (Hinterbrühl, Nockherberg). Without `area`
+            // you end up building this twice later.
             $table->string('area', 32);
 
-            // ISO-8601: 1 = Montag … 7 = Sonntag. Passt zu Carbon::dayOfWeekIso.
+            // ISO-8601: 1 = Monday … 7 = Sunday. Matches Carbon::dayOfWeekIso.
             $table->unsignedTinyInteger('weekday');
 
-            // Ruhetag: is_closed = true, beide Zeiten null. Nicht 00:00–00:00,
-            // das wäre von "öffnet um Mitternacht" nicht zu unterscheiden.
+            // Closing day: is_closed = true, both times null. Not 00:00–00:00,
+            // which would be indistinguishable from "opens at midnight".
             $table->boolean('is_closed')->default(false);
 
-            // MariaDB-TIME fasst bis 838:59:59. Sperrstunde nach Mitternacht
-            // wird deshalb als 24:30 gespeichert, nicht als 00:30 — sonst
-            // rechnet jede Abfrage über den Tageswechsel falsch.
+            // MariaDB TIME holds up to 838:59:59. Closing time after midnight
+            // is therefore stored as 24:30, not 00:30 — otherwise every query
+            // that crosses midnight computes the wrong answer.
             $table->time('opens_at')->nullable();
             $table->time('closes_at')->nullable();
 
-            // "Bei Biergartenwetter täglich ab 12 Uhr" — der Wirt entscheidet
-            // morgens um neun. Steht nirgends, ist aber die halbe Wahrheit.
+            // "Daily from noon in beer garden weather" — the landlord decides
+            // at nine in the morning. Written down nowhere, yet half the truth.
             $table->boolean('weather_dependent')->default(false);
 
-            // Herkunft pro Zeile, nicht pro Garten: Öffnungszeiten kommen aus
-            // einer anderen Quelle als die Stammdaten.
+            // Provenance per row, not per garden: opening hours come from a
+            // different source than the master data.
             $table->string('source_url')->nullable();
             $table->timestamp('verified_at')->nullable();
 

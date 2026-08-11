@@ -4,7 +4,7 @@ import { formatClock, hoursFor, isVerified } from '#core'
 
 const props = defineProps<{
   garden: Garden
-  /** null beim Vorrendern — der heutige Tag steht erst im Browser fest. */
+  /** null while prerendering — today is only known in the browser. */
   today: number | null
 }>()
 
@@ -23,9 +23,9 @@ const rows = computed(() =>
 )
 
 /**
- * Solange nichts gegen eine Quelle verifiziert ist, steht das auch da. Der
- * Hinweis verschwindet von selbst, sobald der Crawler `verified_at` füllt —
- * niemand muss daran denken, ihn zu entfernen.
+ * As long as nothing has been verified against a source, the page says so. The
+ * notice disappears by itself once the crawler fills `verified_at` — nobody has
+ * to remember to remove it.
  */
 const anyVerified = computed(() => WEEKDAYS.some((day) => isVerified(props.garden, day.value)))
 </script>

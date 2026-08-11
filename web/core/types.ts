@@ -1,15 +1,15 @@
 /**
- * Die Typen des Kerns.
+ * The core's types.
  *
- * Zeiten sind ausnahmslos Minuten seit Mitternacht. Eine Sperrstunde um halb
- * eins nachts ist 1470, nicht 30 — sonst rechnet jeder Vergleich über den
- * Tageswechsel falsch. Dieselbe Konvention wie in der Datenbank, wo MariaDB
- * dafür TIME über 24 Stunden hält.
+ * Times are always minutes since midnight, without exception. Closing at half
+ * past midnight is 1470, not 30 — otherwise every comparison across midnight
+ * is wrong. Same convention as the database, where MariaDB holds TIME beyond
+ * 24 hours for this.
  */
 
 export type Mode = 'walk' | 'bike' | 'transit'
 
-/** Was der Nutzer wählt. 'mix' überlässt die Wahl pro Etappe dem Modell. */
+/** What the user picks. 'mix' leaves the per-leg choice to the model. */
 export type PlanningMode = Mode | 'mix'
 
 export interface Coordinates {
@@ -24,7 +24,7 @@ export interface Brewery {
 
 export interface OpeningHour {
   area: string
-  /** ISO-8601: 1 = Montag … 7 = Sonntag. */
+  /** ISO-8601: 1 = Monday … 7 = Sunday. */
   weekday: number
   isClosed: boolean
   opensAt: number | null
@@ -34,11 +34,11 @@ export interface OpeningHour {
 }
 
 export interface BeerPrice {
-  /** hell, weizen, alkoholfrei, radler, dunkel — die Liste wächst ohne Migration. */
+  /** hell, weizen, alkoholfrei, radler, dunkel — the list grows without a migration. */
   kind: string
-  /** Ausschankgröße in Millilitern: 500 für die Halbe, 1000 für die Maß. */
+  /** Serving size in millilitres: 500 for a Halbe, 1000 for a Maß. */
   sizeMl: number
-  /** In Cent. Geld gehört nicht in eine Gleitkommazahl. */
+  /** In cents. Money does not belong in a floating point number. */
   cents: number
   sourceUrl: string | null
   verifiedAt: string | null
@@ -48,7 +48,7 @@ export interface Garden extends Coordinates {
   slug: string
   name: string
   district: string | null
-  /** null heißt "nicht sicher verifiziert", nicht "keine Brauerei". */
+  /** null means "not reliably verified", not "no brewery". */
   brewery: Brewery | null
   seats: number | null
   tags: string[]
@@ -56,12 +56,17 @@ export interface Garden extends Coordinates {
   ownFoodAllowed: boolean | null
   stationWalkMin: number | null
   charm: number | null
-  /** Beide optional. null heißt: es gilt die globale Grenze aus `stay.ts`. */
+  /** Both optional. null means the global bound from `stay.ts` applies. */
   minStayMinutes: number | null
   maxStayMinutes: number | null
   zone: 'city' | 'umland'
   caveat: string | null
   description: string | null
+  /** null means: no licensed image yet. */
+  imageUrl: string | null
+  /** Required as soon as `imageUrl` is set. */
+  imageCredit: string | null
+  imageSourceUrl: string | null
   openingHours: OpeningHour[]
   beerPrices: BeerPrice[]
 }
@@ -70,7 +75,7 @@ export interface StartPoint extends Coordinates {
   name: string
 }
 
-/** Etwas, von dem aus oder zu dem hin gerechnet wird. */
+/** Anything we compute a journey from or to. */
 export type Waypoint = Coordinates & { stationWalkMin?: number | null }
 
 export interface TravelTimes {
@@ -82,14 +87,14 @@ export interface TravelTimes {
 
 export interface Leg extends TravelTimes {
   mode: Mode
-  /** Die Minuten im gewählten Modus. */
+  /** Minutes in the chosen mode. */
   min: number
-  /** Ob die Etappe im gewählten Modus unter dem Limit bleibt. */
+  /** Whether the leg stays under the limit in the chosen mode. */
   feasible: boolean
 }
 
 export interface Filters {
-  /** Charakter-Tags. Alle müssen zutreffen, nicht irgendeiner. */
+  /** Character tags. All must match, not any one of them. */
   tags: string[]
   breweries: string[]
   selfServiceOnly: boolean
@@ -97,9 +102,9 @@ export interface Filters {
   unvisitedOnly: boolean
   cityOnly: boolean
   /**
-   * Im Verzeichnis: nur Gärten am Wasser. Im Generator: mindestens einer
-   * pro Tour. Bewusst zwei verschiedene Bedeutungen für denselben Schalter —
-   * so war es im Prototyp und so ergibt es für den Nutzer Sinn.
+   * In the directory: only gardens on the water. In the generator: at least
+   * one per tour. Deliberately two meanings for the same switch — that is how
+   * the prototype behaved and how it makes sense to the user.
    */
   waterRequired: boolean
 }
@@ -122,10 +127,10 @@ export interface Route {
   legs: Leg[]
   back: Leg
   /**
-   * Aufenthalt je Station in Minuten, gleiche Reihenfolge wie `slugs`.
+   * Stay per stop in minutes, same order as `slugs`.
    *
-   * Nicht eine Zahl für alle: Gärten können eigene Grenzen haben, und in
-   * einem 250-Plätze-Bräustüberl sitzt niemand zweieinhalb Stunden.
+   * Not one number for all of them: gardens can carry their own bounds, and
+   * nobody spends two and a half hours in a 250-seat Bräustüberl.
    */
   stays: number[]
   end: number

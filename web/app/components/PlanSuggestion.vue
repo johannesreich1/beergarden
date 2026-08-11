@@ -19,14 +19,14 @@ const stops = computed(() => props.route.slugs.map(
   (slug) => props.gardens.find((garden) => garden.slug === slug)!,
 ))
 
-// Nicht nur "kennst du teilweise", sondern welche. Sonst muss man die Tour
-// erst wählen, um zu sehen, worauf sich der Hinweis bezieht.
+// Not just "you know some of these" but which ones. Otherwise you have to
+// pick the tour first to see what the hint refers to.
 const chain = computed(() => stops.value.map((garden) => ({
   name: shortName(garden.name),
   visited: props.visited.has(garden.slug),
 })))
 
-/** Was die ganze Runde in jedem Modus kosten würde, Rückweg eingerechnet. */
+/** What the whole round would cost in each mode, return leg included. */
 const totals = computed(() => {
   const points = [props.start, ...stops.value, props.start]
   const sums: Record<Mode, number> = { walk: 0, bike: 0, transit: 0 }
@@ -45,8 +45,8 @@ const MODES: Mode[] = ['walk', 'bike', 'transit']
 
 const isSelectedMode = (candidate: Mode) =>
   props.mode === candidate ||
-  // Bei 'mix' gilt der Fußweg als gewählt, wenn die Tour ohnehin komplett
-  // gelaufen wird.
+  // With 'mix', walking counts as chosen when the tour is walked end to end
+  // anyway.
   (props.mode === 'mix' && candidate === 'walk' && props.route.walk === props.route.travel)
 
 const tags = computed(() => {
@@ -85,7 +85,7 @@ const breweries = computed(() =>
       </template>
     </div>
 
-    <div class="pmeta">{{ route.each }} min pro Station · {{ route.travel }} min unterwegs</div>
+    <div class="pmeta">{{ formatStays(route.stays) }} pro Station · {{ route.travel }} min unterwegs</div>
 
     <div class="legmodes">
       <span

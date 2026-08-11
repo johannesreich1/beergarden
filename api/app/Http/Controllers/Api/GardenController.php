@@ -13,14 +13,14 @@ class GardenController extends Controller
     {
         return GardenResource::collection(
             Garden::query()
-                // Ohne Eager Loading sind das bei 35 Gärten über 140 Queries statt 5.
+                // Without eager loading this is over 140 queries for 35 gardens instead of 5.
                 ->with(['brewery', 'tags', 'openingHours', 'beerPrices'])
                 ->orderBy('name')
                 ->get(),
         );
 
-        // Keine Paginierung. 35 Datensätze, später ein paar tausend — das ist
-        // ein Payload, kein Suchproblem. Das Frontend hält den Bestand ohnehin
-        // komplett im Speicher, weil der Generator ihn komplett braucht.
+        // No pagination. 35 records, a few thousand later — that is a payload,
+        // not a search problem. The frontend keeps the whole set in memory
+        // anyway, because the generator needs all of it.
     }
 }

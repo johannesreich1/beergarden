@@ -6,13 +6,13 @@ services:
     ports:
       - "8080:80"
     environment:
-      # Ohne explizites SERVER_NAME startet FrankenPHP mit automatischem HTTPS.
-      # Lokal ist das nur im Weg.
+      # Without an explicit SERVER_NAME, FrankenPHP starts with automatic
+      # HTTPS. Locally that is only in the way.
       SERVER_NAME: ":80"
-      # Caddy löst für ein Verzeichnis kein index.html auf, sondern fällt auf
-      # Laravels index.php zurück — /prototype/ wäre sonst ein 404 aus dem
-      # Router. Die Pfad-Matcher ohne * treffen exakt, / bleibt also / und
-      # verschluckt nicht /api.
+      # Caddy does not resolve index.html for a directory; it falls through to
+      # Laravel's index.php — /prototype/ would otherwise be a 404 from the
+      # router. Path matchers without * match exactly, so / stays / and does
+      # not swallow /api.
       CADDY_SERVER_EXTRA_DIRECTIVES: |
         rewrite / /prototype/index.html
         rewrite /prototype /prototype/index.html
@@ -21,13 +21,13 @@ services:
         rewrite /design/ /design/index.html
     volumes:
       - ./api:/app
-      # Der Prototyp bleibt im Repo-Root und wird nur eingehängt — keine Kopie,
-      # die auseinanderläuft. Erreichbar unter /prototype/.
+      # The prototype stays in the repo root and is only mounted — no copy to
+      # drift apart. Reachable under /prototype/.
       - ./prototype:/app/public/prototype:ro
-      # Quelle für den Seeder. Read-only, damit klar ist: die JSONs sind Eingabe.
+      # Source for the seeder. Read-only to make clear the JSON files are input.
       - ./data:/app/data:ro
-      # Die Design-Entwürfe. Über HTTP ausgeliefert, damit die Galerie ihre
-      # Vorschauen in iframes laden kann — über file:// blockiert Chrome das.
+      # The design drafts. Served over HTTP so the gallery can load its
+      # previews in iframes — Chrome blocks that over file://.
       - ./design:/app/public/design:ro
     depends_on:
       db:
@@ -46,13 +46,12 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
-      # Legt zusätzlich beergarden_test an. Läuft nur beim allerersten Start
-      # eines leeren Volumes — nach einem Schema-Eingriff hier also
-      # docker compose down -v.
+      # Also creates beergarden_test. Only runs on the very first start of an
+      # empty volume — so after touching the schema here, docker compose down -v.
       - ./docker/mariadb-init.sql:/docker-entrypoint-initdb.d/10-test-db.sql:ro
     healthcheck:
-      # Ohne Healthcheck startet app schneller als die DB und der erste
-      # migrate schlägt reproduzierbar fehl.
+      # Without a health check, app starts before the database and the first
+      # migrate fails reproducibly.
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
       timeout: 5s
@@ -71,9 +70,9 @@ services:
       - "3000:3000"
     volumes:
       - ./web:/app
-      # node_modules als eigenes Volume, nicht aus dem Host gemountet: Rollup
-      # und esbuild bringen native Binaries mit, und die eines macOS-Hosts
-      # laufen in einem Linux-Container nicht.
+      # node_modules as its own volume rather than mounted from the host:
+      # Rollup and esbuild ship native binaries, and a macOS host's do not run
+      # inside a Linux container.
       - web_node_modules:/app/node_modules
     environment:
       NUXT_API_BASE: http://app

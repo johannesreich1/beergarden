@@ -2,36 +2,36 @@ import { brewerySlug, isOnWater } from './garden'
 import type { Garden } from './types'
 
 /**
- * Die Gewichte des Rankings. Bewusst als benannte Konstanten und nicht als
- * Zahlen im Ausdruck — das ist die einzige Stelle, an der jemand die
- * redaktionelle Haltung des Planers ablesen kann.
+ * The ranking weights. Named constants rather than numbers inside the
+ * expression on purpose — this is the one place where anyone can read off the
+ * planner's editorial stance.
  */
-export const WEIGHTS = {
-  /** Redaktionelle Einschätzung 1–5, mal zehn. Der stärkste Einzelfaktor. */
+const WEIGHTS = {
+  /** Editorial judgement 1–5, times ten. The strongest single factor. */
   charm: 10,
-  /** Unterwegs sein ist Verlust. */
+  /** Being under way is a loss. */
   travelMinute: -0.75,
-  /** Sitzen ist Gewinn, aber schwächer als Fahren wehtut. */
+  /** Sitting is a gain, but weaker than travelling hurts. */
   sitMinute: 0.16,
-  /** Drei verschiedene Brauereien sind ein besserer Nachmittag als dreimal Augustiner. */
+  /** Three different breweries make a better afternoon than Augustiner three times. */
   distinctBrewery: 5,
   anyWater: 10,
-  /** Letzte Station am Wasser oder mit Aussicht, wenn die Sonne untergeht. */
+  /** Last stop on the water or with a view, as the sun goes down. */
   sunsetFinale: 14,
-  /** Kennst du schon. Zieht deutlich, verbietet aber nichts. */
+  /** You have been there. Pulls hard, but forbids nothing. */
   visited: -22,
-  /** Die letzte Station sollte keine Einschränkung haben. */
+  /** The last stop should not carry a caveat. */
   caveatOnLast: -6,
 } as const
 
-/** Wie früh vor Sonnenuntergang das Finale zählt. */
+/** How long before sunset the finale still counts. */
 const SUNSET_WINDOW_MIN = 30
 
 export interface ScoreInput {
   gardens: Garden[]
   travelMinutes: number
   sitMinutesEach: number
-  /** Abfahrt von der letzten Station. */
+  /** Departure from the last stop. */
   departureFromLast: number
   sunsetMinutes: number
   visited: ReadonlySet<string>

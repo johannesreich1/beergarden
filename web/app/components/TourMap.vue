@@ -3,7 +3,7 @@ import type { Garden, ScheduleRow, StartPoint } from '#core'
 
 const props = defineProps<{
   start: StartPoint
-  /** Alle Stationen des Plans, auch die ausgelassenen. */
+  /** Every stop of the plan, including the skipped ones. */
   planned: Garden[]
   rows: ScheduleRow[]
 }>()
@@ -14,7 +14,7 @@ const viewBox = computed(() => viewBoxFor([props.start, ...props.planned]))
 
 const activeSlugs = computed(() => new Set(props.rows.map((row) => row.garden.slug)))
 
-/** Die tatsächlich gefahrenen Etappen, in Reihenfolge. */
+/** The legs actually travelled, in order. */
 const arcs = computed(() => {
   let previous: StartPoint | Garden = props.start
 

@@ -6,11 +6,11 @@ const MUNICH = { lat: 48.1374, lon: 11.5755 }
 
 describe('sunsetMinutes', () => {
   it('trifft den nachgerechneten Wert für München', () => {
-    // docs/PROJECT.md nennt unter Quellen 20:34 für diesen Tag. Diese Zahl ist
-    // um zwei bis drei Minuten zu früh: das NOAA-Tabellenverfahren liefert
-    // unabhängig 20:36, diese Implementierung 20:37. Für Sonnenwenden stimmen
-    // beide Verfahren exakt überein (siehe nächster Test) — der Fehler liegt
-    // also in der übernommenen Konstante, nicht in der Rechnung.
+    // docs/PROJECT.md lists 20:34 for this day under its sources. That number
+    // is two to three minutes early: the NOAA spreadsheet method independently
+    // gives 20:36, this implementation 20:37. At the solstices both methods
+    // agree to within a minute (see the next test) — so the error is in the
+    // inherited constant, not in the calculation.
     const minutes = sunsetMinutes(new Date('2026-08-11T12:00:00Z'), MUNICH.lat, MUNICH.lon)
 
     expect(minutes).toBeGreaterThanOrEqual(at(20, 35))
@@ -21,18 +21,18 @@ describe('sunsetMinutes', () => {
     const june = sunsetMinutes(new Date('2026-06-21T12:00:00Z'), MUNICH.lat, MUNICH.lon)
     const december = sunsetMinutes(new Date('2026-12-21T12:00:00Z'), MUNICH.lat, MUNICH.lon)
 
-    // Referenz aus dem NOAA-Tabellenverfahren: 21:17 und 16:22. Diese
-    // Implementierung liefert 21:18 und 16:22. Eine Minute Abweichung ist der
-    // Preis der vereinfachten Reihenentwicklung und für die Frage "geht die
-    // letzte Station in die Dämmerung" ohne jede Bedeutung.
+    // Reference from the NOAA spreadsheet method: 21:17 and 16:22. This
+    // implementation gives 21:18 and 16:22. One minute of deviation is the
+    // price of the simplified series expansion and utterly irrelevant to the
+    // question "does the last stop run into dusk".
     expect(june).toBeGreaterThan(december)
     expect(Math.abs(june - at(21, 17))).toBeLessThanOrEqual(1)
     expect(Math.abs(december - at(16, 22))).toBeLessThanOrEqual(1)
   })
 
   it('rechnet die Sommerzeit über Intl und nicht selbst', () => {
-    // Ende März springt die Uhr. Ein Sonnenuntergang am Tag davor und danach
-    // darf sich nicht um eine ganze Stunde unterscheiden.
+    // The clocks change at the end of March. Sunset the day before and the day
+    // after must not differ by a full hour of daylight.
     const before = sunsetMinutes(new Date('2026-03-28T12:00:00Z'), MUNICH.lat, MUNICH.lon)
     const after = sunsetMinutes(new Date('2026-03-30T12:00:00Z'), MUNICH.lat, MUNICH.lon)
 

@@ -1,4 +1,4 @@
-import { candidates, isOnWater } from './garden'
+import { candidates, countGardens, isOnWater } from './garden'
 import { openingWindow } from './hours'
 import { planLeg } from './travel'
 import { scoreRoute } from './scoring'
@@ -7,17 +7,17 @@ import { formatDuration } from './time'
 import type { Garden, Leg, PlannerOptions, Route } from './types'
 
 /**
- * Der Routengenerator.
+ * The route generator.
  *
- * Tiefensuche über Pfade der gewünschten Länge, mit drei Abkürzungen, die aus
- * einem exponentiellen Problem ein sofortiges machen:
+ * Depth-first search over paths of the requested length, with three shortcuts
+ * that turn an exponential problem into an instant one:
  *
- *   - pro Schritt nur die nächsten Nachbarn statt aller Kandidaten
- *   - nur die vom Start aus nächsten Gärten als erste Station
- *   - Abbruch, sobald die verbleibende Zeit die Mindestsitzzeit unterschreitet
+ *   - only the nearest neighbours per step instead of every candidate
+ *   - only the gardens nearest to the start as a first stop
+ *   - abort as soon as the remaining time falls below the minimum stay
  *
- * Bei 35 Gärten wäre das alles unnötig. Bei ein paar tausend ist es der
- * Unterschied zwischen "läuft bei jedem Slider-Zug" und "läuft nicht".
+ * At 35 gardens none of this would be needed. At a few thousand it is the
+ * difference between "runs on every slider drag" and "does not run".
  */
 
 const NEIGHBOURS_PER_STEP = 14
@@ -33,7 +33,7 @@ const MODE_LABELS: Record<string, string> = {
 
 export interface GenerateResult {
   routes: Route[]
-  /** Leer, wenn es Vorschläge gibt. Sonst der Grund im Klartext. */
+  /** Empty when there are suggestions. Otherwise the reason in plain words. */
   reason: string
 }
 
@@ -47,13 +47,13 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     return {
       routes: [],
       reason: pool.length
-        ? `Nur ${pool.length} Biergärten passen zu deinen Wünschen — für ${stops} Stationen zu wenig.`
+        ? `Nur ${countGardens(pool.length)} ${pool.length === 1 ? 'passt' : 'passen'} zu deinen Wünschen — für ${stops} Stationen zu wenig.`
         : 'Kein Biergarten passt zu dieser Kombination.',
     }
   }
 
-  // Die Fahrzeitmatrix einmal vorberechnen. Ohne sie ruft die Tiefensuche
-  // dieselbe Strecke tausendfach neu aus.
+  // Precompute the travel matrix once. Without it the depth-first search
+  // recomputes the same distance a thousand times over.
   const fromStart = new Map<string, Leg>()
   const between = new Map<string, Leg>()
 
@@ -81,7 +81,7 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
 
   const found: Route[] = []
 
-  /** Ein vollständiger Pfad — prüfen, bewerten, behalten oder verwerfen. */
+  /** A complete path — check it, score it, keep it or drop it. */
   const collect = (path: Garden[], travelled: number): void => {
     const back = legFrom(path[path.length - 1].slug)
     if (!back.feasible) return
@@ -90,16 +90,16 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     const sitTotal = budgetMinutes - travelMinutes
     if (sitTotal < stops * MIN_STAY_MINUTES) return
 
-    // Erst gleichmäßig verteilen, dann pro Garten in seine Grenzen klemmen.
-    // Das Klemmen kann die Summe nach oben treiben — deshalb wird danach
-    // noch einmal gegen das Zeitfenster geprüft, und nicht davor.
+    // Spread evenly first, then clamp per garden into its bounds. Clamping
+    // can push the total up — which is why the time budget is checked again
+    // afterwards, not before.
     const suggested = suggestStay(sitTotal, stops)
     const stays = path.map((garden) => stayAt(garden, suggested))
 
     if (travelMinutes + stays.reduce((sum, stay) => sum + stay, 0) > budgetMinutes) return
 
-    // Öffnungszeiten: ankommen darf man nicht vor dem Aufsperren und nicht
-    // so spät, dass die Sitzzeit über die Sperrstunde hinausragt.
+    // Opening hours: you may not arrive before they unlock, nor so late that
+    // the stay would run past closing time.
     let clock = startMinutes
     const legs: Leg[] = []
 
@@ -150,8 +150,8 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
 
       const step = legBetween(last, next)
       if (!step.feasible) continue
-      // Was jetzt schon zu lange gefahren ist, wird durch weitere Stationen
-      // nicht kürzer.
+      // What is already too much travelling will not get shorter by adding
+      // more stops.
       if (travelled + step.min > budgetMinutes - stops * MIN_STAY_MINUTES) continue
 
       path.push(next)
@@ -167,8 +167,8 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
 
   found.sort((a, b) => b.score - a.score)
 
-  // Nach Stopp-Menge entduplizieren: dieselben drei Gärten in anderer
-  // Reihenfolge sind für den Nutzer dieselbe Tour.
+  // Deduplicate by the set of stops: the same three gardens in a different
+  // order are the same tour to the user.
   const seen = new Set<string>()
   const routes: Route[] = []
 

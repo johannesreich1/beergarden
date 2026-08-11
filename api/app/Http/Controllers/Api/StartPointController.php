@@ -11,8 +11,8 @@ class StartPointController extends Controller
 {
     public function __invoke(): AnonymousResourceCollection
     {
-        // Reihenfolge wie im Prototyp-Export: die Liste ist redaktionell
-        // sortiert, nicht alphabetisch — Innenstadt zuerst.
+        // Order as exported from the prototype: the list is sorted
+        // editorially, not alphabetically — city centre first.
         return StartPointResource::collection(StartPoint::query()->orderBy('id')->get());
     }
 }

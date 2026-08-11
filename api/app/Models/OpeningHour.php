@@ -19,9 +19,9 @@ class OpeningHour extends Model
         ];
     }
 
-    // Bewusst kein Cast auf opens_at/closes_at: MariaDB-TIME kann 24:30 für
-    // "halb eins nachts" halten. Ein datetime-Cast würde daraus den nächsten
-    // Tag machen und die Zeit über den Tageswechsel kaputtrechnen.
+    // Deliberately no cast on opens_at/closes_at: MariaDB TIME can hold 24:30
+    // for "half past midnight". A datetime cast would turn that into the next
+    // day and break every calculation that crosses midnight.
 
     public function garden(): BelongsTo
     {

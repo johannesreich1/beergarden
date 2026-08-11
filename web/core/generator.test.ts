@@ -35,9 +35,9 @@ describe('generateRoutes', () => {
   })
 
   it('überspringt einen Garten an seinem Ruhetag', () => {
-    // Die Hirschau hat dienstags zu. Das steht als eigene Zeile in
-    // opening_hours und nicht als Flag am Garten — genau deshalb kann der
-    // Generator denselben Code für jeden Wochentag benutzen.
+    // The Hirschau is closed on Tuesdays. That lives as its own row in
+    // opening_hours rather than a flag on the garden — which is exactly why the
+    // generator can use the same code for every weekday.
     const tuesday = generateRoutes(GARDENS, defaultOptions({ weekday: TUESDAY }))
     const wednesday = generateRoutes(GARDENS, defaultOptions({ weekday: WEDNESDAY }))
 
@@ -69,8 +69,8 @@ describe('generateRoutes', () => {
   })
 
   it('sagt im Klartext, warum nichts geht, statt eine leere Liste zu liefern', () => {
-    // Zwei Stunden reichen für drei Stationen nicht — dreimal 45 Minuten
-    // sitzen sind allein schon mehr.
+    // Two hours are not enough for three stops — three times 45 minutes of
+    // sitting alone already exceeds it.
     const { routes, reason } = generateRoutes(GARDENS, defaultOptions({ budgetMinutes: 120 }))
 
     expect(routes).toHaveLength(0)
@@ -88,9 +88,9 @@ describe('generateRoutes', () => {
   })
 
   it('bevorzugt Touren mit verschiedenen Brauereien', () => {
-    // Zwei Augustiner-Gärten in einer Tour bringen den Brauerei-Bonus nur
-    // einmal. Das ist die einzige Stelle, an der das Ranking eine Meinung
-    // über den Nachmittag hat.
+    // Two Augustiner gardens on one tour earn the brewery bonus only once.
+    // This is the one place where the ranking holds an opinion about how the
+    // afternoon should go.
     const { routes } = generateRoutes(GARDENS, defaultOptions({ stops: 2, budgetMinutes: 300 }))
     const best = routes[0]
 
@@ -99,8 +99,8 @@ describe('generateRoutes', () => {
   })
 
   it('hält die Verweilgrenze eines Gartens ein', () => {
-    // Der Hofbräukeller ist im Fixture auf 75 Minuten gedeckelt. Sechs Stunden
-    // auf zwei Stationen ergäben sonst über zwei Stunden pro Station.
+    // The Hofbräukeller is capped at 75 minutes in the fixture. Six hours over
+    // two stops would otherwise give more than two hours each.
     const { routes } = generateRoutes(GARDENS, defaultOptions({ stops: 2, budgetMinutes: 420 }))
 
     for (const route of routes) {

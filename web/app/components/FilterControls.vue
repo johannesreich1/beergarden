@@ -4,7 +4,7 @@ import { brewerySlug } from '#core'
 
 const props = defineProps<{
   gardens: Garden[]
-  /** Im Planer heißt der Wasser-Schalter etwas anderes als im Verzeichnis. */
+  /** The water switch is worded differently in the planner than in the directory. */
   waterLabel?: string
 }>()
 
@@ -26,14 +26,14 @@ const breweryCounts = computed(() => {
   return counts
 })
 
-// Nur Brauereien anzeigen, die im Bestand vorkommen. Eine Kachel mit einer
-// Null darauf ist kein Filter, sondern eine Sackgasse.
+// Only show breweries that occur in the data. A tile with a zero on it is not
+// a filter but a dead end.
 const breweries = computed(() =>
   Object.keys(BREWERY_STYLES).filter((slug) => breweryCounts.value[slug] > 0),
 )
 
-// "Nur neue" steckte vorher zwischen den anderen Schaltern und hiess auch
-// noch anders als das, was es tut. Es bekommt jetzt einen eigenen Platz.
+// "Nur neue" used to sit among the other switches and was also named
+// differently from what it does. It gets its own place now.
 const extras = computed<{ key: BooleanFilter, label: string }[]>(() => [
   { key: 'waterRequired', label: props.waterLabel ?? 'Mind. einer am Wasser' },
   { key: 'selfServiceOnly', label: 'Selbstbedienung' },
@@ -43,7 +43,7 @@ const extras = computed<{ key: BooleanFilter, label: string }[]>(() => [
 
 const visitedCount = computed(() => state.value.visited.length)
 
-/** Besuchte einbeziehen (Vorgabe) oder exclude. */
+/** Include visited gardens (the default) or exclude them. */
 function setVisitedFilter(exclude: boolean): void {
   state.value.filters.unvisitedOnly = exclude
   persist()

@@ -2,30 +2,30 @@ import { distanceKm } from './geo'
 import type { Leg, Mode, PlanningMode, TravelTimes, Waypoint } from './types'
 
 /**
- * Das Fahrzeitmodell ist eine Krücke und weiß das.
+ * The travel model is a crutch and knows it.
  *
- * Luftlinie mal Umwegfaktor durch Geschwindigkeit. Bekannte systematische
- * Fehler, dokumentiert in docs/PROJECT.md:
+ * Straight-line distance times a detour factor over a speed. Known systematic
+ * errors, documented in docs/PROJECT.md:
  *
- *   1. ÖPNV auf durchgehenden U-Bahn-Achsen zu schlecht — die pauschalen
- *      9 Minuten Grundzeit passen für die S-Bahn ins Umland, nicht für
- *      Hofbräukeller → Michaeligarten.
- *   2. Keine Höhenmeter. Der Anstieg nach Großhesselohe fehlt.
- *   3. Radfaktor 1.25 stimmt entlang der Isar, quer über den Mittleren Ring
- *      eher 1.4.
+ *   1. Public transport too pessimistic on continuous underground lines — the
+ *      flat 9 minutes of base time fit the suburban train to the outskirts,
+ *      not Hofbräukeller → Michaeligarten.
+ *   2. No elevation. The climb up to Großhesselohe is missing.
+ *   3. The 1.25 cycling factor holds along the Isar; across the Mittlerer Ring
+ *      it is closer to 1.4.
  *
- * Deshalb steht im UI überall ein ≈ und ein Link auf die echte Verbindung.
- * Das bleibt so, bis Valhalla dahinterliegt — dann fliegt diese Datei raus
- * und der Rest des Kerns merkt davon nichts.
+ * That is why the UI shows a ≈ everywhere plus a link to the real connection.
+ * It stays that way until Valhalla sits behind it — then this file goes and
+ * the rest of the core never notices.
  */
 
 const WALK_DETOUR = 1.3
 const WALK_KMH = 4.8
 const BIKE_DETOUR = 1.25
 const BIKE_KMH = 15
-/** Aufschlag fürs Aufschließen und Abstellen. */
+/** Surcharge for unlocking and parking the bike. */
 const BIKE_HANDLING_MIN = 2
-/** Warten plus Umsteigen, pauschal. */
+/** Waiting plus changing, as a flat allowance. */
 const TRANSIT_BASE_MIN = 9
 const TRANSIT_DETOUR = 1.3
 const TRANSIT_KMH = 20
@@ -34,8 +34,8 @@ const MIN_ACTIVE_MIN = 3
 const MIN_TRANSIT_MIN = 8
 
 /**
- * Fußweg von der nächsten Haltestelle. Startpunkte sind selbst Haltestellen
- * und tragen deshalb nichts bei.
+ * Walk from the nearest stop. Start points are stops themselves and therefore
+ * contribute nothing.
  */
 const accessMinutes = (point: Waypoint): number => point.stationWalkMin ?? 0
 
@@ -59,12 +59,12 @@ export function travelTimes(a: Waypoint, b: Waypoint): TravelTimes {
 }
 
 /**
- * Eine Etappe im gewählten Modus.
+ * One leg in the chosen mode.
  *
- * Bei 'mix' entscheidet das Modell pro Etappe: zu Fuß, solange das unter dem
- * Limit bleibt und nicht mehr als zehn Minuten länger dauert als der ÖPNV.
- * Sonst ÖPNV. Bei einem festen Modus zählt stattdessen, ob das Limit hält —
- * `feasible` ist dann die Bedingung, an der der Generator Pfade abschneidet.
+ * With 'mix' the model decides per leg: on foot as long as that stays under
+ * the limit and takes no more than ten minutes longer than public transport.
+ * Otherwise public transport. With a fixed mode what counts instead is whether
+ * the limit holds — `feasible` is then the condition the generator prunes on.
  */
 export function planLeg(
   a: Waypoint,

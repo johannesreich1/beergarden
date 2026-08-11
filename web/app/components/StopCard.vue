@@ -4,7 +4,7 @@ import { brewerySlug, formatClock, formatDuration, isOnWater, openingWindow } fr
 
 const props = defineProps<{
   garden: Garden
-  /** null heißt: ausgelassen, steht aber weiter in der Tour. */
+  /** null means: skipped, but still part of the tour. */
   row: ScheduleRow | null
   weekday: number
   visited: boolean
@@ -58,7 +58,7 @@ const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
       <div v-if="garden.caveat" class="warnbox">{{ garden.caveat }}</div>
 
       <div class="actions">
-        <a class="btn gold" :href="mapsSearchUrl(garden.name)" target="_blank" rel="noopener">Karte</a>
+        <NuxtLink class="btn" :to="`/biergarten/${garden.slug}`">Details</NuxtLink>
         <button class="btn" :class="{ warn: !row }" @click="emit('skip')">
           {{ row ? 'Auslassen' : 'Wieder rein' }}
         </button>

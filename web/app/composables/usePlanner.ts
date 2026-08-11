@@ -1,15 +1,15 @@
-import type { Filters, Plan, PlanProblem, PlannerOptions, PlanningMode, StartPoint } from '#core'
+import type { Filters, Plan, PlannerOptions, PlanningMode, StartPoint } from '#core'
 import { at, sunsetMinutes } from '#core'
 
 /**
- * Der Zustand des Planers, geteilt zwischen Planer und Verzeichnis.
+ * The planner's state, shared between the planner and the directory.
  *
- * Neuer Schlüssel gegenüber dem Prototyp: die Form hat sich geändert, und ein
- * alter Eintrag würde stumm falsche Touren erzeugen statt zu scheitern.
+ * A new key compared to the prototype: the shape changed, and an old entry
+ * would silently produce wrong tours instead of failing.
  */
 const STORAGE_KEY = 'bg-planer-v5'
 
-/** Candidplatz, weil dort die Frage aufkam, aus der das Projekt entstand. */
+/** Candidplatz, because that is where the question behind this project came up. */
 const DEFAULT_START: StartPoint = { name: 'Candidplatz', lat: 48.1148, lon: 11.5687 }
 
 const MUNICH = { lat: 48.1374, lon: 11.5755 }
@@ -38,9 +38,9 @@ function initialState(): PlannerState {
     stops: 3,
     mode: 'mix',
     maxLegMinutes: 25,
-    // Fester Vorgabewert statt `new Date()`: der Zustand wird auch beim
-    // Vorrendern angelegt, und ein Build-Datum im HTML wäre ab morgen falsch.
-    // Der echte Wochentag kommt in hydrate() dazu.
+    // A fixed default rather than `new Date()`: the state is also created
+    // during prerendering, and a build date baked into the HTML would be wrong
+    // from tomorrow on. The real weekday arrives in hydrate().
     weekday: 2,
     filters: {
       tags: [],
@@ -65,7 +65,7 @@ export function usePlanner() {
   const state = useState<PlannerState>('planner', initialState)
   const hydrated = useState<boolean>('planner-hydrated', () => false)
 
-  /** Nur im Browser aufrufen. Vorher gilt der Vorgabewert. */
+  /** Call in the browser only. Before that the default applies. */
   function hydrate(): void {
     if (hydrated.value) return
     hydrated.value = true
@@ -78,12 +78,23 @@ export function usePlanner() {
     }
 
     try {
-      // Flach zusammenführen statt ersetzen: ein gespeicherter Zustand aus
-      // einer Version mit weniger Feldern soll nicht die neuen verschlucken.
+      // Merge shallowly rather than replace: a state stored by a version with
+      // fewer fields must not swallow the new ones.
       Object.assign(state.value, JSON.parse(stored) as Partial<PlannerState>)
+
+      // Older plans only knew one stay for every stop. That cannot be
+      // translated sensibly into per-garden bounds — so it goes. But only the
+      // plan: visits, filters and start point stay, otherwise a format change
+      // would mean data loss for the user.
+      if (state.value.plan && !Array.isArray(state.value.plan.stays)) {
+        state.value.plan = null
+        state.value.durations = {}
+        state.value.skipped = []
+        state.value.lastStop = null
+      }
     }
     catch {
-      // Kaputter Eintrag ist kein Grund, dem Nutzer eine leere Seite zu zeigen.
+      // A corrupt entry is no reason to show the user a blank page.
       localStorage.removeItem(STORAGE_KEY)
     }
   }
@@ -94,26 +105,32 @@ export function usePlanner() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.value))
     }
     catch {
-      // Privater Modus, volles Kontingent — kein Grund, den Planer anzuhalten.
+      // Private mode, quota exhausted — no reason to stop the planner.
     }
   }
 
   /**
-   * Die zuletzt verworfene Tour samt Grund.
+   * The most recently dropped tour.
    *
-   * Nicht gespeichert: sie erklärt eine Änderung, die gerade passiert ist.
-   * Beim nächsten Besuch wäre der Hinweis zusammenhanglos.
+   * Not persisted: it explains a change that just happened. On the next visit
+   * the notice would be without context.
    */
-  const droppedTour = useState<{ plan: Plan, problem: PlanProblem } | null>(
+  const droppedTour = useState<{ plan: Plan } | null>(
     'planner-verworfen',
     () => null,
   )
 
-  /** Tour fallen lassen, weil sie mit den neuen Einstellungen nicht mehr geht. */
-  function dropTour(problem: PlanProblem): void {
+  /**
+   * Drop the tour because it no longer works under the new settings.
+   *
+   * Only the plan is kept, not the reason: that is recomputed on every change.
+   * A frozen reason goes stale the moment the user turns another dial — and
+   * then contradicts what is on screen.
+   */
+  function dropTour(): void {
     if (!state.value.plan) return
 
-    droppedTour.value = { plan: state.value.plan, problem }
+    droppedTour.value = { plan: state.value.plan }
     state.value.plan = null
     state.value.durations = {}
     state.value.skipped = []
@@ -124,7 +141,7 @@ export function usePlanner() {
   const visitedSet = computed(() => new Set(state.value.visited))
   const skippedSet = computed(() => new Set(state.value.skipped))
 
-  /** Sonnenuntergang für heute. Im Prototyp stand hier eine Konstante. */
+  /** Today's sunset. The prototype had a constant here. */
   const sunset = computed(() =>
     hydrated.value
       ? sunsetMinutes(new Date(), MUNICH.lat, MUNICH.lon)

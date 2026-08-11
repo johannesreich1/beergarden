@@ -1,10 +1,10 @@
 /**
- * Der Kern des Planers: Fahrzeitmodell, Generator, Scoring, Ablauf.
+ * The planner's core: travel model, generator, scoring, schedule.
  *
- * Reine Funktionen. Kein DOM, kein Vue, kein Nuxt, keine Laravel-Abhängigkeit,
- * kein Netzwerkzugriff. Wer hier ein `import` aus dem Framework unterbringt,
- * hat die Regel gebrochen, die in CLAUDE.md steht — und damit die einzige
- * Absicherung gegen die Framework-Entscheidung.
+ * Pure functions. No DOM, no Vue, no Nuxt, no Laravel dependency, no network
+ * access. Anyone who sneaks a framework `import` in here has broken the rule
+ * written down in CLAUDE.md — and with it the only hedge against the framework
+ * decision.
  */
 
 export * from './types'

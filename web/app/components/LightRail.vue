@@ -2,14 +2,14 @@
 import { at, formatClock } from '#core'
 
 /**
- * Die Lichtleiste: wann die Tour läuft, gemessen am Tageslicht.
+ * The light rail: when the tour runs, measured against daylight.
  *
- * Der Farbverlauf ist kein Schmuck — er ist der Grund, warum das Ranking
- * Wasser- und Aussichtsplätze ans Ende legt.
+ * The gradient is not decoration — it is the reason the ranking puts places on
+ * the water and with a view at the end.
  */
 const props = defineProps<{
   arrivals: number[]
-  /** Nicht `sunsetMinutes` nennen — so heißt die gleichnamige Kern-Funktion. */
+  /** Do not call this `sunsetMinutes` — that is the core function's name. */
   sunset: number
 }>()
 

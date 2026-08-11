@@ -5,12 +5,12 @@ namespace App\Support;
 use RuntimeException;
 
 /**
- * Liest die JSON-Exporte aus data/.
+ * Reads the JSON exports from data/.
  *
- * Der Ordner liegt je nach Kontext woanders: im Container hängt er als
- * /app/data, im lokalen Checkout liegt er neben api/. Beide Kandidaten zu
- * probieren ist ehrlicher als eine ENV-Variable, die niemand setzt und deren
- * Fehlen sich als leerer Seeder äußert.
+ * The folder sits in different places depending on context: mounted as
+ * /app/data inside the container, next to api/ in a local checkout. Trying
+ * both candidates is more honest than an env variable nobody sets, whose
+ * absence would show up as a silently empty seeder.
  */
 final class DataFile
 {
@@ -27,6 +27,6 @@ final class DataFile
             }
         }
 
-        throw new RuntimeException("Datendatei {$name} nicht gefunden.");
+        throw new RuntimeException("Data file {$name} not found.");
     }
 }

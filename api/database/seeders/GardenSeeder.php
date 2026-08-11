@@ -12,7 +12,7 @@ class GardenSeeder extends Seeder
 {
     private const TUESDAY = 2;
 
-    /** Aus dem Prototyp übernommen, damit die Labels nicht neu erfunden werden. */
+    /** Taken from the prototype so the labels are not reinvented. */
     private const TAG_LABELS = [
         'wasser' => 'Am Wasser',
         'wald' => 'Wald & Grün',
@@ -36,8 +36,8 @@ class GardenSeeder extends Seeder
                 'name' => $row['name'],
                 'district' => $row['district'],
 
-                // Neun von 35 haben keine verifizierte Brauerei. Bleibt null —
-                // "wechselnd" wäre eine Behauptung, "k. A." eine Ausrede.
+                // Nine of 35 have no verified brewery. Stays null — "wechselnd"
+                // would be a claim, "k. A." an excuse.
                 'brewery_id' => $row['brewery'] === null ? null : $breweryIds[$row['brewery']],
 
                 'seats' => $row['seats'],
@@ -98,13 +98,14 @@ class GardenSeeder extends Seeder
     }
 
     /**
-     * Der Prototyp kennt nur ein Zeitpaar plus ein Dienstags-Flag. Beides wird
-     * auf die sieben Wochentage ausgerollt und ausnahmslos als unverifiziert
-     * markiert. Das ist die vorhandene Information in der richtigen Form —
-     * keine erfundene Präzision.
+     * The prototype only knows one pair of times plus a Tuesday flag. Both are
+     * rolled out across the seven weekdays and marked as unverified without
+     * exception. That is the information we have, in the right shape — not
+     * invented precision.
      *
-     * Die Mehrhäuser-Fälle (Hinterbrühl, Nockherberg) löst dieser Seeder nicht
-     * auf: dafür fehlen die Daten. Die Tabelle kann es, der Datenstand nicht.
+     * This seeder does not resolve the multi-venue cases (Hinterbrühl,
+     * Nockherberg): the data is missing. The table can express it, the current
+     * data set cannot.
      */
     private function seedOpeningHours(Garden $garden, array $row): void
     {
@@ -120,8 +121,8 @@ class GardenSeeder extends Seeder
                 'opens_at' => $closed ? null : $row['opens_at'],
                 'closes_at' => $closed ? null : $row['closes_at'],
 
-                // Fast jeder Biergarten ist wetterabhängig, aber welcher wie —
-                // das steht nirgends. false heißt hier "nicht erhoben".
+                // Almost every beer garden depends on the weather, but which one
+                // how — that is written down nowhere. false means "not surveyed".
                 'weather_dependent' => false,
 
                 'source_url' => null,

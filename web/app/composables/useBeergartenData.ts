@@ -2,11 +2,11 @@ import type { BeerPrice, Garden, OpeningHour, StartPoint } from '#core'
 import { parseClock } from '#core'
 
 /**
- * Die Antwortform der Laravel-API — snake_case, Uhrzeiten als Text.
+ * The Laravel API's response shape — snake_case, times as text.
  *
- * Die Umrechnung in den Kern-Typ passiert genau hier und sonst nirgends. Damit
- * kennt der Kern weder die API noch ihre Schreibweise, und ein Feldwechsel im
- * Backend ist eine Änderung an einer Stelle.
+ * The conversion into the core type happens here and nowhere else. That way the
+ * core knows neither the API nor its spelling, and a field change in the
+ * backend is a change in one place.
  */
 
 interface ApiOpeningHour {
@@ -45,6 +45,9 @@ interface ApiGarden {
   zone: 'city' | 'umland'
   caveat: string | null
   description: string | null
+  image_url: string | null
+  image_credit: string | null
+  image_source_url: string | null
   opening_hours: ApiOpeningHour[]
   beer_prices: ApiBeerPrice[]
 }
@@ -59,8 +62,8 @@ const toOpeningHour = (raw: ApiOpeningHour): OpeningHour => ({
   area: raw.area,
   weekday: raw.weekday,
   isClosed: raw.is_closed,
-  // "24:30" bleibt 1470. Der Kern rechnet in Minuten seit Mitternacht, damit
-  // eine Sperrstunde nach Mitternacht größer bleibt als die Öffnungszeit.
+  // "24:30" stays 1470. The core works in minutes since midnight so a closing
+  // time after midnight stays greater than the opening time.
   opensAt: raw.opens_at === null ? null : parseClock(raw.opens_at),
   closesAt: raw.closes_at === null ? null : parseClock(raw.closes_at),
   weatherDependent: raw.weather_dependent,
@@ -93,6 +96,9 @@ const toGarden = (raw: ApiGarden): Garden => ({
   zone: raw.zone,
   caveat: raw.caveat,
   description: raw.description,
+  imageUrl: raw.image_url,
+  imageCredit: raw.image_credit,
+  imageSourceUrl: raw.image_source_url,
   openingHours: raw.opening_hours.map(toOpeningHour),
   beerPrices: (raw.beer_prices ?? []).map(toBeerPrice),
 })

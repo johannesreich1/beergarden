@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · sechs Entity-Views</title>
+<style>
+:root{
+  --bg:#141414; --line:#2E2E2E;
+  --text:#E6E4DF; --mute:#8A8781; --accent:#C8A24A;
+  --mono:ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.5 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 32px 26px;border-bottom:1px solid var(--line)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;
+  letter-spacing:.26em;text-transform:uppercase;color:var(--accent)}
+header p{margin:14px 0 0;max-width:74ch;color:var(--mute)}
+header a{color:var(--text)}
+header b{color:var(--text);font-weight:500}
+
+.row{padding:34px 32px;border-bottom:1px solid var(--line)}
+.meta{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;flex-wrap:wrap}
+.num{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--accent)}
+.sig{color:var(--mute);font-size:13.5px;max-width:78ch;margin:0 0 20px}
+.sig b{color:var(--text);font-weight:500}
+
+.frames{display:flex;gap:22px;align-items:flex-start;overflow-x:auto;padding-bottom:6px}
+.device{flex:0 0 auto}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--mute);margin-bottom:7px;display:flex;
+  justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}
+.cap a:hover{color:var(--accent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--line)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+
+.d .shell{width:520px;height:470px}
+.d iframe{width:1440px;height:1302px;transform:scale(.3611)}
+.m .shell{width:210px;height:470px}
+.m iframe{width:390px;height:873px;transform:scale(.5385)}
+
+footer{padding:32px 32px 64px;color:var(--mute);max-width:82ch}
+footer code{font-family:var(--mono);color:var(--text)}
+footer ul{padding-left:18px;line-height:1.85}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:900px){ .row,header,footer{padding-left:18px;padding-right:18px} }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sechs Entity-Views · Gasthof Hinterbrühl</h1>
+  <p>
+    Dieselbe Seite, sechsmal anders geordnet — alle im Stempel-Design mit der Palette aus
+    <a href="palette.html">palette.html</a>. Was sich unterscheidet, ist die Frage, die
+    zuerst beantwortet wird: <b>Wie ist es dort? Was kostet die Maß? Wann ist offen?</b>
+    <a href="index.html">Zurück zur Übersicht</a>
+  </p>
+  <p>
+    <b>Zwei Dinge sind in allen sechs gleich und absichtlich so:</b> das Bild ist ein
+    gestempelter Platzhalter statt eines grauen Kastens — es fehlt kein Bild, es fehlt
+    ein <i>lizenziertes</i>. Und die Bierpreise sind Beispielwerte; die Tabelle in der
+    Datenbank ist leer, bis der Crawler sie füllt.
+  </p>
+</header>
+
+<div id="rows"></div>
+
+<footer>
+  <p><b>Wonach ich sie unterscheiden würde:</b></p>
+  <ul>
+    <li><b>Steckbrief</b> und <b>Doppelseite</b> behandeln alles gleichrangig — gut, wenn
+        die Seite ein Nachschlagewerk sein soll.</li>
+    <li><b>Preistafel</b> beantwortet eine Frage sofort und schiebt den Rest darunter.
+        Ehrlich nur, wenn der Preis wirklich die Hauptfrage ist.</li>
+    <li><b>Aufmacher</b> und <b>Etikett</b> setzen auf das Bild — beide werden schwächer,
+        solange dort ein Platzhalter steht.</li>
+    <li><b>Laufzettel</b> ist die einzige, die auf dem Telefon genauso gut aussieht wie am
+        Desktop, weil sie gar nicht erst umbricht.</li>
+  </ul>
+  <p>
+    Nichts davon ist gebaut. <code>web/app/pages/garden/[slug].vue</code> ist unverändert.
+    Sag, welche es wird — oder welche Teile aus welcher.
+  </p>
+</footer>
+
+<script>
+const VIEWS = [
+  ['a','Steckbrief','entity-a-profile.html',
+   'Bild links, rechts ein Register aus Feldern — Ausschank, Plätze, Bedienung, Maßpreis. <b>Alles gleich wichtig, alles auffindbar.</b> Am nächsten an einem Verzeichniseintrag.'],
+  ['b','Aufmacher','entity-b-hero.html',
+   'Bild über die volle Breite, der Name als Stempel halb darüber. <b>Der Maßpreis steht rechts als eigener Block</b>, darunter die vollständige Liste. Lebt vom Bild.'],
+  ['c','Preistafel','entity-c-pricetag.html',
+   '<b>Was die Maß kostet, ist der Held</b> — gestempelt und riesig, rechts oben. Alles andere ordnet sich unter. Für den Fall, dass genau das die Frage ist.'],
+  ['d','Etikett','entity-d-label.html',
+   'Die Seite als Bieretikett: mittig, Medaillon, Zierlinie, Preise wie eine Zutatenliste. <b>Die einzige Rundung im ganzen Entwurf</b> — weil ein Etikett rund ist.'],
+  ['e','Doppelseite','entity-e-spread.html',
+   'Wie ein aufgeschlagenes Heft: links Bild und Beschreibung, rechts Zeiten und Preise, <b>dazwischen die Falz als gestrichelte Linie</b>. Auf dem Telefon untereinander.'],
+  ['f','Laufzettel','entity-f-docket.html',
+   'Nummerierte Blöcke wie ein Formular, das durch die Stationen läuft. <b>Bricht nicht um, sondern ordnet nur neu</b> — dieselbe Reihenfolge auf jedem Gerät.'],
+]
+
+const VIEWPORTS = [
+  ['d','Desktop hell','light','1440'],
+  ['d','Desktop dunkel','dark','1440'],
+  ['m','Mobil hell','light','390'],
+]
+
+document.getElementById('rows').innerHTML = VIEWS.map(([num, name, file, sig]) => `
+  <section class="row">
+    <div class="meta">
+      <span class="num">${num}</span>
+      <span class="name"><a href="${file}">${name}</a></span>
+    </div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${VIEWPORTS.map(([cls, label, theme, width]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${file}?theme=${theme}">${width} px</a></div>
+          <div class="shell">
+            <iframe src="${file}?theme=${theme}" title="${name} — ${label}"
+                    loading="lazy" scrolling="no"></iframe>
+          </div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

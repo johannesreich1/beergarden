@@ -11,7 +11,7 @@ const hirschau = gardenBySlug('hirschau')
 
 describe('distanceKm', () => {
   it('misst Luftlinie in Kilometern', () => {
-    // Augustiner-Keller nach Hirschgarten sind knapp 2,7 km Luftlinie.
+    // Augustiner-Keller to Hirschgarten is just under 2.7 km as the crow flies.
     expect(distanceKm(keller, hirschgarten)).toBeCloseTo(2.68, 2)
   })
 
@@ -29,9 +29,9 @@ describe('travelTimes', () => {
   })
 
   it('rechnet den Fußweg von der Haltestelle in die ÖPNV-Zeit ein', () => {
-    // Der Flaucher liegt 13 Minuten von der nächsten Haltestelle entfernt.
-    // Genau deshalb gewinnt dort oft das Rad — das ist keine Schwäche des
-    // Modells, sondern die Aussage, um die es geht.
+    // The Flaucher is 13 minutes from the nearest stop. That is exactly why
+    // the bike usually wins there — not a weakness of the model but the very
+    // statement it is making.
     const withAccess = travelTimes(CANDIDPLATZ, flaucher)
     const withoutAccess = travelTimes(CANDIDPLATZ, { ...flaucher, stationWalkMin: 0 })
 
@@ -48,9 +48,9 @@ describe('travelTimes', () => {
 
 describe('planLeg', () => {
   it('nimmt bei gemischtem Modus den Fußweg für kurze Strecken', () => {
-    // Seehaus zur Hirschau sind keine 500 Meter. Dass der Fußweg gewinnt,
-    // liegt weniger am Limit als daran, dass beide weit von einer Haltestelle
-    // entfernt liegen — der ÖPNV verliert hier gegen sich selbst.
+    // Seehaus to Hirschau is under 500 metres. That walking wins has less to do
+    // with the limit than with both being far from any stop — public transport
+    // loses against itself here.
     const leg = planLeg(seehaus, hirschau, 'mix', 60)
 
     expect(leg.mode).toBe('walk')
@@ -58,9 +58,9 @@ describe('planLeg', () => {
   })
 
   it('nimmt den ÖPNV, sobald der Fußweg mehr als zehn Minuten draufschlägt', () => {
-    // Keller zu Hirschgarten: 44 Minuten laufen gegen 29 mit der Tram. Das
-    // Limit von 60 Minuten wäre eingehalten — trotzdem gewinnt der ÖPNV,
-    // weil "zu Fuß" nur bis zu zehn Minuten Aufschlag bevorzugt wird.
+    // Keller to Hirschgarten: 44 minutes on foot against 29 by tram. The
+    // 60-minute limit would hold — yet public transport wins, because walking
+    // is only preferred up to a ten-minute penalty.
     const leg = planLeg(keller, hirschgarten, 'mix', 60)
 
     expect(leg.mode).toBe('transit')
@@ -73,8 +73,8 @@ describe('planLeg', () => {
   })
 
   it('gilt bei gemischtem Modus immer als machbar', () => {
-    // 'mix' darf pro Etappe wechseln, also gibt es keine Etappe, an der der
-    // Generator scheitern müsste. Der Slider begrenzt dann nur den Fußweg.
+    // 'mix' may switch per leg, so there is no leg the generator would have to
+    // fail on. The slider then only bounds the walking.
     expect(planLeg(keller, flaucher, 'mix', 5).feasible).toBe(true)
   })
 

@@ -22,7 +22,7 @@ class OpeningHourResource extends JsonResource
         ];
     }
 
-    /** MariaDB liefert TIME als 10:00:00. Sekunden trägt hier niemand ein. */
+    /** MariaDB returns TIME as 10:00:00. Nobody records seconds here. */
     private static function hhmm(?string $time): ?string
     {
         return $time === null ? null : substr($time, 0, 5);

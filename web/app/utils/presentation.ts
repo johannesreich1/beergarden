@@ -2,17 +2,26 @@ import type { Mode, PlanningMode } from '#core'
 import { UNKNOWN_BREWERY } from '#core'
 
 /**
- * Alles, was nur mit Darstellung zu tun hat. Bewusst nicht im Kern: Farben und
- * Abkürzungen sind eine Sache dieser Oberfläche, nicht der Domäne.
+ * Everything that is purely presentation. Deliberately not in the core:
+ * colours and abbreviations belong to this interface, not to the domain.
  */
 
 export interface BreweryStyle {
   label: string
-  /** Zweizeilig auf der Kachel, deshalb ein Array statt eines <br>. */
+  /** Two lines on the tile, hence an array rather than a <br>. */
   short: string[]
   color: string
 }
 
+/**
+ * Brand colours, deliberately here and not in the stylesheet.
+ *
+ * The palette belongs in `main.css` — it is a design decision. These values are
+ * something else: they belong to the respective brewery and come with it, like
+ * its name and abbreviation. So they sit with the other brewery data. Making
+ * them readable on light and dark ground is `--bc-readable`'s job in the
+ * stylesheet, not a second set of values here.
+ */
 export const BREWERY_STYLES: Record<string, BreweryStyle> = {
   augustiner: { label: 'Augustiner', short: ['AUGU-', 'STINER'], color: '#2E6B3A' },
   paulaner: { label: 'Paulaner', short: ['PAU-', 'LANER'], color: '#2B5EA8' },
@@ -23,8 +32,8 @@ export const BREWERY_STYLES: Record<string, BreweryStyle> = {
   giesinger: { label: 'Giesinger', short: ['GIE-', 'SINGER'], color: '#9E3030' },
   bio: { label: 'Bio / Lammsbräu', short: ['BIO'], color: '#6E8F3C' },
   wechselnd: { label: 'wechselnd', short: ['WECH-', 'SELND'], color: '#B08D50' },
-  // Der Platzhalter für die neun Gärten ohne verifizierte Brauerei. "k. A."
-  // ist die ehrliche Anzeige — nicht "wechselnd" und nicht gar nichts.
+  // The placeholder for the nine gardens without a verified brewery. "k. A."
+  // is the honest label — not "wechselnd" and not nothing at all.
   [UNKNOWN_BREWERY]: { label: 'k. A.', short: ['K. A.'], color: '#6B5A3E' },
 }
 
@@ -54,7 +63,7 @@ export const MODE_LABELS: Record<Mode, string> = {
   transit: 'ÖPNV',
 }
 
-/** ISO-8601, wie in der Datenbank: 1 = Montag. */
+/** ISO-8601, as in the database: 1 = Monday. */
 export const WEEKDAYS = [
   { value: 1, label: 'Mo', name: 'Montag' },
   { value: 2, label: 'Di', name: 'Dienstag' },
@@ -70,7 +79,7 @@ export const WEEKDAY_NAMES: Record<number, string> = {
   5: 'freitags', 6: 'samstags', 7: 'sonntags',
 }
 
-/** Kürzt Namen für Karte und Ketten-Anzeige, wo der volle Name nicht hinpasst. */
+/** Shortens names for the map and the chain display, where the full name will not fit. */
 export function shortName(name: string): string {
   return name
     .replace(/^(Augustiner Gutshof |Biergarten am |Königlicher |Waldgaststätte |Schlosswirtschaft |Café )/, '')
@@ -82,12 +91,42 @@ export function shortName(name: string): string {
     .replace(' im Westpark', '')
 }
 
+/**
+ * "90 min" or "75–120 min".
+ *
+ * Since stays can be bounded per garden, they are no longer one number for the
+ * whole tour. Showing only the first value would claim a uniformity that does
+ * not exist.
+ */
+export function formatStays(stays: number[]): string {
+  const min = Math.min(...stays)
+  const max = Math.max(...stays)
+
+  return min === max ? `${min} min` : `${min}–${max} min`
+}
+
+/** 980 → "9,80 €". Arithmetic happens in cents, formatting happens here. */
+export const formatEuro = (cents: number): string =>
+  (cents / 100).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })
+
+/** Labels for the kinds. Anything unknown shows its key — better than nothing. */
+export const BEER_KIND_LABELS: Record<string, string> = {
+  hell: 'Helles',
+  weizen: 'Weißbier',
+  alkoholfrei: 'Alkoholfrei',
+  radler: 'Radler',
+  dunkel: 'Dunkles',
+}
+
+export const formatBeerSize = (ml: number): string =>
+  ml === 1000 ? 'Maß' : ml === 500 ? 'Halbe' : `${ml} ml`
+
 export const formatSeats = (seats: number | null): string =>
   seats === null ? 'Größe unbekannt' : `${seats.toLocaleString('de-DE')} Plätze`
 
 /**
- * Die echte Verbindung bei Google. Solange die Fahrzeiten geschätzt sind,
- * gehört zu jeder Zahl ein Weg zur belastbaren Auskunft.
+ * The real connection on Google. As long as travel times are estimates, every
+ * number owes the reader a path to a reliable answer.
  */
 export function directionsUrl(
   from: { lat: number; lon: number },

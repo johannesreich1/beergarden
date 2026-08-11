@@ -13,8 +13,8 @@ class BeerPriceResource extends JsonResource
         return [
             'kind' => $this->kind,
             'size_ml' => $this->size_ml,
-            // In Cent, nicht in Euro. Die Formatierung ist Sache der Oberfläche,
-            // die Rechnung bleibt ganzzahlig.
+            // In cents, not euros. Formatting is the interface's business;
+            // the arithmetic stays integral.
             'cents' => $this->cents,
             'source_url' => $this->source_url,
             'verified_at' => $this->verified_at?->toIso8601String(),

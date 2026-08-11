@@ -2,16 +2,16 @@ import { at } from './time'
 import type { Filters, Garden, PlannerOptions, StartPoint } from './types'
 
 /**
- * Sieben echte Gärten aus `data/gardens.json`, hier abgeschrieben statt zur
- * Testlaufzeit eingelesen.
+ * Seven real gardens from `data/gardens.json`, copied in here rather than read
+ * at test time.
  *
- * Der Kern soll ohne Repo-Layout, ohne Dateisystem und ohne Netz testbar sein —
- * genau das ist die Eigenschaft, wegen der er außerhalb von app/ liegt. Ein
- * `readFileSync('../../data/...')` im Test würde sie stillschweigend aufgeben.
+ * The core must be testable without the repo layout, without a file system and
+ * without a network — that is exactly the property it lives outside app/ for. A
+ * `readFileSync('../../data/...')` in a test would silently give it up.
  *
- * Die Auswahl deckt ab, worauf es ankommt: zwei Gärten derselben Brauerei,
- * einer am Wasser, einer mit Ruhetag am Dienstag, unterschiedliche
- * Öffnungszeiten und ein Umland-Fall über `zone`.
+ * The selection covers what matters: two gardens of the same brewery, one on
+ * the water, one closed on Tuesdays, differing opening hours and an
+ * out-of-town case via `zone`.
  */
 
 interface RawGarden {
@@ -86,7 +86,7 @@ const RAW: RawGarden[] = [
     tags: ['stadt', 'keller'],
     opensAt: at(11), closesAt: at(23), stationWalkMin: 3, charm: 4,
     lat: 48.1338, lon: 11.5928,
-    // Ein kleines Haus: hier sitzt niemand zweieinhalb Stunden.
+    // A small place: nobody sits here for two and a half hours.
     maxStay: 75,
   },
 ]
@@ -112,6 +112,9 @@ function toGarden(raw: RawGarden): Garden {
     zone: raw.zone ?? 'city',
     caveat: raw.caveat ?? null,
     description: null,
+    imageUrl: null,
+    imageCredit: null,
+    imageSourceUrl: null,
     beerPrices: [],
     openingHours: [1, 2, 3, 4, 5, 6, 7].map((weekday) => {
       const closed = weekday === TUESDAY && raw.closedOnTuesday === true
@@ -134,7 +137,7 @@ export const GARDENS: Garden[] = RAW.map(toGarden)
 export const gardenBySlug = (slug: string): Garden =>
   GARDENS.find((garden) => garden.slug === slug)!
 
-/** Candidplatz — der Startpunkt, mit dem das ganze Projekt angefangen hat. */
+/** Candidplatz — the start point the whole project began with. */
 export const CANDIDPLATZ: StartPoint = { name: 'Candidplatz', lat: 48.1148, lon: 11.5687 }
 
 export const NO_FILTERS: Filters = {
@@ -147,7 +150,7 @@ export const NO_FILTERS: Filters = {
   waterRequired: false,
 }
 
-/** Der Ausgangsfall aus PROJECT.md: Dienstagnachmittag ab Candidplatz. */
+/** The original case from PROJECT.md: Tuesday afternoon from Candidplatz. */
 export function defaultOptions(overrides: Partial<PlannerOptions> = {}): PlannerOptions {
   return {
     start: CANDIDPLATZ,

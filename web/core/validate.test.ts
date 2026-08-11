@@ -12,8 +12,8 @@ const TUESDAY = 2
 
 describe('checkPlan', () => {
   it('findet an einer frisch erzeugten Tour nichts auszusetzen', () => {
-    // Wenn das hier bricht, widersprechen sich Generator und Prüfung —
-    // und dann ist eine der beiden Stellen falsch.
+    // If this breaks, generator and validation contradict each other — and then
+    // one of the two is wrong.
     expect(checkPlan(plan, GARDENS, options)).toBeNull()
   })
 
@@ -33,8 +33,8 @@ describe('checkPlan', () => {
   })
 
   it('meldet einen Ruhetag, wenn man den Wochentag wechselt', () => {
-    // Die Hirschau hat dienstags zu. Eine Tour, die sie am Mittwoch enthält,
-    // kippt beim Umschalten auf Dienstag.
+    // The Hirschau is closed on Tuesdays. A tour containing it on Wednesday
+    // breaks when you switch to Tuesday.
     const mittwoch = defaultOptions({ weekday: 3 })
     const mitHirschau = generateRoutes(GARDENS, mittwoch).routes
       .find((route) => route.slugs.includes('hirschau'))!
@@ -46,8 +46,8 @@ describe('checkPlan', () => {
   })
 
   it('meldet, wenn eine verlängerte Verweildauer die Tour sprengt', () => {
-    // Vier Stunden pro Station sind ehrlich gemeint, passen aber in kein
-    // Zeitfenster — und genau das soll der Nutzer erfahren.
+    // Four hours per stop is meant sincerely but fits no time budget — and that
+    // is exactly what the user should be told.
     const durations = Object.fromEntries(plan.slugs.map((slug) => [slug, 240]))
     const problem = checkPlan(plan, GARDENS, options, durations)
 
@@ -63,8 +63,8 @@ describe('checkPlan', () => {
   })
 
   it('meldet einen Garten, den es nicht mehr gibt', () => {
-    // Ein gespeicherter Plan von gestern kann auf einen Garten zeigen, der
-    // aus dem Bestand geflogen ist.
+    // A plan stored yesterday can point at a garden that has since dropped out
+    // of the data set.
     const stale = { ...plan, slugs: ['gibt-es-nicht', ...plan.slugs.slice(1)] }
     const problem = checkPlan(stale, GARDENS, options)
 

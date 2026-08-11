@@ -1,18 +1,18 @@
-/** Minuten seit Mitternacht aus Stunde und Minute. */
+/** Minutes since midnight from an hour and a minute. */
 export const at = (hours: number, minutes = 0): number => hours * 60 + minutes
 
 /**
  * "10:00" → 600, "24:30" → 1470.
  *
- * Werte über 24 Stunden sind kein Fehler: MariaDB speichert eine Sperrstunde
- * nach Mitternacht so, damit sie größer bleibt als die Öffnungszeit.
+ * Values beyond 24 hours are not a bug: MariaDB stores a closing time after
+ * midnight this way so it stays greater than the opening time.
  */
 export function parseClock(value: string): number {
   const [hours, minutes] = value.split(':').map(Number)
   return hours * 60 + (minutes || 0)
 }
 
-/** 1470 → "00:30". Für die Anzeige, nicht zum Rechnen. */
+/** 1470 → "00:30". For display, not for arithmetic. */
 export function formatClock(total: number): string {
   const hours = Math.floor(total / 60) % 24
   const minutes = total % 60

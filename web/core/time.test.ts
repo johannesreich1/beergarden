@@ -8,9 +8,9 @@ describe('parseClock', () => {
   })
 
   it('hält Sperrstunden nach Mitternacht über 24 Stunden', () => {
-    // MariaDB speichert "halb eins nachts" als 24:30, damit die Sperrstunde
-    // größer bleibt als die Öffnungszeit. Wer das auf 00:30 normalisiert,
-    // baut sich einen Garten, der 22 Stunden vor dem Aufsperren zumacht.
+    // MariaDB stores "half past midnight" as 24:30 so closing time stays
+    // greater than opening time. Normalising that to 00:30 gives you a garden
+    // that closes 22 hours before it opens.
     expect(parseClock('24:30')).toBe(1470)
     expect(parseClock('24:30')).toBeGreaterThan(parseClock('23:00'))
   })

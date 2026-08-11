@@ -1,26 +1,48 @@
-import type { Filters, Garden } from './types'
+import type { BeerPrice, Filters, Garden } from './types'
 import { isOpenOn } from './hours'
 
 /**
- * Der Platzhalter für eine nicht verifizierte Brauerei.
+ * The placeholder for an unverified brewery.
  *
- * In der API ist `brewery` schlicht null. Fürs Filtern und Gruppieren braucht
- * es aber einen Schlüssel, sonst fallen die neun unverifizierten Gärten aus
- * jeder Auswahl heraus, statt als eigene Gruppe auffindbar zu sein.
+ * In the API `brewery` is simply null. Filtering and grouping need a key
+ * though, otherwise the nine unverified gardens drop out of every selection
+ * instead of being findable as a group of their own.
  */
 export const UNKNOWN_BREWERY = 'ka'
 
 export const brewerySlug = (garden: Garden): string => garden.brewery?.slug ?? UNKNOWN_BREWERY
 
+/** The Maß. That is what people mean when they ask for "the beer price". */
+export const MASS_ML = 1000
+/** Helles is the reference price. The other kinds live in the detail view. */
+export const REFERENCE_KIND = 'hell'
+
+export const priceFor = (garden: Garden, kind: string, sizeMl: number): BeerPrice | undefined =>
+  garden.beerPrices.find((price) => price.kind === kind && price.sizeMl === sizeMl)
+
+/** The single price that fits in a list. Everything else belongs in the detail view. */
+export const massPrice = (garden: Garden): BeerPrice | undefined =>
+  priceFor(garden, REFERENCE_KIND, MASS_ML)
+
 export const isOnWater = (garden: Garden): boolean => garden.tags.includes('wasser')
 
-export function matchesFilters(
+/**
+ * "ein Biergarten" or "17 Biergärten".
+ *
+ * Lives here because both callers need the same rule: the generator for its
+ * refusal and the UI for its counter. Two phrasings for the same number would
+ * be two opportunities to write "1 Biergärten".
+ */
+export const countGardens = (count: number): string =>
+  count === 1 ? 'ein Biergarten' : `${count} Biergärten`
+
+function matchesFilters(
   garden: Garden,
   filters: Filters,
   visited: ReadonlySet<string>,
 ): boolean {
-  // Charakter-Tags sind eine Und-Verknüpfung: wer "Wald" und "Wasser" wählt,
-  // will beides an einem Ort, nicht das eine oder das andere.
+  // Character tags are an AND: someone picking "Wald" and "Wasser" wants both
+  // in one place, not one or the other.
   if (filters.tags.length && !filters.tags.every((tag) => garden.tags.includes(tag))) return false
 
   if (filters.breweries.length && !filters.breweries.includes(brewerySlug(garden))) return false
@@ -33,8 +55,8 @@ export function matchesFilters(
 }
 
 /**
- * Fürs Verzeichnis: hier heißt "am Wasser" wirklich dieser eine Garten.
- * Im Generator heißt derselbe Schalter "irgendeiner auf der Tour".
+ * For the directory: here "on the water" really means this one garden.
+ * In the generator the same switch means "any one on the tour".
  */
 export function matchesDirectoryFilters(
   garden: Garden,
@@ -47,7 +69,7 @@ export function matchesDirectoryFilters(
   return true
 }
 
-/** Die Gärten, aus denen der Generator überhaupt wählen darf. */
+/** The gardens the generator is allowed to choose from at all. */
 export function candidates(
   gardens: Garden[],
   filters: Filters,

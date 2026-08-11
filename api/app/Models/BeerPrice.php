@@ -10,16 +10,16 @@ class BeerPrice extends Model
     protected $guarded = [];
 
     /**
-     * Die gepflegten Sorten.
+     * The curated list of kinds.
      *
-     * Bewusst hier und nicht als enum in der Datenbank: eine neue Sorte soll
-     * eine Zeile in dieser Liste sein, keine Migration. Was der Crawler an
-     * Unbekanntem findet, landet trotzdem in der Tabelle — die Liste steuert
-     * nur Reihenfolge und Beschriftung im UI.
+     * Kept here rather than as a database enum on purpose: a new kind should be
+     * a line in this list, not a migration. Whatever unknown kind the crawler
+     * finds still lands in the table — this list only drives ordering and
+     * labelling in the UI.
      */
     public const KINDS = ['hell', 'weizen', 'alkoholfrei', 'radler', 'dunkel'];
 
-    /** Ausschankgrößen in Millilitern. Halbe und Maß, alles weitere bei Bedarf. */
+    /** Serving sizes in millilitres. Halbe and Maß; anything else on demand. */
     public const SIZES_ML = [500, 1000];
 
     protected function casts(): array

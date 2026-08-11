@@ -1,12 +1,12 @@
 /**
- * Sonnenuntergang aus Datum und Ort.
+ * Sunset from a date and a place.
  *
- * Vorher stand im Prototyp eine Konstante — 20:34, der Wert für München am
- * 11.08.2026. Damit war der Planer auf genau einen Tag festgenagelt. Das
- * Verfahren hier ist der übliche NOAA-Ansatz und liegt auf die Minute genau,
- * was für "geht die letzte Station in die Dämmerung" mehr als reicht.
+ * The prototype had a constant here — 20:34, the value for Munich on
+ * 2026-08-11. That pinned the planner to exactly one day. The method below is
+ * the usual NOAA approach and is accurate to the minute, which is more than
+ * enough for "does the last stop run into dusk".
  *
- * Die Gegenprobe steht im Test: derselbe Tag, derselbe Ort, 20:34.
+ * The cross-check lives in the test: same day, same place.
  */
 
 const DAY_MS = 86_400_000
@@ -17,8 +17,8 @@ const rad = Math.PI / 180
 const OBLIQUITY = rad * 23.4397
 
 /**
- * Sonnenuntergang gilt, wenn die Sonnenmitte 0.833° unter dem Horizont steht.
- * Das deckt Refraktion und den scheinbaren Radius der Sonnenscheibe ab.
+ * Sunset is when the centre of the sun sits 0.833° below the horizon. That
+ * covers refraction and the apparent radius of the solar disc.
  */
 const SUNSET_ALTITUDE = rad * -0.833
 
@@ -41,11 +41,11 @@ const eclipticLongitude = (meanAnomaly: number) => {
 const declination = (eclipticLon: number) =>
   Math.asin(Math.sin(OBLIQUITY) * Math.sin(eclipticLon))
 
-/** Korrektur zwischen mittlerer und wahrer Sonnenzeit. */
+/** Correction between mean and true solar time. */
 const solarTransit = (approx: number, meanAnomaly: number, eclipticLon: number) =>
   J2000 + approx + 0.0053 * Math.sin(meanAnomaly) - 0.0069 * Math.sin(2 * eclipticLon)
 
-export function sunsetAt(date: Date, lat: number, lon: number): Date {
+function sunsetAt(date: Date, lat: number, lon: number): Date {
   const west = rad * -lon
   const latitude = rad * lat
   const days = toDays(date)
@@ -68,10 +68,10 @@ export function sunsetAt(date: Date, lat: number, lon: number): Date {
 }
 
 /**
- * Minuten seit Mitternacht in einer Zeitzone.
+ * Minutes since midnight in a time zone.
  *
- * Über Intl statt über eine Bibliothek: Sommerzeit ist genau der Fall, bei dem
- * eigene Rechnerei schiefgeht, und die Zeitzonendaten bringt die Laufzeit mit.
+ * Via Intl rather than a library: daylight saving is exactly where doing the
+ * arithmetic yourself goes wrong, and the runtime ships the zone data anyway.
  */
 function minutesInZone(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat('de-DE', {
@@ -86,7 +86,7 @@ function minutesInZone(date: Date, timeZone: string): number {
   return value('hour') * 60 + value('minute')
 }
 
-/** Sonnenuntergang als Minuten seit Mitternacht Ortszeit. */
+/** Sunset as minutes since midnight, local time. */
 export function sunsetMinutes(
   date: Date,
   lat: number,

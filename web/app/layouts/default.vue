@@ -4,21 +4,20 @@ import { formatClock, sunsetMinutes } from '#core'
 const MUNICH = { lat: 48.1374, lon: 11.5755 }
 
 /**
- * Datum und Sonnenuntergang erst im Browser. Auf einer vorgerenderten Seite
- * wäre beides das Build-Datum und ab dem nächsten Tag falsch.
+ * Date and sunset only in the browser. On a prerendered page both would be the
+ * build date and wrong from the next day on.
  *
- * Im Prototyp stand hier zusätzlich "31° · Sonne". Dafür gibt es keine Quelle —
- * und eine erfundene Wetterlage ist genau die Art Behauptung, die sich das
- * Projekt an anderer Stelle ausdrücklich verbietet.
+ * The prototype also had "31° · Sonne" here. There is no source for that — and
+ * an invented weather report is exactly the kind of claim this project
+ * explicitly forbids itself elsewhere.
  */
 const today = ref<Date | null>(null)
 const { theme, choose, hydrate } = useTheme()
 
 /*
- * Läuft im <head>, also vor dem ersten Anstrich. Ohne das zeigt eine
- * vorgerenderte Seite kurz die Systemfassung und springt dann auf die
- * gewählte um — ein Blitzer, den man nicht mehr wegbekommt, wenn er
- * einmal drin ist.
+ * Runs in the <head>, so before the first paint. Without it a prerendered page
+ * briefly shows the system variant and then jumps to the chosen one — a flash
+ * you never get rid of once it is in.
  */
 useHead({
   script: [{
@@ -70,37 +69,40 @@ const eyebrow = computed(() => {
 
         <div class="eyebrow">{{ eyebrow }}</div>
 
-        <!--
-          Das Siegel: Schrift auf dem Ring, bayerische Raute im Kern, Ort im Fuß.
-          Schief aufgesetzt, weil ein Gummistempel nie gerade sitzt. Die Maske
-          `abdruck` reißt die Farbe auf — dieselbe, die Titel und Schalter tragen.
+        <div class="wordmark">
+          <!--
+          The seal: lettering on the ring, the Bavarian lozenge at its core, the
+          place at its foot. Set askew, because a rubber stamp never sits
+          straight. The `stamped` mask breaks the ink up — the same one the
+          title and the switches carry.
         -->
-        <svg
-          class="seal stamped"
-          viewBox="0 0 132 132"
-          role="img"
-          aria-label="Siegel: Biergarten Freunde, München"
-        >
-          <defs>
-            <path id="siegelring" d="M66,66 m-49,0 a49,49 0 1,1 98,0 a49,49 0 1,1 -98,0" />
-          </defs>
-          <circle class="ringlinie" cx="66" cy="66" r="63" stroke-width="3" />
-          <circle class="ringlinie" cx="66" cy="66" r="57" stroke-width="1.5" />
-          <circle class="ringlinie" cx="66" cy="66" r="34" stroke-width="1.5" />
-          <text font-size="11.5">
-            <textPath href="#siegelring" startOffset="50%" text-anchor="middle">
-              BIERGARTEN · FREUNDE ·
-            </textPath>
-          </text>
-          <path class="raute" d="M66,48 L78,66 L66,84 L54,66 Z" />
-          <text class="ort" x="66" y="112" font-size="8" text-anchor="middle">MÜNCHEN</text>
-        </svg>
+          <svg
+            class="seal stamped"
+            viewBox="0 0 132 132"
+            role="img"
+            aria-label="Siegel: Biergarten Freunde, München"
+          >
+            <defs>
+              <path id="siegelring" d="M66,66 m-49,0 a49,49 0 1,1 98,0 a49,49 0 1,1 -98,0" />
+            </defs>
+            <circle class="ringlinie" cx="66" cy="66" r="63" stroke-width="3" />
+            <circle class="ringlinie" cx="66" cy="66" r="57" stroke-width="1.5" />
+            <circle class="ringlinie" cx="66" cy="66" r="34" stroke-width="1.5" />
+            <text font-size="11.5">
+              <textPath href="#siegelring" startOffset="50%" text-anchor="middle">
+                BIERGARTEN · FREUNDE ·
+              </textPath>
+            </text>
+            <path class="raute" d="M66,48 L78,66 L66,84 L54,66 Z" />
+            <text class="ort" x="66" y="112" font-size="8" text-anchor="middle">MÜNCHEN</text>
+          </svg>
 
-        <h1 class="stamped">
-          <NuxtLink to="/">
-            <span class="l1">Biergarten</span><span class="l2">Freunde</span>
-          </NuxtLink>
-        </h1>
+          <h1 class="stamped">
+            <NuxtLink to="/">
+              <span class="l1">Biergarten</span><span class="l2">Freunde</span>
+            </NuxtLink>
+          </h1>
+        </div>
 
         <p>
           Sag, wo du losgehst, wie lange du Zeit hast und was du willst — die Tour baut

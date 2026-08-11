@@ -2,19 +2,19 @@ import { planLeg } from './travel'
 import type { Garden, Leg, Mode, PlanningMode, Route, StartPoint } from './types'
 
 /**
- * Der Ablauf einer gewählten Tour, nachdem der Nutzer daran gedreht hat.
+ * The schedule of a chosen tour, after the user has adjusted it.
  *
- * Der Generator liefert einen Vorschlag. Danach darf man Stationen auslassen,
- * die Verweildauer ändern und früher Schluss machen. Diese Funktion rechnet
- * aus, was daraus wird — ohne neu zu generieren, denn die gewählte Tour soll
- * die gewählte Tour bleiben.
+ * The generator delivers a suggestion. After that you may skip stops, change
+ * how long you stay and finish early. This function works out what comes of
+ * that — without regenerating, because the chosen tour should stay the chosen
+ * tour.
  */
 
 export interface Plan {
   slugs: string[]
   legs: Pick<Leg, 'min' | 'mode' | 'km'>[]
   back: Pick<Leg, 'min' | 'mode' | 'km'>
-  /** Aufenthalt je Station, gleiche Reihenfolge wie `slugs`. */
+  /** Stay per stop, same order as `slugs`. */
   stays: number[]
 }
 
@@ -24,9 +24,9 @@ export interface ScheduleOptions {
   mode: PlanningMode
   maxLegMinutes: number
   skipped: ReadonlySet<string>
-  /** Abweichende Verweildauer pro Garten. */
+  /** Overridden stay per garden. */
   durations: Readonly<Record<string, number>>
-  /** Ab hier Schluss, Rest der Tour fällt weg. */
+  /** Finish here; the rest of the tour is dropped. */
   lastStop: string | null
 }
 
@@ -45,7 +45,7 @@ export interface Schedule {
   rows: ScheduleRow[]
   back: Leg
   end: number
-  /** Ob der Nutzer die Tour verändert hat. */
+  /** Whether the user has changed the tour. */
   modified: boolean
 }
 
@@ -66,9 +66,8 @@ export function buildSchedule(
   const bySlug = new Map(gardens.map((garden) => [garden.slug, garden]))
   const planned = plan.slugs.map((slug) => bySlug.get(slug))
 
-  // Kann passieren, wenn ein gespeicherter Plan auf einen inzwischen
-  // entfernten Garten zeigt. Dann ist der ganze Plan hinfällig, nicht nur
-  // eine Station.
+  // Can happen when a stored plan points at a garden that has since been
+  // removed. Then the whole plan is void, not just one stop.
   if (planned.some((garden) => garden === undefined)) return null
 
   const active: { garden: Garden; legMinutes: number; legMode: Mode; stay: number }[] = []
@@ -84,9 +83,9 @@ export function buildSchedule(
       garden,
       stay: plan.stays[index],
       legMinutes: plan.legs[index].min + carried,
-      // Eine übersprungene Station macht die Etappe länger, und der ursprünglich
-      // gewählte Modus passt dann nicht mehr. ÖPNV ist die konservative Annahme:
-      // lieber zu lange schätzen als den Nutzer zu Fuß im Regen stehen lassen.
+      // A skipped stop makes the leg longer, and the originally chosen mode no
+      // longer fits. Public transport is the conservative assumption: better to
+      // overestimate than to leave the user walking in the rain.
       legMode: carried ? 'transit' : plan.legs[index].mode,
     })
 

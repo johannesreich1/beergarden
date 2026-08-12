@@ -12,7 +12,6 @@ import {
   checkPlan,
   countGardens,
   BACK_LEG,
-  LEG_UNCAPPED,
 } from '#core'
 
 // English file name, German URL — as with the directory.
@@ -232,20 +231,6 @@ function toggleSkip(slug: string): void {
 const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
 
 
-/** 50 on the slider is the "egal" stop; everything below is a real cap. */
-function setLegCap(value: number): void {
-  state.value.maxLegMinutes = value >= 50 ? LEG_UNCAPPED : value
-  planner.persist()
-}
-
-const legLabel = computed(() =>
-  state.value.mode === 'bike'
-    ? 'Max. Radzeit pro Etappe'
-    : state.value.mode === 'transit'
-      ? 'Max. Fahrzeit pro Etappe'
-      : 'Max. Fußweg pro Etappe',
-)
-
 function setMode(mode: typeof state.value.mode): void {
   state.value.mode = mode
   // Five minutes of cycling is not a filter but an empty result list.
@@ -275,139 +260,16 @@ function setMode(mode: typeof state.value.mode): void {
     this renders, not where it sits.
   -->
   <ClientOnly>
-  <FilterRail v-if="started" :gardens="gardens" />
+  <FilterRail :gardens="gardens" />
 
   <section
     class="stage"
     :class="{
       setup: !started,
-      'rail-only': started && !state.allControls,
+      'rail-only': started,
       'self-mode': started && state.planMode === 'self',
-      'three-column': started && state.allControls && !!schedule && state.planMode !== 'self',
     }"
   >
-    <div v-if="!started || state.allControls" class="controls">
-    <div class="panel">
-      <span class="eyebrow">Start und Ziel</span>
-      <div class="startrow">
-        <input
-          v-model="startQuery"
-          class="inp"
-          list="places"
-          placeholder="Haltestelle oder Viertel"
-          autocomplete="off"
-          @change="applyStartQuery"
-        >
-        <button class="btn" @click="useGeolocation">Standort</button>
-      </div>
-      <datalist id="places">
-        <option v-for="point in startPoints" :key="point.name" :value="point.name" />
-      </datalist>
-      <div class="startmeta">
-        <template v-if="startNote === 'kenne-ich-nicht'">
-          Kenne ich nicht — nimm eine Haltestelle aus der Liste. Weiter ab
-          <b>{{ state.startPoint.name }}</b>.
-        </template>
-        <template v-else-if="startNote === 'suche'">Suche Position …</template>
-        <template v-else-if="startNote === 'abgelehnt'">
-          Standort nicht freigegeben — Haltestelle eintippen.
-        </template>
-        <template v-else-if="startNote === 'kein-standort'">
-          Standort ist hier nicht verfügbar — Haltestelle eintippen.
-        </template>
-        <template v-else-if="startNote === 'standort'">
-          Position übernommen · <b>{{ state.startPoint.name }}</b>
-        </template>
-        <template v-else>
-          Alles rechnet ab <b>{{ state.startPoint.name }}</b> und wieder zurück.
-        </template>
-      </div>
-    </div>
-
-    <div class="panel">
-      <span class="eyebrow">Rahmen</span>
-
-      <div class="stepper">
-        <button class="step" @click="planner.shiftStart(-15)">–</button>
-        <div class="lbl">
-          <small>Losgehen</small>
-          <strong>{{ formatClock(state.startMinutes) }}</strong>
-        </div>
-        <button class="step" @click="planner.shiftStart(15)">+</button>
-      </div>
-
-      <div v-if="state.allControls" style="margin-top: 15px">
-        <div class="sub"><span class="eyebrow">Wochentag</span></div>
-        <div class="grid">
-          <button
-            v-for="day in WEEKDAYS"
-            :key="day.value"
-            class="chip gold"
-            :aria-pressed="state.weekday === day.value"
-            @click="state.weekday = day.value; planner.persist()"
-          >{{ day.label }}</button>
-        </div>
-      </div>
-
-      <div style="margin-top: 15px">
-        <div class="sub"><span class="eyebrow">Zeitfenster</span></div>
-        <div class="grid">
-          <button
-            v-for="budget in BUDGETS"
-            :key="budget.value"
-            class="chip gold"
-            :aria-pressed="state.budgetMinutes === budget.value"
-            @click="state.budgetMinutes = budget.value; planner.persist()"
-          >{{ budget.label }}</button>
-        </div>
-      </div>
-
-      <div v-if="state.allControls" style="margin-top: 15px">
-        <div class="sub"><span class="eyebrow">Stationen</span></div>
-        <div class="grid">
-          <button
-            v-for="count in [2, 3, 4]"
-            :key="count"
-            class="chip gold"
-            :aria-pressed="state.stops === count"
-            @click="state.stops = count; planner.persist()"
-          >{{ count }} Stationen</button>
-        </div>
-      </div>
-
-      <div v-if="state.allControls" style="margin-top: 15px">
-        <div class="sub"><span class="eyebrow">Unterwegs</span></div>
-        <div class="grid">
-          <button
-            v-for="(label, key) in MODE_OPTIONS"
-            :key="key"
-            class="chip gold"
-            :aria-pressed="state.mode === key"
-            @click="setMode(key)"
-          >{{ label }}</button>
-        </div>
-      </div>
-
-      <div style="margin-top: 16px">
-        <div v-if="state.allControls" class="sub">
-          <span class="eyebrow">{{ legLabel }}</span>
-          <span class="v">{{ state.maxLegMinutes >= LEG_UNCAPPED ? 'egal' : `${state.maxLegMinutes} min` }}</span>
-        </div>
-        <!-- The rightmost stop means "egal" — a limit is a refinement somebody
-             reaches for, not a wall they start against. -->
-        <input
-          :value="Math.min(state.maxLegMinutes, 50)"
-          type="range"
-          min="5"
-          max="50"
-          step="5"
-          @input="setLegCap(Number(($event.target as HTMLInputElement).value))"
-        >
-      </div>
-    </div>
-
-    <FilterControls v-if="state.allControls" :gardens="gardens" />
-
     <div v-if="!started" class="setup-go">
       <button class="btn on big" @click="planner.start">
         Tour bauen
@@ -416,7 +278,6 @@ function setMode(mode: typeof state.value.mode): void {
         {{ countGardens(poolSize) }} passen dazu. Ändern kannst du alles danach
         weiter — die Vorschläge rechnen dann live mit.
       </p>
-    </div>
     </div>
 
     <div v-if="started" class="results">

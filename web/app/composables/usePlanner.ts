@@ -98,7 +98,6 @@ function initialState(): PlannerState {
     started: false,
     planMode: 'suggest',
     legModes: {},
-    allControls: false,
     timeMode: 'flexible',
   }
 }
@@ -318,26 +317,31 @@ export function usePlanner() {
     setStops((state.value.plan?.slugs ?? []).filter((s) => s !== slug), gardens)
 
   /**
-   * Show or hide the dense dials — and forget them when they go.
+   * Whether anything the reset would clear is actually set.
    *
-   * A dial that is not on screen must not constrain what is: a weekday, a
-   * stop count or a leg cap set twenty minutes ago behind a switch is exactly
-   * what makes the planner look broken. Closing the switch returns those
-   * dials to their defaults. The rail's own answers — start, time, mode,
-   * wishes — stay, because they remain visible.
+   * A reset button with nothing to reset is noise — worse, it suggests there
+   * IS something set and sends people hunting for it. Visits, `started` and
+   * the plan mode do not count: the reset keeps them.
    */
-  function setAllControls(next: boolean): void {
-    state.value.allControls = next
+  const resettable = computed(() => {
+    const fresh = initialState()
+    const value = state.value
+    const f = value.filters
 
-    if (!next) {
-      const fresh = initialState()
-      state.value.weekday = isoWeekday(new Date())
-      state.value.stops = fresh.stops
-      state.value.maxLegMinutes = fresh.maxLegMinutes
-      state.value.filters.breweries = []
-    }
-    persist()
-  }
+    return value.plan !== null
+      || f.tags.length > 0 || f.breweries.length > 0
+      || f.selfServiceOnly || f.ownFoodOnly || f.cityOnly || f.unvisitedOnly
+      || value.mode !== fresh.mode
+      || value.budgetMinutes !== fresh.budgetMinutes
+      || value.startMinutes !== fresh.startMinutes
+      || value.startPoint.name !== fresh.startPoint.name
+      || value.stops !== fresh.stops
+      || value.maxLegMinutes !== fresh.maxLegMinutes
+      || value.weekday !== isoWeekday(new Date())
+      || Object.keys(value.legModes).length > 0
+      || Object.keys(value.durations).length > 0
+      || value.skipped.length > 0
+  })
 
   /**
    * Only the wishes, nothing else.
@@ -395,8 +399,8 @@ export function usePlanner() {
     setPlanMode,
     setTimeMode,
     setLegMode,
-    setAllControls,
     resetAll,
+    resettable,
     clearFilters,
     shiftStart,
     addStop,

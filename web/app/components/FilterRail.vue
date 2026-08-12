@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Garden, PlanningMode } from '#core'
-import { formatClock, formatDuration } from '#core'
+import { LEG_UNCAPPED, brewerySlug, formatClock, formatDuration } from '#core'
 
 /**
  * The Schankleiste — the filters as a small menu on a brass rail.
@@ -15,15 +15,16 @@ import { formatClock, formatDuration } from '#core'
  * from the browser, not from hand-written listeners. Under 640px a panel
  * becomes a sheet on the bottom edge, where the thumb already is.
  *
- * "Alle Regler" stays and lives at the end of the rail: it opens the dense
- * controls column for whoever wants every dial at once. While that column is
- * open the rail hides its chips — the same answers twice on one screen would
- * ask which one counts.
+ * There is no "advanced" view any more. It held four dials — weekday, stop
+ * count, leg cap, breweries — and those now live inside the panels where they
+ * belong. Two views of the same settings were one too many: the dense column
+ * was the same state wearing a different coat, and every session someone asked
+ * which of the two counts.
  */
 const props = defineProps<{ gardens: Garden[] }>()
 
 const planner = usePlanner()
-const { state } = planner
+const { state, resettable } = planner
 const { data: startPoints } = await useStartPoints()
 const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
 
@@ -38,7 +39,8 @@ const MEHR: Array<{ key: 'selfServiceOnly' | 'ownFoodOnly' | 'cityOnly' | 'unvis
 
 const activeToggles = computed(() => MEHR.filter((entry) => state.value.filters[entry.key]))
 
-const wishCount = computed(() => state.value.filters.tags.length + activeToggles.value.length)
+const wishCount = computed(() =>
+  state.value.filters.tags.length + activeToggles.value.length + state.value.filters.breweries.length)
 
 /** The stamps in the small row: every wish that is set, each removable. */
 const stamps = computed(() => [
@@ -49,6 +51,12 @@ const stamps = computed(() => [
   ...activeToggles.value.map((entry) => ({
     label: entry.label,
     remove: () => { state.value.filters[entry.key] = false; planner.persist() },
+  })),
+  // Breweries are wishes too — a chosen one that never shows up small is a
+  // filter working invisibly, which is the exact bug this row exists to end.
+  ...state.value.filters.breweries.map((slug) => ({
+    label: breweryStyle(slug).label,
+    remove: () => planner.toggle(state.value.filters.breweries, slug),
   })),
 ])
 
@@ -61,6 +69,19 @@ function setBudget(minutes: number): void {
   state.value.budgetMinutes = minutes
   planner.persist()
 }
+
+/** 50 on the slider is the "egal" stop; everything below is a real cap. */
+function setLegCap(value: number): void {
+  state.value.maxLegMinutes = value >= 50 ? LEG_UNCAPPED : value
+  planner.persist()
+}
+
+// Only breweries that occur in the data — a filter with zero hits is a dead end.
+const breweries = computed(() => {
+  const present = new Set(props.gardens.map((garden) => brewerySlug(garden)))
+
+  return Object.keys(BREWERY_STYLES).filter((slug) => present.has(slug))
+})
 
 /* --------------------------------------------------- popover plumbing */
 
@@ -122,7 +143,7 @@ function pickAndClose(id: string, action: () => void): void {
     <div class="schiene" aria-hidden="true" />
 
     <div class="rail-zeile">
-      <template v-if="!state.allControls">
+      <template v-if="true">
         <button
           :ref="setChip('p-ort')"
           class="rchip"
@@ -167,18 +188,9 @@ function pickAndClose(id: string, action: () => void): void {
       </template>
 
       <span class="rail-rest">
-        <button
-          class="alle-regler"
-          type="button"
-          :aria-pressed="state.allControls"
-          @click="planner.setAllControls(!state.allControls)"
-        >
-          <span class="gleis"><i /></span>
-          <span>Alle Regler</span>
-        </button>
-        <!-- Always within reach, not only behind the switch it also undoes:
-             a reset that first needs the dense view defeats its own purpose. -->
-        <button class="aufheben rail-reset" @click="planner.resetAll()">
+        <!-- Only when there is something to undo: a reset with nothing to
+             reset suggests there IS something set, and sends people hunting. -->
+        <button v-if="resettable" class="btn warn rail-reset" @click="planner.resetAll()">
           Alles zurücksetzen
         </button>
       </span>
@@ -186,7 +198,7 @@ function pickAndClose(id: string, action: () => void): void {
 
     <!-- The chosen wishes, small. Solid ink on purpose: at this size the break
          eats legibility, and the tilt alone already says stamp. -->
-    <div v-if="!state.allControls && stamps.length" class="klein">
+    <div v-if="stamps.length" class="klein">
       <b
         v-for="stamp in stamps"
         :key="stamp.label"
@@ -255,6 +267,26 @@ function pickAndClose(id: string, action: () => void): void {
           @click="setBudget(budget.value)"
         >{{ budget.label }}</button>
       </div>
+      <p class="sub-frage">Welcher Tag?</p>
+      <div class="grid">
+        <button
+          v-for="day in WEEKDAYS"
+          :key="day.value"
+          class="chip gold"
+          :aria-pressed="state.weekday === day.value"
+          @click="state.weekday = day.value; planner.persist()"
+        >{{ day.label }}</button>
+      </div>
+      <p class="sub-frage">Wie viele Stationen?</p>
+      <div class="grid">
+        <button
+          v-for="count in [2, 3, 4]"
+          :key="count"
+          class="chip gold"
+          :aria-pressed="state.stops === count"
+          @click="state.stops = count; planner.persist()"
+        >{{ count }}</button>
+      </div>
       <button class="fertig" @click="panels['p-zeit']?.hidePopover()">Passt</button>
     </div>
 
@@ -273,9 +305,25 @@ function pickAndClose(id: string, action: () => void): void {
           :key="mode"
           class="chip gold"
           :aria-pressed="state.mode === mode"
-          @click="pickAndClose('p-weg', () => setMode(mode))"
+          @click="setMode(mode)"
         >{{ label }}</button>
       </div>
+      <p class="sub-frage">
+        Längste Etappe:
+        <b>{{ state.maxLegMinutes >= LEG_UNCAPPED ? 'egal' : `${state.maxLegMinutes} min` }}</b>
+      </p>
+      <!-- The rightmost stop means "egal" — a limit is a refinement somebody
+           reaches for, not a wall they start against. -->
+      <input
+        :value="Math.min(state.maxLegMinutes, 50)"
+        type="range"
+        min="5"
+        max="50"
+        step="5"
+        aria-label="Längste Etappe"
+        @input="setLegCap(Number(($event.target as HTMLInputElement).value))"
+      >
+      <button class="fertig" @click="panels['p-weg']?.hidePopover()">Passt</button>
     </div>
 
     <div
@@ -304,6 +352,16 @@ function pickAndClose(id: string, action: () => void): void {
           :aria-pressed="state.filters[entry.key]"
           @click="state.filters[entry.key] = !state.filters[entry.key]; planner.persist()"
         >{{ entry.label }}</button>
+      </div>
+      <p class="sub-frage">Brauerei?</p>
+      <div class="grid">
+        <button
+          v-for="slug in breweries"
+          :key="slug"
+          class="chip"
+          :aria-pressed="state.filters.breweries.includes(slug)"
+          @click="planner.toggle(state.filters.breweries, slug)"
+        >{{ breweryStyle(slug).label }}</button>
       </div>
       <button class="fertig" @click="panels['p-was']?.hidePopover()">Passt</button>
     </div>

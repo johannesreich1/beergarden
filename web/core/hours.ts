@@ -45,10 +45,36 @@ export function isOpenOn(garden: Garden, weekday: number, area: string = GARDEN_
   return openingWindow(garden, weekday, area) !== null
 }
 
+/** The ways a stay can fail against a window. Shared by everything that asks. */
+export type WindowProblem = 'closed' | 'too-early' | 'too-late'
+
+/**
+ * Does a stay of this length, arriving then, fit the window?
+ *
+ * The one predicate behind three decisions: the generator prunes on it, the
+ * validator reports it, the manual planner explains candidates with it. It
+ * used to be written out three times — and a rule corrected in one place and
+ * not the other two is how a tour passes validation the generator would have
+ * refused.
+ */
+export function windowProblem(
+  window: OpeningWindow | null,
+  arrival: number,
+  stay: number,
+): WindowProblem | null {
+  if (!window) return 'closed'
+  if (arrival < window.opensAt) return 'too-early'
+  if (arrival + stay > window.closesAt) return 'too-late'
+
+  return null
+}
+
 /**
  * Whether a verified source is on file for this day at all.
  * As long as this is true nowhere, the UI owes the reader a ≈.
  */
 export function isVerified(garden: Garden, weekday: number, area: string = GARDEN_AREA): boolean {
-  return hoursFor(garden, weekday, area)?.verifiedAt !== null
+  // The ?? matters: with no row at all, `undefined !== null` would report a
+  // day we know nothing about as verified — the exact opposite of the truth.
+  return (hoursFor(garden, weekday, area)?.verifiedAt ?? null) !== null
 }

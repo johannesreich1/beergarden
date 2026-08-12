@@ -36,24 +36,24 @@ const at = (minute: number) => `${((minute - span.value.from) / span.value.lengt
 
 /** Travel and stay, in the order they happen. */
 const pieces = computed(() => {
-  const raus: Array<{ kind: 'leg' | 'stay', mode?: string, minutes: number, label: string }> = []
+  const out: Array<{ kind: 'leg' | 'stay', mode?: string, minutes: number, label: string }> = []
 
   for (const row of props.schedule.rows) {
-    raus.push({ kind: 'leg', mode: row.legMode, minutes: row.legMinutes, label: `${row.legMinutes} min` })
-    raus.push({ kind: 'stay', minutes: row.depart - row.arrive, label: shortName(row.garden.name) })
+    out.push({ kind: 'leg', mode: row.legMode, minutes: row.legMinutes, label: `${row.legMinutes} min` })
+    out.push({ kind: 'stay', minutes: row.depart - row.arrive, label: shortName(row.garden.name) })
   }
 
-  return raus
+  return out
 })
 
 const overBudget = computed(() => props.schedule.end - props.startMinutes - props.budgetMinutes)
 
 /** Whole hours inside the span — enough to read by, not so many they collide. */
 const ticks = computed(() => {
-  const raus: number[] = []
-  for (let m = Math.ceil(span.value.from / 60) * 60; m <= span.value.to; m += 60) raus.push(m)
+  const out: number[] = []
+  for (let m = Math.ceil(span.value.from / 60) * 60; m <= span.value.to; m += 60) out.push(m)
 
-  return raus.length > 8 ? raus.filter((_, i) => i % 2 === 0) : raus
+  return out.length > 8 ? out.filter((_, i) => i % 2 === 0) : out
 })
 </script>
 

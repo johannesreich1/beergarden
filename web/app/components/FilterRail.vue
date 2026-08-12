@@ -29,7 +29,7 @@ const { tagLabel } = useFormats()
 const planner = usePlanner()
 const { state, resettable } = planner
 const { data: startPoints } = await useStartPoints()
-const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
+const { startQuery, startNote, applyStartQuery, locateMe } = useStartPicker(startPoints)
 
 /* ---------------------------------------------------------- what is set */
 
@@ -136,51 +136,49 @@ function onToggle(id: string, event: Event): void {
     <div class="schiene" aria-hidden="true" />
 
     <div class="rail-zeile">
-      <template v-if="true">
-        <button
-          :ref="setChip('p-ort')"
-          class="rchip"
-          popovertarget="p-ort"
-          :aria-expanded="expanded['p-ort'] ? 'true' : 'false'"
-        >
-          <span class="was">{{ t('rail.whereQuestion') }}</span>
-          <span class="wert">{{ state.startPoint.name }}</span>
-        </button>
+      <button
+        :ref="setChip('p-ort')"
+        class="rchip"
+        popovertarget="p-ort"
+        :aria-expanded="expanded['p-ort'] ? 'true' : 'false'"
+      >
+        <span class="was">{{ t('rail.whereQuestion') }}</span>
+        <span class="wert">{{ state.startPoint.name }}</span>
+      </button>
 
-        <button
-          :ref="setChip('p-zeit')"
-          class="rchip"
-          popovertarget="p-zeit"
-          :aria-expanded="expanded['p-zeit'] ? 'true' : 'false'"
-        >
-          <span class="was">{{ t('rail.whenQuestion') }}</span>
-          <span class="wert">{{ formatClock(state.startMinutes) }} · {{ formatDuration(state.budgetMinutes) }}</span>
-        </button>
+      <button
+        :ref="setChip('p-zeit')"
+        class="rchip"
+        popovertarget="p-zeit"
+        :aria-expanded="expanded['p-zeit'] ? 'true' : 'false'"
+      >
+        <span class="was">{{ t('rail.whenQuestion') }}</span>
+        <span class="wert">{{ formatClock(state.startMinutes) }} · {{ formatDuration(state.budgetMinutes) }}</span>
+      </button>
 
-        <button
-          :ref="setChip('p-weg')"
-          class="rchip"
-          popovertarget="p-weg"
-          :aria-expanded="expanded['p-weg'] ? 'true' : 'false'"
-          :class="{ an: state.mode !== 'mix' }"
-        >
-          <span class="was">{{ t('rail.howQuestion') }}</span>
-          <span class="wert">{{ t(`planningModes.${state.mode}`) }}</span>
-        </button>
+      <button
+        :ref="setChip('p-weg')"
+        class="rchip"
+        popovertarget="p-weg"
+        :aria-expanded="expanded['p-weg'] ? 'true' : 'false'"
+        :class="{ an: state.mode !== 'mix' }"
+      >
+        <span class="was">{{ t('rail.howQuestion') }}</span>
+        <span class="wert">{{ t(`planningModes.${state.mode}`) }}</span>
+      </button>
 
-        <button
-          :ref="setChip('p-was')"
-          class="rchip"
-          popovertarget="p-was"
-          :aria-expanded="expanded['p-was'] ? 'true' : 'false'"
-          :class="{ an: wishCount > 0 }"
-        >
-          <span class="was">{{ t('rail.wishesQuestion') }}</span>
-          <span class="wert">{{ wishCount > 0 ? t('rail.wishesCount', { n: wishCount }) : t('rail.wishesNone') }}</span>
-        </button>
-      </template>
+      <button
+        :ref="setChip('p-was')"
+        class="rchip"
+        popovertarget="p-was"
+        :aria-expanded="expanded['p-was'] ? 'true' : 'false'"
+        :class="{ an: wishCount > 0 }"
+      >
+        <span class="was">{{ t('rail.wishesQuestion') }}</span>
+        <span class="wert">{{ wishCount > 0 ? t('rail.wishesCount', { n: wishCount }) : t('rail.none') }}</span>
+      </button>
 
-      <span class="rail-rest">
+      <span class="rail-tail">
         <!-- Only when there is something to undo: a reset with nothing to
              reset suggests there IS something set, and sends people hunting. -->
         <button v-if="resettable" class="btn warn rail-reset" @click="planner.resetAll()">
@@ -224,14 +222,14 @@ function onToggle(id: string, event: Event): void {
           autocomplete="off"
           @change="applyStartQuery"
         >
-        <button class="btn" @click="useGeolocation">{{ t('rail.where.locate') }}</button>
+        <button class="btn" @click="locateMe">{{ t('rail.where.locate') }}</button>
       </div>
       <datalist id="rail-places">
         <option v-for="point in startPoints" :key="point.name" :value="point.name" />
       </datalist>
-      <p v-if="startNote === 'kenne-ich-nicht'" class="note">{{ t('rail.where.unknown') }}</p>
-      <p v-else-if="startNote === 'suche'" class="note">{{ t('rail.where.locating') }}</p>
-      <p v-else-if="startNote === 'abgelehnt'" class="note">{{ t('rail.where.denied') }}</p>
+      <!-- Every note the picker can raise renders — a state without a sentence
+           is a button that appears to do nothing. -->
+      <p v-if="startNote" class="note" role="status">{{ t(`rail.where.note.${startNote}`) }}</p>
       <button class="fertig" @click="panels['p-ort']?.hidePopover()">{{ t('rail.done') }}</button>
     </div>
 
@@ -249,7 +247,7 @@ function onToggle(id: string, event: Event): void {
         <button class="step" :aria-label="t('rail.when.later')" @click="planner.shiftStart(15)">+</button>
       </div>
       <div class="grid">
-        <button
+      <button
           v-for="budget in BUDGETS"
           :key="budget.value"
           class="chip gold"
@@ -259,7 +257,7 @@ function onToggle(id: string, event: Event): void {
       </div>
       <p class="sub-frage">{{ t('rail.when.dayQuestion') }}</p>
       <div class="grid">
-        <button
+      <button
           v-for="day in WEEKDAY_VALUES"
           :key="day"
           class="chip gold"
@@ -270,7 +268,7 @@ function onToggle(id: string, event: Event): void {
       </div>
       <p class="sub-frage">{{ t('rail.when.stopsQuestion') }}</p>
       <div class="grid">
-        <button
+      <button
           v-for="count in [2, 3, 4]"
           :key="count"
           class="chip gold"
@@ -291,7 +289,7 @@ function onToggle(id: string, event: Event): void {
       <h2>{{ t('rail.how.title') }}</h2>
       <p>{{ t('rail.how.hint') }}</p>
       <div class="grid">
-        <button
+      <button
           v-for="mode in PLANNING_MODES"
           :key="mode"
           class="chip gold"
@@ -301,7 +299,7 @@ function onToggle(id: string, event: Event): void {
       </div>
       <p class="sub-frage">
         {{ t('rail.how.legCap') }}
-        <b>{{ state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.how.legCapNone') : t('common.minutes', { min: state.maxLegMinutes }) }}</b>
+        <b>{{ state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.none') : t('common.minutes', { min: state.maxLegMinutes }) }}</b>
       </p>
       <!-- The rightmost stop means "egal" — a limit is a refinement somebody
            reaches for, not a wall they start against. -->
@@ -312,7 +310,7 @@ function onToggle(id: string, event: Event): void {
         max="50"
         step="5"
         :aria-label="t('rail.how.legCapLabel')"
-        :aria-valuetext="state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.how.legCapNone') : t('rail.how.legCapMinutes', { min: state.maxLegMinutes })"
+        :aria-valuetext="state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.none') : t('rail.how.legCapMinutes', { min: state.maxLegMinutes })"
         @input="setLegCap(Number(($event.target as HTMLInputElement).value))"
       >
       <button class="fertig" @click="panels['p-weg']?.hidePopover()">{{ t('rail.done') }}</button>
@@ -328,7 +326,7 @@ function onToggle(id: string, event: Event): void {
       <h2>{{ t('rail.wishes.title') }}</h2>
       <p>{{ t('rail.wishes.hint') }}</p>
       <div class="grid">
-        <button
+      <button
           v-for="tag in TAG_KEYS"
           :key="tag"
           class="chip"
@@ -337,7 +335,7 @@ function onToggle(id: string, event: Event): void {
         >{{ tagLabel(tag) }}</button>
       </div>
       <div class="grid" style="margin-top: 10px">
-        <button
+      <button
           v-for="key in EXTRA_FILTERS"
           :key="key"
           class="chip gold"
@@ -347,7 +345,7 @@ function onToggle(id: string, event: Event): void {
       </div>
       <p class="sub-frage">{{ t('rail.wishes.breweryQuestion') }}</p>
       <div class="grid">
-        <button
+      <button
           v-for="slug in breweries"
           :key="slug"
           class="chip"

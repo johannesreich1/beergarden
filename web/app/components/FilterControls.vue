@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import type { Garden } from '#core'
 
-const props = defineProps<{
-  gardens: Garden[]
-  /** The water switch is worded differently in the planner than in the directory. */
-  waterLabel?: string
-}>()
+const props = defineProps<{ gardens: Garden[] }>()
 
 const { state, toggle, persist } = usePlanner()
 
@@ -16,14 +12,15 @@ const counts = computed(() => breweryCounts(props.gardens))
 const breweries = computed(() => presentBreweries(props.gardens))
 
 /*
- * The shared labels, minus `unvisitedOnly` — that one has its own place below.
- * Only the water label bends: in this list it filters rows, in the planner it
- * wishes for a stop, and the two sentences differ because the meanings do.
+ * The shared list, minus `unvisitedOnly` — that one has its own place below.
+ * Only the water label bends: in this list the switch means THIS garden is on
+ * the water, so it wears the tag's name; in the planner the same key wishes
+ * for a stop and says so. Different meanings, different sentences.
  */
 const extras = computed<{ key: ExtraFilter, label: string }[]>(() =>
-  (['waterRequired', 'selfServiceOnly', 'ownFoodOnly', 'cityOnly'] as ExtraFilter[]).map((key) => ({
+  EXTRA_FILTERS.filter((key) => key !== 'unvisitedOnly').map((key) => ({
     key,
-    label: key === 'waterRequired' && props.waterLabel ? props.waterLabel : t(`extras.${key}`),
+    label: key === 'waterRequired' ? t('tags.wasser') : t(`extras.${key}`),
   })),
 )
 

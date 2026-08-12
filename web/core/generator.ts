@@ -1,9 +1,9 @@
-import { candidates, countGardens, isOnWater } from './garden'
-import { openingWindow } from './hours'
+import { candidates, isOnWater } from './garden'
+import { tourKey } from './schedule'
+import { openingWindow, windowProblem } from './hours'
 import { LEG_UNCAPPED, planLeg } from './travel'
 import { scoreRoute } from './scoring'
 import { MIN_STAY_MINUTES, stayAt, suggestStay } from './stay'
-import { formatDuration } from './time'
 import type { Garden, Leg, PlannerOptions, Route } from './types'
 
 /**
@@ -24,17 +24,27 @@ const NEIGHBOURS_PER_STEP = 14
 const FIRST_STOP_CANDIDATES = 20
 const MAX_SUGGESTIONS = 6
 
-const MODE_LABELS: Record<string, string> = {
-  mix: 'gemischt',
-  walk: 'zu fuß',
-  bike: 'rad',
-  transit: 'öpnv',
-}
+/**
+ * Why there are no suggestions — as data, not as a sentence.
+ *
+ * The core used to build German prose here, complete with its own copy of the
+ * mode labels in its own spelling. The words are the UI's job; the core states
+ * what happened and hands over the numbers the sentence needs. It also lets
+ * the message finally name the right dial: a tour that fails only on the
+ * water wish used to blame time and mode instead.
+ */
+export type GenerateReason =
+  /** Fewer matching gardens than requested stops. `count` may be zero. */
+  | { kind: 'pool-too-small', count: number, stops: number }
+  /** Routes existed, but none had a stop on the water. */
+  | { kind: 'none-on-water' }
+  /** Nothing fits the window. `maxLegMinutes` is null when no cap is set. */
+  | { kind: 'no-route', budgetMinutes: number, mode: PlannerOptions['mode'], maxLegMinutes: number | null }
 
 export interface GenerateResult {
   routes: Route[]
-  /** Empty when there are suggestions. Otherwise the reason in plain words. */
-  reason: string
+  /** null when there are suggestions. */
+  reason: GenerateReason | null
 }
 
 export function generateRoutes(gardens: Garden[], options: PlannerOptions): GenerateResult {
@@ -44,12 +54,7 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
   const pool = candidates(gardens, filters, visited, weekday)
 
   if (pool.length < stops) {
-    return {
-      routes: [],
-      reason: pool.length
-        ? `Nur ${countGardens(pool.length)} ${pool.length === 1 ? 'passt' : 'passen'} zu deinen Wünschen — für ${stops} Stationen zu wenig.`
-        : 'Kein Biergarten passt zu dieser Kombination.',
-    }
+    return { routes: [], reason: { kind: 'pool-too-small', count: pool.length, stops } }
   }
 
   // Precompute the travel matrix once. Without it the depth-first search
@@ -80,6 +85,8 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     .slice(0, FIRST_STOP_CANDIDATES)
 
   const found: Route[] = []
+  /** Complete tours that failed on nothing but the water wish. */
+  let rejectedForWater = 0
 
   /** A complete path — check it, score it, keep it or drop it. */
   const collect = (path: Garden[], travelled: number): void => {
@@ -109,14 +116,16 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
       const step = i === 0 ? legFrom(path[0]!.slug) : legBetween(path[i - 1]!, path[i]!)
       clock += step.min
 
-      const window = openingWindow(path[i]!, weekday)
-      if (!window || clock < window.opensAt || clock + stays[i]! > window.closesAt) return
+      if (windowProblem(openingWindow(path[i]!, weekday), clock, stays[i]!)) return
 
       legs.push(step)
       clock += stays[i]!
     }
 
-    if (filters.waterRequired && !path.some(isOnWater)) return
+    if (filters.waterRequired && !path.some(isOnWater)) {
+      rejectedForWater++
+      return
+    }
 
     found.push({
       slugs: path.map((garden) => garden.slug),
@@ -176,7 +185,7 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
   const routes: Route[] = []
 
   for (const route of found) {
-    const id = [...route.slugs].sort().join('|')
+    const id = tourKey(route.slugs)
     if (seen.has(id)) continue
 
     seen.add(id)
@@ -184,14 +193,22 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     if (routes.length >= MAX_SUGGESTIONS) break
   }
 
+  if (routes.length) return { routes, reason: null }
+
+  // Blame the dial that actually failed. When complete tours existed and only
+  // the water wish struck them all, saying "add time or change mode" sends
+  // the user to the wrong control. The cap may only be cited when it is set —
+  // a message about a limit nobody has seen reads as a bug, not as an
+  // explanation.
   return {
     routes,
-    reason: routes.length
-      ? ''
-      // The reason may only cite dials that are actually set: a message about a
-      // 25-minute cap nobody has seen reads as a bug, not as an explanation.
-      : maxLegMinutes >= LEG_UNCAPPED
-        ? `Mit ${formatDuration(budgetMinutes)} und ${MODE_LABELS[mode]} geht sich das nicht aus. Mehr Zeit — oder auf Rad oder Gemischt umstellen.`
-        : `Mit ${formatDuration(budgetMinutes)}, ${MODE_LABELS[mode]} und maximal ${maxLegMinutes} Minuten pro Etappe geht sich das nicht aus. Mehr Zeit, längere Etappen — oder auf Rad umstellen.`,
+    reason: rejectedForWater > 0
+      ? { kind: 'none-on-water' }
+      : {
+          kind: 'no-route',
+          budgetMinutes,
+          mode,
+          maxLegMinutes: maxLegMinutes >= LEG_UNCAPPED ? null : maxLegMinutes,
+        },
   }
 }

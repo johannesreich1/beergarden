@@ -56,13 +56,17 @@ const chosenGardens = computed(() => gardensFor(props.chosen, props.gardens))
  * stop AND moves the ground under your finger breaks the rule the rest of this
  * surface follows — one tap, one thing. Panning and zooming stay yours.
  */
+// `draw` goes through useMap rather than a hand-wired 'load' listener: useMap
+// re-runs it after every theme change, when setStyle has discarded the leg
+// layers. A load listener fires once — the first dark/light switch would wipe
+// the route until the candidate set happened to change.
 const { map } = useMap(container, {
   center: point(props.options.start),
   // The city, plus enough of its edge that the Umland gardens are reachable by
   // panning rather than absent. Zoom 11 held every garden at once but made the
   // Altstadt a knot of markers a thumb cannot separate.
   zoom: 11.6,
-})
+}, drawLegs)
 
 const { markers, clear } = useMapMarkers()
 
@@ -148,12 +152,12 @@ async function draw(): Promise<void> {
 
   /* Without a pointer there is no hover, so the nearest few keep their names
      outright — `nah` is what the stylesheet reaches for on a touch screen. */
-  const NAH = 8
+  const NAMED_NEARBY = 8
 
   candidates.value.forEach((candidate, index) => {
-    const offen = pickable(candidate)
+    const isPickable = pickable(candidate)
     const pin = label(
-      mapPin('off', '', offen
+      mapPin('off', '', isPickable
         ? t('builder.addPin', {
             name: candidate.garden.name,
             minutes: candidate.legMinutes,
@@ -163,10 +167,10 @@ async function draw(): Promise<void> {
       shortName(candidate.garden.name),
       t('common.minutes', { min: candidate.legMinutes }),
     )
-    pin.element.classList.add('cand', offen ? 'reachable' : 'faded')
-    if (index < NAH) pin.element.classList.add('nah')
+    pin.element.classList.add('cand', isPickable ? 'reachable' : 'faded')
+    if (index < NAMED_NEARBY) pin.element.classList.add('nah')
 
-    if (offen) {
+    if (isPickable) {
       pin.element.addEventListener('click', () => emit('add', candidate.garden.slug))
       // The unnamed ones say who they are here instead.
       pin.element.title = t('builder.arrivalTitle', {
@@ -181,11 +185,6 @@ async function draw(): Promise<void> {
 }
 
 watch([map, candidates], () => { if (map.value) draw() }, { immediate: true })
-
-/* The style arrives after the map object does; the legs need it, so ask again. */
-watch(map, (instance) => {
-  instance?.on('load', () => draw())
-})
 </script>
 
 <template>

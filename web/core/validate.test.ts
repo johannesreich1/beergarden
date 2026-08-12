@@ -1,20 +1,31 @@
 import { describe, expect, it } from 'vitest'
-import { GARDENS, defaultOptions } from './fixtures'
+import { GARDENS, TUESDAY, defaultOptions } from './fixtures'
 import { generateRoutes } from './generator'
-import { planFromRoute } from './schedule'
+import { planFromRoute, planFromSlugs } from './schedule'
 import { at } from './time'
 import { checkPlan } from './validate'
 
 const options = defaultOptions()
 const plan = planFromRoute(generateRoutes(GARDENS, options).routes[0])
 
-const TUESDAY = 2
-
 describe('checkPlan', () => {
   it('findet an einer frisch erzeugten Tour nichts auszusetzen', () => {
     // If this breaks, generator and validation contradict each other — and then
     // one of the two is wrong.
     expect(checkPlan(plan, GARDENS, options)).toBeNull()
+  })
+
+  it('prüft eine von Hand gebaute Tour durch dasselbe Nadelöhr', () => {
+    // The two plan constructors exist so that both shapes run through ONE
+    // validator — this is the manual half of the promise above.
+    const manual = planFromSlugs(
+      ['augustinerkeller', 'hofbraeukeller'],
+      GARDENS,
+      { start: options.start, mode: options.mode, maxLegMinutes: options.maxLegMinutes },
+      {},
+    )!
+
+    expect(checkPlan(manual, GARDENS, options)).toBeNull()
   })
 
   it('meldet, wenn man durch früheren Aufbruch vor dem Aufsperren ankäme', () => {
@@ -48,8 +59,8 @@ describe('checkPlan', () => {
   it('meldet, wenn eine verlängerte Verweildauer die Tour sprengt', () => {
     // Four hours per stop is meant sincerely but fits no time budget — and that
     // is exactly what the user should be told.
-    const durations = Object.fromEntries(plan.slugs.map((slug) => [slug, 240]))
-    const problem = checkPlan(plan, GARDENS, options, durations)
+    const stayOverrides = Object.fromEntries(plan.slugs.map((slug) => [slug, 240]))
+    const problem = checkPlan(plan, GARDENS, options, stayOverrides)
 
     expect(problem).not.toBeNull()
     expect(['too-late', 'over-budget']).toContain(problem!.kind)

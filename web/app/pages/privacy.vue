@@ -34,7 +34,7 @@ usePageSeo({
     </p>
 
     <div class="warnbox">
-      <b>{{ t('legal.privacy.todoLead') }}</b> {{ t('legal.privacy.todo') }}
+      <b>{{ t('legal.todoLead') }}</b> {{ t('legal.privacy.todo') }}
     </div>
 
     <h2>{{ t('legal.privacy.controllerTitle') }}</h2>
@@ -54,8 +54,10 @@ usePageSeo({
 
     <h2>{{ t('legal.privacy.locationTitle') }}</h2>
     <p>
+      <!-- The button's own label, not a copy of it: rename the control and
+           this sentence keeps describing something that exists. -->
       <i18n-t keypath="legal.privacy.location">
-        <template #button><b>{{ t('legal.privacy.locationButton') }}</b></template>
+        <template #button><b>{{ t('rail.where.locate') }}</b></template>
       </i18n-t>
     </p>
 

@@ -16,7 +16,7 @@ import { TAGS } from '#core'
  */
 const { data: gardens } = await useGardens()
 
-const { t } = useI18n()
+const { t, tm, rt } = useI18n()
 
 const stats = computed(() => {
   const all = gardens.value
@@ -31,7 +31,7 @@ const stats = computed(() => {
     ownFood: all.filter((garden) => garden.ownFoodAllowed).length,
     water: withTag(TAGS.water),
     forest: withTag(TAGS.forest),
-    city_tag: withTag(TAGS.city),
+    cityTagged: withTag(TAGS.city),
     playground: withTag(TAGS.playground),
     music: withTag(TAGS.music),
     cellar: withTag(TAGS.cellar),
@@ -60,31 +60,34 @@ const featured = computed(() => gardensFor(FEATURED, gardens.value))
 const TYPE_ITEMS = [
   { key: 'green', stat: 'forest' },
   { key: 'water', stat: 'water' },
-  { key: 'city', stat: 'city_tag' },
+  { key: 'city', stat: 'cityTagged' },
   { key: 'cellar', stat: 'cellar' },
   { key: 'playground', stat: 'playground' },
   { key: 'music', stat: 'music' },
   { key: 'view', stat: 'view' },
 ] as const
 
-const faq = computed((): FaqItem[] => [
-  { question: t('home.faq.q1'), answer: t('home.faq.a1', stats.value) },
-  { question: t('home.faq.q2'), answer: t('home.faq.a2', stats.value) },
-  {
-    question: t('home.faq.q3'),
-    answer: stats.value.largest
-      ? t('home.faq.a3', {
-          name: stats.value.largest.name,
-          district: stats.value.largest.district,
-          seats: stats.value.largest.seats?.toLocaleString('de-DE'),
-        })
-      : t('home.faq.a3Unknown'),
-  },
-  { question: t('home.faq.q4'), answer: t('home.faq.a4') },
-  { question: t('home.faq.q5'), answer: t('home.faq.a5') },
-  { question: t('home.faq.q6'), answer: t('home.faq.a6') },
-  { question: t('home.faq.q7'), answer: t('home.faq.a7') },
-])
+/*
+ * The FAQ is an array in the locale file, so adding or removing a question is
+ * a data change — the code no longer holds the count. One params object feeds
+ * every answer; entries ignore what they do not name. The third entry carries
+ * an `aFallback` for the day no seat counts are recorded.
+ */
+const faq = computed((): FaqItem[] => {
+  const params = {
+    ...stats.value,
+    name: stats.value.largest?.name ?? '',
+    district: stats.value.largest?.district ?? '',
+    seats: stats.value.largest?.seats?.toLocaleString('de-DE') ?? '',
+  }
+
+  return (tm('home.faq') as Array<{ q: unknown, a: unknown, aFallback?: unknown }>).map((item) => ({
+    question: rt(item.q as string),
+    answer: item.aFallback && !stats.value.largest
+      ? rt(item.aFallback as string)
+      : rt(item.a as string, params),
+  }))
+})
 
 usePageSeo(() => ({
   // The one page whose title is worth a keyword rather than just the name:
@@ -187,7 +190,7 @@ useJsonLd(() => ({
       <p>{{ t('home.hoursSection.p1') }}</p>
       <p>
         <i18n-t keypath="home.hoursSection.p2">
-          <template #ka><b>{{ t('home.hoursSection.p2Ka') }}</b></template>
+          <template #ka><b>{{ t('common.ka') }}</b></template>
         </i18n-t>
       </p>
       <p>{{ t('home.hoursSection.p3') }}</p>

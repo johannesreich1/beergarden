@@ -30,8 +30,8 @@ const TRANSIT_BASE_MIN = 9
 const TRANSIT_DETOUR = 1.3
 const TRANSIT_KMH = 20
 
-const MIN_ACTIVE_MIN = 3
-const MIN_TRANSIT_MIN = 8
+const MIN_ACTIVE_MINUTES = 3
+const MIN_TRANSIT_MINUTES = 8
 
 /**
  * Walk from the nearest stop. Start points are stops themselves and therefore
@@ -44,10 +44,10 @@ export function travelTimes(a: Waypoint, b: Waypoint): TravelTimes {
 
   return {
     km,
-    walk: Math.max(MIN_ACTIVE_MIN, Math.round(((km * WALK_DETOUR) / WALK_KMH) * 60)),
-    bike: Math.max(MIN_ACTIVE_MIN, Math.round(((km * BIKE_DETOUR) / BIKE_KMH) * 60) + BIKE_HANDLING_MIN),
+    walk: Math.max(MIN_ACTIVE_MINUTES, Math.round(((km * WALK_DETOUR) / WALK_KMH) * 60)),
+    bike: Math.max(MIN_ACTIVE_MINUTES, Math.round(((km * BIKE_DETOUR) / BIKE_KMH) * 60) + BIKE_HANDLING_MIN),
     transit: Math.max(
-      MIN_TRANSIT_MIN,
+      MIN_TRANSIT_MINUTES,
       Math.round(
         TRANSIT_BASE_MIN +
           accessMinutes(a) +
@@ -59,20 +59,12 @@ export function travelTimes(a: Waypoint, b: Waypoint): TravelTimes {
 }
 
 /**
- * One leg in the chosen mode.
- *
- * With 'mix' the model decides per leg: on foot as long as that stays under
- * the limit and takes no more than ten minutes longer than public transport.
- * Otherwise public transport. With a fixed mode what counts instead is whether
- * the limit holds — `feasible` is then the condition the generator prunes on.
- */
-/**
  * The leg cap's "egal" value — and the default.
  *
- * A cap of 25 minutes used to be the silent default, set by a dial that only
- * exists behind "Alle Regler". Pure walking tours then produced zero results,
- * and the empty-state message cited a number the user had never seen. A limit
- * is a refinement somebody reaches for, not a constraint they start under.
+ * A cap of 25 minutes used to be the silent default, set by a dial hardly
+ * anyone saw. Pure walking tours then produced zero results, and the
+ * empty-state message cited a number the user had never chosen. A limit is a
+ * refinement somebody reaches for, not a constraint they start under.
  *
  * Under `mix` the cap still matters even at "egal": the walk-or-transit choice
  * keeps its own comparison (walk unless transit is clearly faster), so an
@@ -80,6 +72,14 @@ export function travelTimes(a: Waypoint, b: Waypoint): TravelTimes {
  */
 export const LEG_UNCAPPED = 999
 
+/**
+ * One leg in the chosen mode.
+ *
+ * With 'mix' the model decides per leg: on foot as long as that stays under
+ * the limit and takes no more than ten minutes longer than public transport.
+ * Otherwise public transport. With a fixed mode what counts instead is whether
+ * the limit holds — `feasible` is then the condition the generator prunes on.
+ */
 export function planLeg(
   a: Waypoint,
   b: Waypoint,

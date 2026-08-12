@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ThemeChoice } from '~/composables/useTheme'
-import { formatClock, sunsetMinutes } from '#core'
-
-const MUNICH = { lat: 48.1374, lon: 11.5755 }
+import { formatClock } from '#core'
 
 /**
  * Date and sunset only in the browser. On a prerendered page both would be the
@@ -15,6 +13,11 @@ const MUNICH = { lat: 48.1374, lon: 11.5755 }
 const today = ref<Date | null>(null)
 const { t } = useI18n()
 const { theme, next, cycle, hydrate } = useTheme()
+
+// The planner owns today's sunset; the header reads the same number instead
+// of computing a second one that agrees only by accident. hydrate() below is
+// idempotent — pages call it too, and on the legal pages nobody else would.
+const planner = usePlanner()
 
 /*
  * Runs in the <head>, so before the first paint. Without it a prerendered page
@@ -44,6 +47,7 @@ const onGarden = computed(() => route.path.startsWith('/biergarten/'))
 onMounted(() => {
   today.value = new Date()
   hydrate()
+  planner.hydrate()
 })
 
 const eyebrow = computed(() => {
@@ -55,9 +59,7 @@ const eyebrow = computed(() => {
     month: 'long',
   }).format(today.value)
 
-  const sunset = formatClock(sunsetMinutes(today.value, MUNICH.lat, MUNICH.lon))
-
-  return t('head.eyebrow', { date, sunset })
+  return t('head.eyebrow', { date, sunset: formatClock(planner.sunset.value) })
 })
 </script>
 
@@ -177,7 +179,7 @@ const eyebrow = computed(() => {
 
         <p class="fuss-genau">
           <i18n-t keypath="footer.accuracy">
-            <template #ka><b>{{ t('footer.accuracyKa') }}</b></template>
+            <template #ka><b>{{ t('common.ka') }}</b></template>
           </i18n-t>
         </p>
 

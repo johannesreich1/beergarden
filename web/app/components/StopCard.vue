@@ -30,11 +30,11 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { seats } = useFormats()
 
-const window = computed(() => openingWindow(props.garden, props.weekday))
+const hoursWindow = computed(() => openingWindow(props.garden, props.weekday))
 
 const hoursLabel = computed(() =>
-  window.value
-    ? t('stop.open', { from: formatClock(window.value.opensAt), to: formatClock(window.value.closesAt) })
+  hoursWindow.value
+    ? t('stop.open', { from: formatClock(hoursWindow.value.opensAt), to: formatClock(hoursWindow.value.closesAt) })
     : t('stop.closedToday'),
 )
 

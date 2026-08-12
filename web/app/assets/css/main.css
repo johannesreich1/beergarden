@@ -16,55 +16,67 @@
  */
 
 :root{
+  /*
+   * One palette for both themes, each token a light-dark() pair.
+   *
+   * This block used to exist three times: once light, and the dark values
+   * twice — once under the media query, once under the attribute, with a
+   * "change one, change both" warning. `color-scheme` makes that duplication
+   * unnecessary: the head script always writes data-theme, the two rules
+   * after this block turn the choice into a scheme, and with no choice the
+   * device preference decides — exactly the old behaviour, in one place.
+   */
+  color-scheme:light dark;
+
   /* ---- Beer ---- */
-  --foam:#FBF5E6;
-  --kraft:#CBA469;
-  --kraft-deep:#BE9354;
+  --foam:light-dark(#FBF5E6, #F0E3C4);
+  --kraft:light-dark(#CBA469, #241A0E);
+  --kraft-deep:light-dark(#BE9354, #31240F);
   /* Gold carries the times, amber the caveats — so both have to be readable,
-     and on kraft board neither ever gets there: even this dark they only reach
-     3.99 and 3.60 against it. They reach 6.8 and 6.1 against --surface. Hence
-     the rule that goes with them: anything that means something in colour sits
+     and on kraft board neither ever gets there: light gold/amber reach only
+     3.99 and 3.60 against it, but 6.8 and 6.1 against --surface. Hence the
+     rule that goes with them: anything that means something in colour sits
      on a surface, never on the bare board. */
-  --gold:#5E4004;
-  --amber:#7A3B06;
-  --brown:#6E3B16;
-  --ink-deep:#2E1C0D;
+  --gold:light-dark(#5E4004, #E8B647);
+  --amber:light-dark(#7A3B06, #E09A55);
+  --brown:light-dark(#6E3B16, #C9A97A);
+  --ink-deep:light-dark(#2E1C0D, #EBDCBB);
 
   /* ---- Bavaria ---- */
-  --blue:#12336E;
-  --blue-soft:#2C5697;
+  --blue:light-dark(#12336E, #8FB4DF);
+  --blue-soft:light-dark(#2C5697, #8FB4DF);
 
   /* ---- Roles ---- */
   --ground:var(--kraft);
-  /* Lighter than the board, not darker. A panel used to be --kraft-deep, and
-     every accent colour on it failed: gold 3.4, amber 3.1, blue 4.3. This is
-     the surface those colours were mixed for. --kraft-deep stays where it
-     belongs, under the map. */
-  --surface:#E8D8B7;
+  /* Lighter than the board, not darker — in both themes: a panel is a mat
+     lying on the board. A panel used to be --kraft-deep, and every accent
+     colour on it failed: gold 3.4, amber 3.1, blue 4.3. This is the surface
+     those colours were mixed for. --kraft-deep stays under the map. */
+  --surface:light-dark(#E8D8B7, #342714);
   --text:var(--ink-deep);
-  --text-soft:#4E3417;
-  /* There used to be a third, lighter grey here at 2.5:1 against the board —
-     unreadable, and used for travel times and meta lines. Two text weights are
-     enough; this is the second one. */
+  --text-soft:light-dark(#4E3417, #C4AF88);
+  /* There used to be a third, lighter grey here — 2.5:1 light, 3.8:1 dark,
+     both below the line, and it carried the travel times. Two text weights
+     are enough; this is the second one. */
   --muted:var(--text-soft);
-  --edge:rgba(46,28,13,.32);
-  --edge-soft:rgba(46,28,13,.18);
-  --ring:rgba(46,28,13,.16);
-  --warn-bg:rgba(168,86,15,.16);
-  --on-accent:var(--foam);
+  --edge:light-dark(rgba(46,28,13,.32), rgba(235,220,187,.28));
+  --edge-soft:light-dark(rgba(46,28,13,.18), rgba(235,220,187,.15));
+  --ring:light-dark(rgba(46,28,13,.16), rgba(235,220,187,.14));
+  --warn-bg:light-dark(rgba(168,86,15,.16), rgba(224,154,85,.16));
+  --on-accent:light-dark(#FBF5E6, #241A0E);
 
   /* ---- Map: printed in two colours, not tinted ---- */
-  --map-ground:#BE9354;
-  --map-park:rgba(27,63,139,.13);
-  --map-water:#1B3F8B;
-  --map-label:rgba(46,28,13,.42);
-  --leg-walk:#7E5606;
-  --leg-bike:#1B3F8B;
-  --leg-transit:#A8560F;
+  --map-ground:light-dark(#BE9354, #1B1409);
+  --map-park:light-dark(rgba(27,63,139,.13), rgba(143,180,223,.12));
+  --map-water:light-dark(#1B3F8B, #8FB4DF);
+  --map-label:light-dark(rgba(46,28,13,.42), rgba(235,220,187,.34));
+  --leg-walk:light-dark(#7E5606, #E8B647);
+  --leg-bike:light-dark(#1B3F8B, #8FB4DF);
+  --leg-transit:light-dark(#A8560F, #E09A55);
 
   /* Broken stamp ink, two crossed stripe masks — in two strengths. On an
      outline the ink may drop out hard. On a filled surface with text in it the
-     same break eats the legibility. */
+     same break eats the legibility. Theme-independent: a mask has no colour. */
   --ink-break:
     repeating-linear-gradient(81deg, #000 0 9px, rgba(0,0,0,.46) 9px 10px, #000 10px 21px),
     repeating-linear-gradient(9deg, #000 0 13px, rgba(0,0,0,.42) 13px 14px, #000 14px 28px);
@@ -72,108 +84,58 @@
     repeating-linear-gradient(81deg, #000 0 11px, rgba(0,0,0,.80) 11px 12px, #000 12px 25px),
     repeating-linear-gradient(9deg, #000 0 15px, rgba(0,0,0,.78) 15px 16px, #000 16px 33px);
 
-  /* Brand colours on kraft board: Spaten's yellow and Ayinger's blue are too
-     light for this ground. The hue stays, the lightness is pulled along — the
-     same mechanism as in dark mode, only in the other direction. */
-  --bc-readable:color-mix(in srgb, var(--bc, #2E1C0D) 74%, #2E1C0D);
+  /* Brewery colours are brand colours and stay as they are. On light kraft
+     they are pulled darker (Spaten's yellow would float away), on dark board
+     lifted lighter — the hue stays, only the lightness moves. */
+  /* The 21-tooth bottle-cap crimp. Theme switch, timeline nodes and the
+     suggestion cap all wear the same edge — one polygon, three lids. */
+  --crimp:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
+    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
+    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
+    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
+    24% 6%,31% 8%,36% 1%,43% 4%);
+
+  --bc-readable:light-dark(
+    color-mix(in srgb, var(--bc, #2E1C0D) 74%, #2E1C0D),
+    color-mix(in srgb, var(--bc, #EBDCBB) 52%, #EBDCBB));
 
   --display:"Arial Black","Helvetica Neue",Impact,sans-serif;
   --body:"American Typewriter","Courier New",serif;
   --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
 }
 
+/* The stored choice wins over the device; absent, `light dark` above lets the
+   device decide. These two lines are the whole theme switch. */
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+
 /*
- * The dark palette.
- *
- * Written twice on purpose. The media query covers the device setting; the
- * attribute covers an explicit choice, and without it "Dunkel" on a light
- * system changes nothing at all — which is exactly what it did before. CSS has
- * no way to share one declaration list between a media query and a selector,
- * so the price of a working switch is this duplication. Change one, change both.
+ * Typed, because mapStyle.ts reads these seven with getComputedStyle: an
+ * untyped custom property hands JavaScript the literal "light-dark(…)" text —
+ * MapLibre then gets no valid colour and the whole style dies while the DOM
+ * markers live on. A registered <color> property resolves before JS reads it.
+ * The initial values are the light palette; :root overrides them anyway.
  */
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --foam:#F0E3C4;
-    --kraft:#241A0E;
-    --kraft-deep:#31240F;
-    --gold:#E8B647;
-    --amber:#E09A55;
-    --brown:#C9A97A;
-    --ink-deep:#EBDCBB;
-    /* Lighter than the ground here too, only in the other direction — a panel
-       is a mat lying on the board. Without this line --surface keeps the light
-       theme's beige and every panel glows. */
-    --surface:#342714;
-    --blue:#8FB4DF;
-    --blue-soft:#8FB4DF;
+@property --map-ground{syntax:'<color>';inherits:true;initial-value:#BE9354}
+@property --map-park{syntax:'<color>';inherits:true;initial-value:rgba(27,63,139,.13)}
+@property --map-water{syntax:'<color>';inherits:true;initial-value:#1B3F8B}
+@property --map-label{syntax:'<color>';inherits:true;initial-value:rgba(46,28,13,.42)}
+@property --leg-walk{syntax:'<color>';inherits:true;initial-value:#7E5606}
+@property --leg-bike{syntax:'<color>';inherits:true;initial-value:#1B3F8B}
+@property --leg-transit{syntax:'<color>';inherits:true;initial-value:#A8560F}
 
-    --text:#EBDCBB;
-    --text-soft:#C4AF88;
-    /* Same rule as in the light theme: two text weights, not three.
-       The third grey sat at 3.8:1 on a panel — below the line, and it
-       carried the travel times. */
-    --muted:var(--text-soft);
-    --edge:rgba(235,220,187,.28);
-    --edge-soft:rgba(235,220,187,.15);
-    --ring:rgba(235,220,187,.14);
-    --warn-bg:rgba(224,154,85,.16);
-    --on-accent:#241A0E;
-
-    --map-ground:#1B1409;
-    --map-park:rgba(143,180,223,.12);
-    --map-water:#8FB4DF;
-    --map-label:rgba(235,220,187,.34);
-    --leg-walk:#E8B647;
-    --leg-bike:#8FB4DF;
-    --leg-transit:#E09A55;
-
-    /* Brewery colours are brand colours and stay as they are. On dark board
-       they only need lifting, otherwise nobody can read them — the hue stays,
-       the lightness changes. */
-    --bc-readable:color-mix(in srgb, var(--bc, #EBDCBB) 52%, #EBDCBB);
-  }
-}
-
-:root[data-theme="dark"]{
-    --foam:#F0E3C4;
-    --kraft:#241A0E;
-    --kraft-deep:#31240F;
-    --gold:#E8B647;
-    --amber:#E09A55;
-    --brown:#C9A97A;
-    --ink-deep:#EBDCBB;
-    /* Lighter than the ground here too, only in the other direction — a panel
-       is a mat lying on the board. Without this line --surface keeps the light
-       theme's beige and every panel glows. */
-    --surface:#342714;
-    --blue:#8FB4DF;
-    --blue-soft:#8FB4DF;
-
-    --text:#EBDCBB;
-    --text-soft:#C4AF88;
-    /* Same rule as in the light theme: two text weights, not three.
-       The third grey sat at 3.8:1 on a panel — below the line, and it
-       carried the travel times. */
-    --muted:var(--text-soft);
-    --edge:rgba(235,220,187,.28);
-    --edge-soft:rgba(235,220,187,.15);
-    --ring:rgba(235,220,187,.14);
-    --warn-bg:rgba(224,154,85,.16);
-    --on-accent:#241A0E;
-
-    --map-ground:#1B1409;
-    --map-park:rgba(143,180,223,.12);
-    --map-water:#8FB4DF;
-    --map-label:rgba(235,220,187,.34);
-    --leg-walk:#E8B647;
-    --leg-bike:#8FB4DF;
-    --leg-transit:#E09A55;
-
-    /* Brewery colours are brand colours and stay as they are. On dark board
-       they only need lifting, otherwise nobody can read them — the hue stays,
-       the lightness changes. */
-    --bc-readable:color-mix(in srgb, var(--bc, #EBDCBB) 52%, #EBDCBB);
-}
+/*
+ * The keyboard's place marker on the stamp controls, stated once. The global
+ * amber ring further down covers plain content; these are the surfaces where
+ * amber would sit on amber, so the lozenge blue is the visible answer.
+ */
+.theme-switch:focus-visible,
+.pin:focus-visible,
+.lm-maps:focus-visible,
+.rchip:focus-visible,
+.klein .wunsch:focus-visible,
+.plan summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.theme-switch:focus-visible{outline-offset:3px}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
@@ -181,10 +143,12 @@ body{
   background:var(--ground);
   /* Board fibre: coarse, uneven grooves, because kraft board is not smooth.
      Half as strong as in the draft and further apart — it should suggest the
-     ground, not work against the text. */
+     ground, not work against the text. The groove ink flips with the theme:
+     on dark board a black 2.6% line is invisible, so there the light side of
+     each pair draws the ridge instead. */
   background-image:
-    repeating-linear-gradient(94deg, rgba(0,0,0,.026) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(2deg, rgba(255,255,255,.05) 0 1px, transparent 1px 6px);
+    repeating-linear-gradient(94deg, light-dark(rgba(0,0,0,.026), rgba(255,255,255,.05)) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(2deg, light-dark(rgba(255,255,255,.05), rgba(0,0,0,.3)) 0 1px, transparent 1px 6px);
   background-attachment:fixed;
   color:var(--text);
   font:16.5px/1.66 var(--body);
@@ -199,10 +163,24 @@ body{
 .eyebrow{font-family:var(--mono);font-size:14.5px;letter-spacing:.3em;
   text-transform:uppercase;color:var(--muted)}
 
-/* Every imprint shares the same broken ink. */
-.stamped{
+/*
+ * Every imprint shares the same broken ink — one mask, stated once. This list
+ * IS rule 3 from the header: change the break here and every stamp changes
+ * with it. Pressed chips swap only the image for the soft variant; the
+ * composite mode below still applies to them.
+ */
+.stamped,
+.seg a::before,
+.seg span[aria-current="page"]::before,
+.btn::before,
+.chip,
+.mat,
+.seen,
+.hero-plate h1::before,
+.modes button::before{
   -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect;
+  mask-image:var(--ink-break);mask-composite:intersect}
+.stamped{
 }
 
 /* --------------------------------------------------------- Theme switch */
@@ -219,11 +197,7 @@ body{
   display:grid;place-items:center;justify-self:end}
 .theme-switch::before{content:'';position:absolute;inset:0;border-radius:50%;
   background:var(--gold);
-  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
-    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
-    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
-    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
-    24% 6%,31% 8%,36% 1%,43% 4%)}
+  clip-path:var(--crimp)}
 .theme-switch::after{content:'';position:absolute;inset:5px;border-radius:50%;
   background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--gold)}
 .theme-switch svg{position:relative;z-index:1;width:21px;height:21px;
@@ -232,7 +206,6 @@ body{
 .theme-switch:hover{color:var(--amber)}
 .theme-switch:hover::before{background:var(--amber)}
 .theme-switch:hover::after{box-shadow:inset 0 0 0 1.5px var(--amber)}
-.theme-switch:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 
 /* ------------------------------------------------------------- Long prose */
 /* Imprint and privacy notice: one column at reading width, because these are
@@ -271,9 +244,7 @@ body{
   position:relative;isolation:isolate;
   background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
 .seg span[aria-current="page"]::before{content:'';position:absolute;inset:0;z-index:-1;
-  background:var(--blue);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  background:var(--blue)}
 
 /* -------------------------------------------------------------- Header */
 /* The switch sits in the top right corner of the head at every width; the
@@ -336,9 +307,7 @@ body{
   text-transform:uppercase;color:var(--blue);background:transparent;
   --tilt:-1deg;transform:rotate(var(--tilt));position:relative;isolation:isolate}
 .seg a::before{content:'';position:absolute;inset:0;z-index:-1;
-  box-shadow:inset 0 0 0 2.5px var(--blue);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  box-shadow:inset 0 0 0 2.5px var(--blue)}
 .seg a:nth-child(2){--tilt:.8deg}
 .seg a[aria-current="page"]{color:var(--on-accent);
   background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
@@ -380,15 +349,15 @@ body{
   text-decoration:none;display:inline-block;--tilt:-1.2deg;transform:rotate(var(--tilt));
   position:relative;isolation:isolate}
 .btn::before{content:'';position:absolute;inset:0;z-index:-1;
-  box-shadow:inset 0 0 0 2.5px var(--stempel);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  box-shadow:inset 0 0 0 2.5px var(--stempel)}
 .btn.gold{--stempel:var(--gold)}
-.btn.warn{--stempel:var(--amber)}
+/* One rule, not two: the second .btn.warn used to re-state the colour with an
+   inline box-shadow that bypassed the ::before ink-break every other stamp
+   uses. The stamp variable is the mechanism; warn only picks the colour. */
+.btn.warn{--stempel:var(--amber);color:var(--amber)}
 .btn.on{--tilt:1.1deg;color:var(--on-accent);
   background:color-mix(in srgb, var(--stempel) 62%, var(--surface))}
 .btn.on::before{background:var(--stempel);box-shadow:none}
-.btn.warn{color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber)}
 .btn.big{padding:12px 17px;font-size:15px}
 
 /* --------------------------------------------------------------- Panels */
@@ -401,8 +370,6 @@ body{
   box-shadow:inset 0 0 0 1px var(--edge);color:var(--text);
   font-family:var(--body);font-size:16px;min-width:0}
 .inp::placeholder{color:var(--muted)}
-.startmeta{margin-top:10px;font-family:var(--mono);font-size:14.5px;color:var(--muted)}
-.startmeta b{color:var(--blue);font-weight:400}
 .grid{display:flex;flex-wrap:wrap;gap:8px}
 
 /* Chips are stamp imprints, not pills. The rotation comes from their position
@@ -412,9 +379,7 @@ body{
 .chip{padding:9px 13px;font-family:var(--display);font-size:14.5px;font-weight:900;
   letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:0;
   background:transparent;color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue);
-  white-space:nowrap;--tilt:-1.4deg;transform:rotate(var(--tilt));
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  white-space:nowrap;--tilt:-1.4deg;transform:rotate(var(--tilt))}
 .chip:nth-child(2n){--tilt:1deg}
 .chip:nth-child(3n){--tilt:-.5deg}
 .chip[aria-pressed="true"]{background:var(--blue);color:var(--on-accent);
@@ -431,8 +396,6 @@ body{
   .frow,.mats{flex-wrap:wrap;overflow-x:visible}
 }
 .frow::-webkit-scrollbar{display:none}
-.sub{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
-.sub .v{font-family:var(--mono);font-size:14px;color:var(--gold)}
 input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .stepper{display:flex;align-items:center;gap:11px}
 .step{width:42px;height:38px;border:0;background:transparent;color:var(--blue);
@@ -451,9 +414,7 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   color:var(--bc-readable,var(--bc,var(--text-soft)));
   font-family:var(--display);font-size:14.5px;font-weight:900;line-height:1.15;
   display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;
-  transform:rotate(-1.6deg);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  transform:rotate(-1.6deg)}
 .mat:nth-child(2n){transform:rotate(1.2deg)}
 .mat[aria-pressed="true"]{background:var(--bc);color:var(--on-accent);
   -webkit-mask-image:var(--ink-break-soft);mask-image:var(--ink-break-soft)}
@@ -473,40 +434,24 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
   position:relative;display:inline-block;vertical-align:middle;flex:none;
   width:var(--cap-size);height:var(--cap-size)}
 .cap i{position:absolute;inset:0;border-radius:50%;background:var(--cap-colour);
-  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
-    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
-    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
-    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
-    24% 6%,31% 8%,36% 1%,43% 4%)}
+  clip-path:var(--crimp)}
 .cap b{position:absolute;inset:8px;border-radius:50%;background:var(--surface);
   box-shadow:inset 0 0 0 2px var(--cap-colour);display:flex;flex-direction:column;
   align-items:center;justify-content:center;line-height:1.02;
   font-family:var(--display);font-weight:900;font-size:calc(var(--cap-size) * .32);
   color:var(--cap-colour)}
-.cap b span{font-family:var(--body);font-weight:400;font-size:14px;color:var(--text-soft)}
-.cap.off{--cap-colour:var(--edge)}
-.cap.off b{color:var(--text-soft)}
-
 /* ------------------------------------------------------------ Suggestions */
 /* The extra room on the left is gone with the cap that used to hang there —
    the cards are even on all four sides now. */
 .plan{padding:15px;background:var(--surface);margin:0 0 14px;
   box-shadow:inset 0 0 0 2px var(--edge-soft)}
-/* Only the suggestions are clickable. The dropped tour below wears the same
-   class and keeps its own button, so the pointer is tied to the role rather
-   than to the look. */
-.plan[role="button"]{cursor:pointer}
-.plan[role="button"]:hover{box-shadow:inset 0 0 0 2px var(--edge);background:var(--surface)}
-.plan.active{box-shadow:inset 0 0 0 2.5px var(--gold);background:var(--surface)}
-/* The chosen card keeps its gold frame on hover — it is already taken, and
-   swapping the frame for the hover one reads as losing the selection. */
-.plan[role="button"].active:hover{box-shadow:inset 0 0 0 2.5px var(--gold)}
-.plan .ptop{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
-.plan .ptop{align-items:baseline;gap:6px 12px}
+/* The chosen card's frame lives with the <details> rules further down —
+   one declaration, so two rules cannot answer the question differently. */
+.plan.active{background:var(--surface)}
+.plan .ptop{display:flex;justify-content:space-between;gap:6px 12px;align-items:baseline}
 .plan .rank{font-family:var(--mono);font-size:14.5px;letter-spacing:.02em;
   text-transform:uppercase;color:var(--amber);white-space:nowrap}
-.plan .tot{white-space:nowrap}
-.plan .tot{font-family:var(--mono);font-size:15px;color:var(--gold)}
+.plan .tot{white-space:nowrap;font-family:var(--mono);font-size:15px;color:var(--gold)}
 .chain{margin:10px 0 0;font-family:var(--display);font-size:16px;font-weight:900;
   letter-spacing:-.024em;text-transform:uppercase;color:var(--text);line-height:1.24}
 .chain span{color:var(--blue);font-weight:900}
@@ -588,7 +533,6 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
    and a div-only map is a list the keyboard cannot reach. The reset keeps it
    looking like every other pin; the outline is the keyboard's place marker. */
 button.pin{background:none;border:0;padding:0;margin:0;font:inherit;text-align:left}
-.pin:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .pin i{width:13px;height:13px;flex:none;transform:rotate(45deg);
   background:var(--gold);box-shadow:0 0 0 1.5px var(--map-ground)}
 .pin b{font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.04em;
@@ -628,11 +572,7 @@ button.pin{background:none;border:0;padding:0;margin:0;font:inherit;text-align:l
 .node{position:relative;margin:0 0 14px;--cap-colour:var(--gold)}
 .node::before{content:"";position:absolute;left:-46px;top:2px;width:34px;height:34px;
   border-radius:50%;background:var(--cap-colour);
-  clip-path:polygon(50% 0,57% 4%,64% 1%,69% 8%,76% 6%,80% 13%,87% 13%,89% 21%,95% 23%,95% 31%,
-    100% 36%,98% 43%,101% 50%,98% 57%,100% 64%,95% 69%,95% 77%,89% 79%,87% 87%,80% 87%,76% 94%,
-    69% 92%,64% 99%,57% 96%,50% 100%,43% 96%,36% 99%,31% 92%,24% 94%,20% 87%,13% 87%,11% 79%,
-    5% 77%,5% 69%,0 64%,2% 57%,-1% 50%,2% 43%,0 36%,5% 31%,5% 23%,11% 21%,13% 13%,20% 13%,
-    24% 6%,31% 8%,36% 1%,43% 4%)}
+  clip-path:var(--crimp)}
 .node::after{content:counter(halt);position:absolute;left:-41px;top:7px;width:24px;height:24px;
   border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--cap-colour);
   display:flex;align-items:center;justify-content:center;
@@ -684,9 +624,7 @@ button.pin{background:none;border:0;padding:0;margin:0;font:inherit;text-align:l
 .seen{display:inline-block;margin-left:9px;font-family:var(--display);font-size:14px;
   font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);
   box-shadow:inset 0 0 0 2px var(--amber);padding:2px 6px;vertical-align:3px;
-  transform:rotate(-4deg);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  transform:rotate(-4deg)}
 /* The same stamp, smaller — for the chain in a suggestion, where it sits next
    to a stop's name rather than a heading. A second label for the same thing
    would be a mistake, even if it fitted better. */
@@ -827,10 +765,6 @@ footer b{color:var(--text-soft);font-weight:400}
  * stamp half over it — an imprint does not respect margins.
  */
 .entity{padding-top:22px}
-/* The way back sits at the top and as a button. At the bottom and faint,
-   nobody found it — and whoever lands on a detail page wants to know first
-   how to get back. */
-.entity-top{margin:0 0 16px}
 .hero{position:relative;margin-bottom:34px}
 .hero .photo{aspect-ratio:16/7}
 .hero-plate{position:absolute;left:0;right:0;bottom:-18px;pointer-events:none;
@@ -856,9 +790,7 @@ footer b{color:var(--text-soft);font-weight:400}
    text — that is the whole trick, and it needs the isolation above to hold.
    The hard break, not the soft one: the soft variant exists to keep masked
    lettering legible, and the lettering here is not masked at all. */
-.hero-plate h1::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--blue);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+.hero-plate h1::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--blue)}
 
 /* Image slot. As long as no licensed photo exists, a stamp stands here — not
    a grey box pretending only the file is missing. */
@@ -867,7 +799,8 @@ footer b{color:var(--text-soft);font-weight:400}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
 .photo .placeholder{font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.16em;
   text-transform:uppercase;color:var(--amber);box-shadow:inset 0 0 0 2.5px var(--amber);
-  padding:10px 14px;transform:rotate(-6deg);text-align:center;line-height:1.5}
+  padding:10px 14px;transform:rotate(-6deg);text-align:center;line-height:1.5;
+  white-space:pre-line}
 .photo .credit{position:absolute;left:0;right:0;bottom:0;padding:6px 10px;
   background:rgba(46,28,13,.66);color:var(--foam);text-decoration:none;
   font-family:var(--mono);font-size:14px;letter-spacing:.1em}
@@ -885,15 +818,6 @@ table.prices .size{color:var(--muted);font-size:14.5px;letter-spacing:.14em;text
 table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-space:nowrap}
 
 /* ------------------------------------------------------------ Detail page */
-.back{display:inline-block;margin:22px 0 0;font-family:var(--mono);font-size:14.5px;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
-.back:hover{color:var(--amber)}
-.detail-head{margin:16px 0 0}
-.detail-head h2{margin:0;font-family:var(--display);font-size:clamp(23px,6vw,32px);
-  font-weight:900;letter-spacing:-.03em;text-transform:uppercase;color:var(--text);
-  line-height:1.08}
-.detail-head .gmeta{margin-top:9px;font-family:var(--mono);font-size:14.5px;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .hours{width:100%;border-collapse:collapse;margin-top:14px;font-family:var(--mono);font-size:15px}
 .hours th{text-align:left;font-weight:400;color:var(--muted);padding:0 0 8px;
   letter-spacing:.14em;text-transform:uppercase;font-size:14px}
@@ -1056,20 +980,14 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   font-size:14px;color:var(--gold);letter-spacing:0;text-transform:none}
 .pin b{max-width:19ch}
 .pin.cand{cursor:pointer}
-.pin.cand.faded{opacity:.42;cursor:default}
+/* The faded strength lives with the reach rules further down — one number,
+   so two rules cannot disagree about how visible "not now" is. */
+.pin.cand.faded{cursor:default}
 .pin.pick{cursor:pointer}
 .pin.pick b em{color:var(--text-soft)}
 
-/*
- * On a phone the map fills the screen and the sheet sits on the bottom edge,
- * where the thumb already is. It is the same markup — a second list for the
- * second layout would be a second thing to keep right.
- */
 @media(max-width:899px){
-  .builder{position:relative;gap:0}
   .builder-map .map-canvas{aspect-ratio:auto;height:min(62vh,520px)}
-  .sheet{max-height:38vh;overflow-y:auto;
-    padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 }
 
 /* The two ways to a tour. A segmented pair, not a checkbox: neither is the
@@ -1081,9 +999,7 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   position:relative;isolation:isolate}
 .modes button:nth-child(2){--tilt:.7deg}
 .modes button::before{content:'';position:absolute;inset:0;z-index:-1;
-  box-shadow:inset 0 0 0 2.5px var(--blue);
-  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
-  mask-image:var(--ink-break);mask-composite:intersect}
+  box-shadow:inset 0 0 0 2.5px var(--blue)}
 .modes button[aria-pressed="true"]{color:var(--on-accent);
   background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
 .modes button[aria-pressed="true"]::before{background:var(--blue);box-shadow:none}
@@ -1094,11 +1010,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border:0;cursor:pointer;
   background:transparent;color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
 .timemode button[aria-pressed="true"]{background:var(--gold);color:var(--on-accent)}
-
-/* The far ones carry minutes only — short enough that the frame never cuts a
-   name in half, and quiet enough that the near ones stand out. */
-.pin.cand.bare b{font-family:var(--body);font-weight:400;font-size:14px;
-  letter-spacing:0;text-transform:none;color:var(--text-soft);max-width:none}
 
 /* ------------------------------------------------------- Map: zoom buttons */
 /*
@@ -1173,7 +1084,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   box-shadow:inset 0 0 0 2px var(--edge);text-decoration:none}
 .lm-maps svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
 .lm-maps:hover{color:var(--amber);box-shadow:inset 0 0 0 2px var(--amber)}
-.lm-maps:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
@@ -1205,12 +1115,11 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 /* A set handle tips: the state is a posture, not a badge. */
 .rchip.an{transform:rotate(-2.2deg)}
 .rchip[aria-expanded="true"]{box-shadow:inset 0 0 0 3px var(--blue)}
-.rchip:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.rail-rest{margin-left:auto;display:flex;align-items:center}
+.rail-tail{margin-left:auto;display:flex;align-items:center}
 /* The reset speaks the same stamp language as every other button — a bare
    underlined link next to a stamped switch looked borrowed from another site.
    Smaller than a regular stamp: it undoes, it does not invite. */
-.rail-rest .rail-reset{font-size:14px;padding:5px 9px;letter-spacing:.05em;
+.rail-tail .rail-reset{font-size:14px;padding:5px 9px;letter-spacing:.05em;
   white-space:nowrap;align-self:center}
 
 /* Chosen wishes, small. Solid ink on purpose: at this size the break eats
@@ -1222,7 +1131,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   background:var(--blue);padding:4px 9px;transform:rotate(-1.2deg);
   white-space:nowrap;cursor:pointer}
 .klein .wunsch:nth-child(2n){transform:rotate(1deg);background:var(--amber)}
-.klein .wunsch:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .klein .aufheben{border:0;background:none;cursor:pointer;font:14.5px var(--body);
   color:var(--text-soft);text-decoration:underline;text-underline-offset:3px}
 
@@ -1282,7 +1190,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 /* The card is a <details>: closed it compares, open it acts. */
 .plan summary{list-style:none;cursor:pointer;margin:-15px;padding:15px;display:block}
 .plan summary::-webkit-details-marker{display:none}
-.plan summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .plan[open]{box-shadow:inset 0 0 0 2px var(--edge)}
 .plan.active{box-shadow:inset 0 0 0 3px var(--blue)}
 .plan .paktionen{padding:15px 0 0;display:flex;flex-direction:column;gap:10px;

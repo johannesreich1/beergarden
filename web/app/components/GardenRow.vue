@@ -26,13 +26,13 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
-const window = computed(() =>
+const hoursWindow = computed(() =>
   props.weekday === null ? null : openingWindow(props.garden, props.weekday),
 )
 /** "dienstags zu", or null when the garden is open or the day is not known yet. */
 const closedLabel = computed(() =>
   props.weekday !== null && !isOpenOn(props.garden, props.weekday)
-    ? t('directoryPage.closedOn', { weekday: t(`weekdays.adverb.${props.weekday}`) })
+    ? t('directory.closedOn', { weekday: t(`weekdays.adverb.${props.weekday}`) })
     : null,
 )
 </script>
@@ -65,8 +65,8 @@ const closedLabel = computed(() =>
     <p v-if="garden.caveat" class="gnote">{{ garden.caveat }}</p>
 
     <GardenTags :garden="garden">
-      <span v-if="window" class="ptag">
-        {{ formatClock(window.opensAt) }}–{{ formatClock(window.closesAt) }}
+      <span v-if="hoursWindow" class="ptag">
+        {{ formatClock(hoursWindow.opensAt) }}–{{ formatClock(hoursWindow.closesAt) }}
       </span>
       <span v-if="closedLabel" class="ptag zu">{{ closedLabel }}</span>
     </GardenTags>

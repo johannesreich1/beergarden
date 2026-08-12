@@ -1,4 +1,6 @@
-import { openingWindow } from './hours'
+import { gardensBySlug } from './garden'
+import { openingWindow, windowProblem } from './hours'
+import type { WindowProblem } from './hours'
 import type { Plan } from './schedule'
 import { planLeg } from './travel'
 import type { Garden, PlannerOptions, StartPoint } from './types'
@@ -16,15 +18,14 @@ import type { Garden, PlannerOptions, StartPoint } from './types'
  * taken from the plan: changing the mode of travel changes the times.
  */
 
+/**
+ * The window failures come from the shared predicate; this union only adds
+ * what the validator can see that a single window cannot.
+ */
 export type PlanProblemKind =
+  | WindowProblem
   /** The garden is no longer in the data set. */
   | 'missing'
-  /** Closed on this weekday. */
-  | 'closed'
-  /** You would arrive before they unlock. */
-  | 'too-early'
-  /** The stay would run past closing time. */
-  | 'too-late'
   /** The tour no longer fits the time budget. */
   | 'over-budget'
 
@@ -46,9 +47,9 @@ export function checkPlan(
   gardens: Garden[],
   options: PlannerOptions,
   /** Overridden stays. Those can break a tour too. */
-  durations: Readonly<Record<string, number>> = {},
+  stayOverrides: Readonly<Record<string, number>> = {},
 ): PlanProblem | null {
-  const bySlug = new Map(gardens.map((garden) => [garden.slug, garden]))
+  const bySlug = gardensBySlug(gardens)
   const stops = plan.slugs.map((slug) => bySlug.get(slug))
 
   const missing = stops.findIndex((garden) => garden === undefined)
@@ -63,19 +64,13 @@ export function checkPlan(
     clock += planLeg(previous, garden, options.mode, options.maxLegMinutes).min
     const arrival = clock
 
-    const window = openingWindow(garden, options.weekday)
-    if (!window) {
-      return { kind: 'closed', slug: garden.slug, arrival }
-    }
-
     // Stays mirror slugs index for index — the plan's own shape.
-    const stay = durations[garden.slug] ?? plan.stays[index]!
+    const stay = stayOverrides[garden.slug] ?? plan.stays[index]!
 
-    if (arrival < window.opensAt) {
-      return { kind: 'too-early', slug: garden.slug, arrival, ...window }
-    }
-    if (arrival + stay > window.closesAt) {
-      return { kind: 'too-late', slug: garden.slug, arrival, ...window }
+    const window = openingWindow(garden, options.weekday)
+    const problem = windowProblem(window, arrival, stay)
+    if (problem) {
+      return { kind: problem, slug: garden.slug, arrival, ...window }
     }
 
     clock += stay

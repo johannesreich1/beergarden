@@ -19,7 +19,14 @@ plus die Regeln fürs Arbeiten im Repo.
 `GET /api/gardens` und `GET /api/start-points`. Sonst nichts.
 
 `web/core/` ist der framework-freie Kern — Fahrzeitmodell, Generator, Scoring,
-Ablauf, Sonnenuntergang. Reine Funktionen, 41 Vitest-Fälle. `web/app/` ist Nuxt.
+Ablauf, Sonnenuntergang. Reine Funktionen mit Vitest-Abdeckung (`npm test`),
+Typprüfung über `npm run typecheck`. `web/app/` ist Nuxt.
+
+**Alle UI-Texte liegen in `web/i18n/locales/de.json`** (@nuxtjs/i18n, Strategie
+`no_prefix` — die deutschen URLs bleiben). Im Code stehen Schlüssel, nie Sätze;
+der Kern liefert strukturierte Daten (z. B. `GenerateReason`), die Wörter macht
+die App-Schicht daraus. Gleiche Aussage = gleicher Schlüssel; verlinkte
+Schlüssel (`@:nav.plan`) statt kopierter Werte.
 
 **Karten laufen mit eigenen Kacheln.** `tools/fetch-tiles.sh` schneidet einmalig
 rund 32 MB Protomaps-Basiskarte für den Großraum München nach
@@ -70,7 +77,8 @@ teurer als ein Zeitpaar am Garten und trotzdem richtig.
 und für Wörter im UI. Wenn „warst du" die Beschriftung für einen besuchten Garten
 ist, heißt sie überall so und nicht an einer Stelle „war". Zwei Schreibweisen für
 dieselbe Sache sind ein Fehler, auch wenn beide gut aussehen. Farben, Fahrzeiten
-und Bezeichnungen haben je eine Quelle: `main.css`, `web/core/`, `presentation.ts`.
+und Bezeichnungen haben je eine Quelle: `main.css`, `web/core/`,
+`web/i18n/locales/de.json`.
 
 Die Grenze: DRY heißt nicht, zwei Dinge zusammenzulegen, die heute zufällig gleich
 aussehen. Gleicher Code ist kein Grund, gleiche Bedeutung schon.

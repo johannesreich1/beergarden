@@ -22,9 +22,9 @@ const usable = computed(() => !!props.garden.imageUrl && !!props.garden.imageCre
       :alt="$t('photo.alt', { name: garden.name })"
       loading="lazy"
     >
-    <span v-else class="placeholder stamped">
-      {{ $t('photo.placeholderLine1') }}<br>{{ $t('photo.placeholderLine2') }}<br>{{ $t('photo.placeholderLine3') }}
-    </span>
+    <!-- One key; where the lines break is layout, so `pre-line` renders the
+         message's own newlines instead of three keys pretending to be text. -->
+    <span v-else class="placeholder stamped">{{ $t('photo.placeholder') }}</span>
 
     <a
       v-if="usable && garden.imageSourceUrl"

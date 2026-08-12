@@ -86,8 +86,15 @@ function minutesInZone(date: Date, timeZone: string): number {
   return value('hour') * 60 + value('minute')
 }
 
+/**
+ * The city this planner is about. One pair of coordinates — the header, the
+ * planner and the tests all used to carry their own copy, and two suns that
+ * agree only by accident is one sun too many.
+ */
+export const MUNICH = { lat: 48.1374, lon: 11.5755 }
+
 /** Sunset as minutes since midnight, local time. */
-export function sunsetMinutes(
+export function sunsetMinutesAt(
   date: Date,
   lat: number,
   lon: number,

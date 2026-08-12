@@ -94,7 +94,7 @@ const breweries = computed(() =>
     >
     <span class="ptop">
       <span class="rank">{{ rank === 0 ? t('suggestion.best') : t('suggestion.alternative', { n: rank }) }}</span>
-      <span v-if="active" class="seen">{{ t('suggestion.yoursStamp') }}</span>
+      <span v-if="active" class="seen">{{ t('suggestion.yours') }}</span>
       <span class="tot">
         {{ formatClock(startMinutes) }}–{{ formatClock(route.end) }} ·
         {{ formatDuration(route.end - startMinutes) }}

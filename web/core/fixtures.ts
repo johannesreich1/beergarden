@@ -2,7 +2,7 @@ import { at } from './time'
 import type { Filters, Garden, PlannerOptions, StartPoint } from './types'
 
 /**
- * Seven real gardens from `data/gardens.json`, copied in here rather than read
+ * Eight real gardens from `data/gardens.json`, copied in here rather than read
  * at test time.
  *
  * The core must be testable without the repo layout, without a file system and
@@ -10,8 +10,10 @@ import type { Filters, Garden, PlannerOptions, StartPoint } from './types'
  * `readFileSync('../../data/...')` in a test would silently give it up.
  *
  * The selection covers what matters: two gardens of the same brewery, one on
- * the water, one closed on Tuesdays, differing opening hours and an
- * out-of-town case via `zone`.
+ * the water, one closed on Tuesdays, differing opening hours — and, all on the
+ * WaWi, the four cases nothing else provides: `zone: 'umland'`, an unverified
+ * brewery, a verified opening-hours row, a surveyed beer price and a second
+ * `area` with its own hours.
  */
 
 interface RawGarden {
@@ -89,9 +91,19 @@ const RAW: RawGarden[] = [
     // A small place: nobody sits here for two and a half hours.
     maxStay: 75,
   },
+  {
+    slug: 'wawi', name: 'Waldwirtschaft Großhesselohe', district: 'Pullach · Umland',
+    brewery: null, breweryLabel: null, seats: 2000,
+    tags: ['wald', 'aussicht', 'musik'],
+    opensAt: at(11), closesAt: at(23), stationWalkMin: 10, charm: 5,
+    lat: 48.0666, lon: 11.5395,
+    zone: 'umland',
+  },
 ]
 
-const TUESDAY = 2
+/** ISO weekdays the tests reason about — exported so no file redeclares them. */
+export const TUESDAY = 2
+export const WEDNESDAY = 3
 
 function toGarden(raw: RawGarden): Garden {
   return {
@@ -133,6 +145,36 @@ function toGarden(raw: RawGarden): Garden {
 }
 
 export const GARDENS: Garden[] = RAW.map(toGarden)
+
+/*
+ * The cases only the WaWi carries, attached after the generic conversion so
+ * `toGarden` stays one honest mapping:
+ *  - a restaurant area with its own hours (the reason `area` is part of the
+ *    opening-hours key at all)
+ *  - one verified row, so `isVerified` has a true case to return
+ *  - one surveyed beer price, so the price helpers are testable
+ */
+{
+  const wawi = GARDENS.find((garden) => garden.slug === 'wawi')!
+
+  wawi.openingHours[0]!.verifiedAt = '2026-08-01'
+  wawi.openingHours.push({
+    area: 'restaurant',
+    weekday: 1,
+    isClosed: false,
+    opensAt: at(17),
+    closesAt: at(23, 30),
+    weatherDependent: false,
+    verifiedAt: null,
+  })
+  wawi.beerPrices.push({
+    kind: 'hell',
+    sizeMl: 1000,
+    cents: 1190,
+    sourceUrl: null,
+    verifiedAt: null,
+  })
+}
 
 export const gardenBySlug = (slug: string): Garden =>
   GARDENS.find((garden) => garden.slug === slug)!

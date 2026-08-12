@@ -23,17 +23,17 @@ const props = defineProps<{
 }>()
 
 const pieces = computed(() => {
-  const raus: Array<{ kind: 'leg' | 'stay', mode?: string, min: number, label?: string }> = []
+  const out: Array<{ kind: 'leg' | 'stay', mode?: string, min: number, label?: string }> = []
 
   // Legs and stays mirror slugs index for index — the route's own shape.
   props.route.slugs.forEach((_, index) => {
     const leg = props.route.legs[index]!
-    raus.push({ kind: 'leg', mode: leg.mode, min: leg.min })
-    raus.push({ kind: 'stay', min: props.route.stays[index]!, label: props.labels?.[index] })
+    out.push({ kind: 'leg', mode: leg.mode, min: leg.min })
+    out.push({ kind: 'stay', min: props.route.stays[index]!, label: props.labels?.[index] })
   })
-  raus.push({ kind: 'leg', mode: props.route.back.mode, min: props.route.back.min })
+  out.push({ kind: 'leg', mode: props.route.back.mode, min: props.route.back.min })
 
-  return raus
+  return out
 })
 
 const total = computed(() => pieces.value.reduce((sum, piece) => sum + piece.min, 0))

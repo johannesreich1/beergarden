@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CANDIDPLATZ, gardenBySlug } from './fixtures'
 import { distanceKm } from './geo'
-import { planLeg, travelTimes } from './travel'
+import { LEG_UNCAPPED, planLeg, travelTimes } from './travel'
 
 const keller = gardenBySlug('augustinerkeller')
 const hirschgarten = gardenBySlug('hirschgarten')
@@ -81,5 +81,16 @@ describe('planLeg', () => {
   it('schneidet bei festem Modus alles über dem Limit ab', () => {
     expect(planLeg(keller, flaucher, 'walk', 10).feasible).toBe(false)
     expect(planLeg(keller, flaucher, 'walk', 240).feasible).toBe(true)
+  })
+
+  it('läuft auch ohne Limit nicht alles zu Fuß', () => {
+    // LEG_UNCAPPED's own doc makes this claim: under mix the walk-or-transit
+    // comparison holds its own line, so an uncapped cap must not degenerate
+    // into hour-long walks. Candidplatz to the Hirschgarten is far enough
+    // that transit has to win.
+    const leg = planLeg(CANDIDPLATZ, hirschgarten, 'mix', LEG_UNCAPPED)
+
+    expect(leg.mode).toBe('transit')
+    expect(leg.min).toBe(travelTimes(CANDIDPLATZ, hirschgarten).transit)
   })
 })

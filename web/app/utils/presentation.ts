@@ -60,10 +60,10 @@ export const metaLine = (...parts: Array<string | null | undefined>): string =>
   parts.filter(Boolean).join(' · ')
 
 /**
- * A garden's page. The URL shape is a single statement — six templates
- * spelling it out by hand is how one of them ends up different.
+ * Re-exported from the core so components keep their auto-import — the
+ * definitions moved there because the server-side sitemap needs them too.
  */
-export const gardenPath = (slug: string): string => `/biergarten/${slug}`
+export { gardenPath, gardensFor } from '#core'
 
 /**
  * The boolean wish filters, in the order every surface shows them.
@@ -100,12 +100,6 @@ export function presentBreweries(gardens: Garden[]): string[] {
 
   return Object.keys(BREWERY_STYLES).filter((slug) => (counts[slug] ?? 0) > 0)
 }
-
-/** The gardens behind a list of slugs, unknown ones dropped, order kept. */
-export const gardensFor = (slugs: string[], gardens: Garden[]): Garden[] =>
-  slugs
-    .map((slug) => gardens.find((garden) => garden.slug === slug))
-    .filter((garden) => garden !== undefined)
 
 /** The character tags in display order — the vocabulary is the core's. */
 export const TAG_KEYS: string[] = Object.values(TAGS)

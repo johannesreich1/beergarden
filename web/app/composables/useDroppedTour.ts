@@ -27,7 +27,7 @@ export function useDroppedTour(gardens: Ref<Garden[]>) {
 
   const problem = computed(() =>
     droppedTour.value
-      ? checkPlan(droppedTour.value.plan, gardens.value, options.value, state.value.durations)
+      ? checkPlan(droppedTour.value.plan, gardens.value, options.value, state.value.stayOverrides)
       : null,
   )
 

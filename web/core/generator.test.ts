@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { GARDENS, defaultOptions, gardenBySlug } from './fixtures'
+import { GARDENS, TUESDAY, WEDNESDAY, defaultOptions, gardenBySlug } from './fixtures'
 import { generateRoutes } from './generator'
 import { openingWindow } from './hours'
 import { at } from './time'
-
-const TUESDAY = 2
-const WEDNESDAY = 3
+import { LEG_UNCAPPED } from './travel'
 
 describe('generateRoutes', () => {
   it('liefert Vorschläge mit der gewünschten Stationszahl', () => {
@@ -68,13 +66,19 @@ describe('generateRoutes', () => {
     expect(new Set(sets).size).toBe(sets.length)
   })
 
-  it('sagt im Klartext, warum nichts geht, statt eine leere Liste zu liefern', () => {
+  it('sagt strukturiert, warum nichts geht, statt eine leere Liste zu liefern', () => {
     // Two hours are not enough for three stops — three times 45 minutes of
-    // sitting alone already exceeds it.
+    // sitting alone already exceeds it. The default options carry a leg cap,
+    // so the reason must hand it over for the message to cite.
     const { routes, reason } = generateRoutes(GARDENS, defaultOptions({ budgetMinutes: 120 }))
 
     expect(routes).toHaveLength(0)
-    expect(reason).toContain('geht sich das nicht aus')
+    expect(reason).toEqual({
+      kind: 'no-route',
+      budgetMinutes: 120,
+      mode: 'mix',
+      maxLegMinutes: 25,
+    })
   })
 
   it('nennt die Zahl, wenn zu wenige Gärten zu den Filtern passen', () => {
@@ -84,7 +88,33 @@ describe('generateRoutes', () => {
     const { routes, reason } = generateRoutes(GARDENS, options)
 
     expect(routes).toHaveLength(0)
-    expect(reason).toContain('Nur 2 Biergärten')
+    expect(reason).toEqual({ kind: 'pool-too-small', count: 2, stops: 3 })
+  })
+
+  it('lässt die Meldung ohne Etappen-Limit das Limit auch nicht zitieren', () => {
+    // The branch every real user sees: the app's default is LEG_UNCAPPED, and
+    // the empty state used to cite a 25-minute cap nobody had set. `null`
+    // here is the UI's licence to leave the cap out of the sentence.
+    const { routes, reason } = generateRoutes(
+      GARDENS,
+      defaultOptions({ budgetMinutes: 120, maxLegMinutes: LEG_UNCAPPED }),
+    )
+
+    expect(routes).toHaveLength(0)
+    expect(reason).toEqual({ kind: 'no-route', budgetMinutes: 120, mode: 'mix', maxLegMinutes: null })
+  })
+
+  it('beschuldigt den Wasser-Wunsch, wenn nur er die Touren verwirft', () => {
+    // Two Keller gardens form perfectly good two-stop tours — none on the
+    // water. The old message blamed time and mode; the reason now names the
+    // one dial that actually struck.
+    const options = defaultOptions({ stops: 2 })
+    options.filters = { ...options.filters, tags: ['keller'], waterRequired: true }
+
+    const { routes, reason } = generateRoutes(GARDENS, options)
+
+    expect(routes).toHaveLength(0)
+    expect(reason).toEqual({ kind: 'none-on-water' })
   })
 
   it('bevorzugt Touren mit verschiedenen Brauereien', () => {

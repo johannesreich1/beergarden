@@ -8,7 +8,7 @@ import {
   generateRoutes,
   planFromRoute,
   checkPlan,
-  countGardens,
+  tourKey,
 } from '#core'
 
 // English file name, German URL — as with the directory.
@@ -57,6 +57,36 @@ const poolSize = computed(
   () => candidates(gardens.value, state.value.filters, visitedSet.value, state.value.weekday).length,
 )
 
+/**
+ * The generator states what happened; the words are this layer's job. That
+ * split is what lets the message blame the right dial — and keeps the core
+ * free of German prose with its own spelling of the mode names.
+ */
+const emptyReason = computed(() => {
+  const reason = suggestions.value.reason
+  if (!reason) return ''
+
+  switch (reason.kind) {
+    case 'pool-too-small':
+      return reason.count === 0
+        ? t('planner.empty.noneMatch')
+        : t('planner.empty.poolTooSmall', { count: reason.count, stops: reason.stops }, reason.count)
+    case 'none-on-water':
+      return t('planner.empty.noneOnWater')
+    case 'no-route':
+      return reason.maxLegMinutes === null
+        ? t('planner.empty.noRoute', {
+            budget: formatDuration(reason.budgetMinutes),
+            mode: t(`planningModes.${reason.mode}`),
+          })
+        : t('planner.empty.noRouteCapped', {
+            budget: formatDuration(reason.budgetMinutes),
+            mode: t(`planningModes.${reason.mode}`),
+            cap: reason.maxLegMinutes,
+          })
+  }
+})
+
 /*
  * Before any tour is taken, the right column previews the best hit.
  *
@@ -76,18 +106,14 @@ const previewSchedule = computed(() => {
     mode: state.value.mode,
     maxLegMinutes: state.value.maxLegMinutes,
     skipped: new Set(),
-    durations: {},
+    stayOverrides: {},
     lastStop: null,
   })
 })
 
 const previewGardens = computed(() => gardensFor(previewRoute.value?.slugs ?? [], gardens.value))
 
-const planId = computed(() =>
-  state.value.plan ? [...state.value.plan.slugs].sort().join('|') : '',
-)
-
-const routeId = (route: Route) => [...route.slugs].sort().join('|')
+const planId = computed(() => (state.value.plan ? tourKey(state.value.plan.slugs) : ''))
 
 function takeRoute(route: Route): void {
   planner.choosePlan(planFromRoute(route))
@@ -102,12 +128,12 @@ function takeRoute(route: Route): void {
  * tour that is silently wrong is worse than none. So: recompute and drop.
  */
 watch(
-  [options, () => state.value.durations],
+  [options, () => state.value.stayOverrides],
   () => {
     const plan = state.value.plan
     if (!plan || !gardens.value.length) return
 
-    const problem = checkPlan(plan, gardens.value, options.value, state.value.durations)
+    const problem = checkPlan(plan, gardens.value, options.value, state.value.stayOverrides)
     if (problem) planner.dropTour()
   },
   { deep: true },
@@ -124,7 +150,7 @@ const schedule = computed(() => {
     mode: state.value.mode,
     maxLegMinutes: state.value.maxLegMinutes,
     skipped: skippedSet.value,
-    durations: state.value.durations,
+    stayOverrides: state.value.stayOverrides,
     lastStop: state.value.lastStop,
   })
 })
@@ -169,7 +195,7 @@ const schedule = computed(() => {
       <button class="btn on big" @click="planner.start">
         {{ t('planner.start') }}
       </button>
-      <p class="note">{{ t('planner.startNote', { count: countGardens(poolSize) }) }}</p>
+      <p class="note">{{ t('planner.startNote', { count: poolSize }, poolSize) }}</p>
     </div>
 
     <div v-if="started" class="results">
@@ -195,7 +221,7 @@ const schedule = computed(() => {
         :options="options"
         :chosen="state.plan?.slugs ?? []"
         :legs="state.plan?.legs"
-        :stays="state.durations"
+        :stays="state.stayOverrides"
         :time-mode="state.timeMode"
         @add="(slug) => planner.addStop(slug, gardens)"
         @remove="(slug) => planner.removeStop(slug, gardens)"
@@ -228,9 +254,9 @@ const schedule = computed(() => {
     <SectionTitle :title="t('planner.suggestionsTitle')" :count="suggestions.routes.length" />
     <p class="note" aria-live="polite">
       {{ t('planner.suggestionsNote', {
-        count: countGardens(poolSize),
+        count: poolSize,
         weekday: t(`weekdays.adverb.${state.weekday}`),
-      }) }}
+      }, poolSize) }}
     </p>
 
     <div style="margin-top: 14px">
@@ -245,10 +271,10 @@ const schedule = computed(() => {
         </template>
       </div>
 
-      <div v-if="!suggestions.routes.length" class="empty" role="status">{{ suggestions.reason }}</div>
+      <div v-if="!suggestions.routes.length" class="empty" role="status">{{ emptyReason }}</div>
       <PlanSuggestion
         v-for="(route, index) in suggestions.routes"
-        :key="routeId(route)"
+        :key="tourKey(route.slugs)"
         :route="route"
         :rank="index"
         :gardens="gardens"
@@ -256,7 +282,7 @@ const schedule = computed(() => {
         :start-minutes="state.startMinutes"
         :mode="state.mode"
         :visited="visitedSet"
-        :active="routeId(route) === planId"
+        :active="tourKey(route.slugs) === planId"
         :sunset-minutes="sunset"
         @take="takeRoute(route)"
       />

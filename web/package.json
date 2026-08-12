@@ -7,7 +7,8 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "preview": "nuxt preview --host 0.0.0.0",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "nuxi typecheck"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.6.0",

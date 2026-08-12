@@ -44,14 +44,30 @@ export const TAGS = {
 export const isOnWater = (garden: Garden): boolean => garden.tags.includes(TAGS.water)
 
 /**
- * "ein Biergarten" or "17 Biergärten".
+ * The one URL a garden lives under.
  *
- * Lives here because both callers need the same rule: the generator for its
- * refusal and the UI for its counter. Two phrasings for the same number would
- * be two opportunities to write "1 Biergärten".
+ * In the core rather than in the app's utils because the sitemap runs on the
+ * server, where Nuxt's auto-imports do not reach — and a second hand-spelled
+ * template there is how crawlers end up with silent 404s.
  */
-export const countGardens = (count: number): string =>
-  count === 1 ? 'ein Biergarten' : `${count} Biergärten`
+export const GARDEN_ROUTE = '/biergarten'
+
+export const gardenPath = (slug: string): string => `${GARDEN_ROUTE}/${slug}`
+
+/** Lookup by slug, built once — the O(n²) find-in-map was written five times. */
+export const gardensBySlug = (gardens: Garden[]): Map<string, Garden> =>
+  new Map(gardens.map((garden) => [garden.slug, garden]))
+
+/** The gardens behind a list of slugs, unknown ones dropped, order kept. */
+export function gardensFor(slugs: string[], gardens: Garden[]): Garden[] {
+  const bySlug = gardensBySlug(gardens)
+
+  return slugs.flatMap((slug) => {
+    const garden = bySlug.get(slug)
+
+    return garden ? [garden] : []
+  })
+}
 
 function matchesFilters(
   garden: Garden,

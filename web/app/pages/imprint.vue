@@ -27,7 +27,7 @@ usePageSeo({
     <h1 class="page-title stamped">{{ t('legal.imprint.title') }}</h1>
 
     <div class="warnbox">
-      <b>{{ t('legal.imprint.todoLead') }}</b> {{ t('legal.imprint.todo') }}
+      <b>{{ t('legal.todoLead') }}</b> {{ t('legal.imprint.todo') }}
     </div>
 
     <h2>{{ t('legal.imprint.providerTitle') }}</h2>

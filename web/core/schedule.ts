@@ -1,3 +1,4 @@
+import { gardensBySlug, gardensFor } from './garden'
 import { planLeg, travelTimes } from './travel'
 import { stayAt } from './stay'
 import type { Garden, Leg, Mode, PlannerOptions, PlanningMode, Route, StartPoint, Waypoint } from './types'
@@ -26,7 +27,7 @@ export interface ScheduleOptions {
   maxLegMinutes: number
   skipped: ReadonlySet<string>
   /** Overridden stay per garden. */
-  durations: Readonly<Record<string, number>>
+  stayOverrides: Readonly<Record<string, number>>
   /** Finish here; the rest of the tour is dropped. */
   lastStop: string | null
 }
@@ -60,15 +61,6 @@ export function planFromRoute(route: Route): Plan {
 }
 
 /**
- * A plan from a hand-picked list of stops.
- *
- * The counterpart to `planFromRoute`: the generator already knows the legs it
- * chose, a person picking on a map does not. Everything else about the plan is
- * identical, and it has to be — a hand-picked tour runs through the same
- * schedule, the same validation and the same controls as a proposed one. Two
- * shapes of plan would mean two of each.
- */
-/**
  * A mode chosen by hand for a single leg.
  *
  * Keyed by where the leg goes — the destination's slug, or `back` for the way
@@ -77,6 +69,22 @@ export function planFromRoute(route: Route): Plan {
  */
 export const BACK_LEG = 'back'
 
+/**
+ * One identity for a tour: its set of stops, regardless of order. The same
+ * three gardens in reverse are the same evening to the user — this used to be
+ * computed in three places under three names.
+ */
+export const tourKey = (slugs: readonly string[]): string => [...slugs].sort().join('|')
+
+/**
+ * A plan from a hand-picked list of stops.
+ *
+ * The counterpart to `planFromRoute`: the generator already knows the legs it
+ * chose, a person picking on a map does not. Everything else about the plan is
+ * identical, and it has to be — a hand-picked tour runs through the same
+ * schedule, the same validation and the same controls as a proposed one. Two
+ * shapes of plan would mean two of each.
+ */
 export function planFromSlugs(
   slugs: string[],
   gardens: Garden[],
@@ -84,9 +92,12 @@ export function planFromSlugs(
   stays: Record<string, number>,
   legModes: Record<string, Mode> = {},
 ): Plan | null {
-  const stops = slugs
-    .map((slug) => gardens.find((garden) => garden.slug === slug))
-    .filter((garden) => garden !== undefined)
+  // A stale slug is dropped, not fatal. This differs from `buildSchedule`
+  // (whole plan void) and `checkPlan` ('missing') on purpose: those judge a
+  // finished plan, where one ghost stop falsifies the times of every other.
+  // Here somebody is mid-picking, and a pick that vanished from the data must
+  // not veto the stops that still exist.
+  const stops = gardensFor(slugs, gardens)
 
   if (!stops.length) return null
 
@@ -128,15 +139,18 @@ export function planFromSlugs(
  * What a hand-picked stop starts with. Ninety minutes is a Maß and a Brotzeit
  * without hurrying; the generator divides a budget, picking by hand has none to
  * divide. `stayAt` still clamps it to the garden's own bounds.
+ *
+ * Exported because the timeline's fallback must be this number, not a copy of
+ * it — a hardcoded 90 in the UI is how the two drift apart.
  */
-const DEFAULT_MANUAL_STAY = 90
+export const DEFAULT_MANUAL_STAY = 90
 
 export function buildSchedule(
   plan: Plan,
   gardens: Garden[],
   options: ScheduleOptions,
 ): Schedule | null {
-  const bySlug = new Map(gardens.map((garden) => [garden.slug, garden]))
+  const bySlug = gardensBySlug(gardens)
   const planned = plan.slugs.map((slug) => bySlug.get(slug))
 
   // Can happen when a stored plan points at a garden that has since been
@@ -182,7 +196,7 @@ export function buildSchedule(
     clock += entry.legMinutes
     const arrive = clock
 
-    const duration = options.durations[entry.garden.slug] ?? entry.stay
+    const duration = options.stayOverrides[entry.garden.slug] ?? entry.stay
     clock += duration
 
     rows.push({

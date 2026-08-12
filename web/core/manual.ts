@@ -1,5 +1,6 @@
-import { candidates } from './garden'
-import { openingWindow } from './hours'
+import { candidates, gardensFor } from './garden'
+import { openingWindow, windowProblem } from './hours'
+import type { WindowProblem } from './hours'
 import { buildSchedule } from './schedule'
 import type { Plan } from './schedule'
 import { MIN_STAY_MINUTES, stayAt } from './stay'
@@ -17,7 +18,8 @@ import type { Garden, Leg, Mode, PlannerOptions, StartPoint } from './types'
  * computation.
  */
 
-export type CandidateReason = 'ok' | 'closed' | 'too-early' | 'too-late' | 'over-budget'
+/** Window failures from the shared predicate, plus what only a leg can add. */
+export type CandidateReason = WindowProblem | 'ok' | 'over-budget'
 
 export interface Candidate {
   garden: Garden
@@ -71,13 +73,9 @@ function departure(
   options: PlannerOptions,
   stays: Record<string, number>,
 ): { from: StartPoint | Garden; departAt: number } {
-  const bySlug = new Map(gardens.map((garden) => [garden.slug, garden]))
-
   // A slug without a garden is a stale pick out of localStorage. Skipping it
   // beats refusing to plan the rest of the evening.
-  const picked = chosen
-    .map((slug) => bySlug.get(slug))
-    .filter((garden): garden is Garden => garden !== undefined)
+  const picked = gardensFor(chosen, gardens)
 
   if (!picked.length) return { from: options.start, departAt: options.startMinutes }
 
@@ -102,7 +100,7 @@ function departure(
     mode: options.mode,
     maxLegMinutes: options.maxLegMinutes,
     skipped: new Set<string>(),
-    durations: stays,
+    stayOverrides: stays,
     lastStop: null,
   })!
 
@@ -118,13 +116,10 @@ function reasonFor(
   earliestLeave: number,
   options: PlannerOptions,
 ): CandidateReason {
-  const window = openingWindow(garden, options.weekday)
-
-  if (!window) return 'closed'
-  if (arrival < window.opensAt) return 'too-early'
-  // Same rule as in the generator: arriving is not enough, the minimum stay has
-  // to fit before closing time.
-  if (earliestLeave > window.closesAt) return 'too-late'
+  // The same predicate the generator prunes on and the validator reports on:
+  // arriving is not enough, the minimum stay has to fit before closing time.
+  const problem = windowProblem(openingWindow(garden, options.weekday), arrival, earliestLeave - arrival)
+  if (problem) return problem
   // Too far for the chosen mode. No reason of its own — for the user it is the
   // same answer: this stop does not fit into the evening.
   if (!leg.feasible) return 'over-budget'

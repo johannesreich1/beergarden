@@ -1,12 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { CANDIDPLATZ, GARDENS, defaultOptions, gardenBySlug } from './fixtures'
+import { CANDIDPLATZ, GARDENS, TUESDAY, WEDNESDAY, defaultOptions, gardenBySlug } from './fixtures'
 import { nextStops } from './manual'
 import { MIN_STAY_MINUTES, stayAt } from './stay'
 import { at } from './time'
 import { planLeg } from './travel'
-
-const TUESDAY = 2
-const WEDNESDAY = 3
 
 const options = defaultOptions()
 

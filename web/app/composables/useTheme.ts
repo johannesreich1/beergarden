@@ -38,9 +38,9 @@ export function useTheme() {
     choose(next.value)
   }
 
-  /** Call in the browser only. The head script already set the attribute. */
   /**
    * The device decides the first view, the visitor decides every one after.
+   * Call in the browser only.
    *
    * The head script has already written the attribute, resolving the device
    * preference when nothing was stored — reading it back keeps one source for
@@ -52,5 +52,6 @@ export function useTheme() {
     theme.value = stored === 'dark' ? 'dark' : 'light'
   }
 
-  return { theme, next, choose, cycle, hydrate }
+  // `choose` stays internal: the one switch cycles, nothing else picks.
+  return { theme, next, cycle, hydrate }
 }

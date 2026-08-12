@@ -2,6 +2,13 @@ import type { StartPoint } from '#core'
 import { distanceKm } from '#core'
 
 /**
+ * What the picker has to report about the last attempt — or null when there
+ * is nothing to say. A typed union, not loose strings: two of the old German
+ * codes were rendered nowhere, and no compiler could tell.
+ */
+export type StartPickerNote = 'unknown-place' | 'locating' | 'denied' | 'unsupported' | null
+
+/**
  * Picking the start point.
  *
  * Only the rail's Ort panel asks this today, but the matching rules and the
@@ -13,13 +20,15 @@ export function useStartPicker(startPoints: Ref<StartPoint[]>) {
   const { state } = planner
 
   const startQuery = ref('')
-  const startNote = ref('')
+  const startNote = ref<StartPickerNote>(null)
 
   watch(
     () => state.value.startPoint.name,
     (name) => {
       startQuery.value = name
-      startNote.value = ''
+      // A changed start point IS the success feedback — the chip now carries
+      // the new name. That is why there is no 'located' state to render.
+      startNote.value = null
     },
     { immediate: true },
   )
@@ -32,7 +41,7 @@ export function useStartPicker(startPoints: Ref<StartPoint[]>) {
       startPoints.value.find((point) => point.name.toLowerCase().includes(query))
 
     if (!hit) {
-      startNote.value = 'kenne-ich-nicht'
+      startNote.value = 'unknown-place'
       return
     }
 
@@ -40,13 +49,13 @@ export function useStartPicker(startPoints: Ref<StartPoint[]>) {
     planner.persist()
   }
 
-  function useGeolocation(): void {
+  function locateMe(): void {
     if (!navigator.geolocation) {
-      startNote.value = 'kein-standort'
+      startNote.value = 'unsupported'
       return
     }
 
-    startNote.value = 'suche'
+    startNote.value = 'locating'
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -64,15 +73,14 @@ export function useStartPicker(startPoints: Ref<StartPoint[]>) {
           ? nearest.point
           : { name: 'Mein Standort', lat: here.lat, lon: here.lon }
 
-        startNote.value = 'standort'
         planner.persist()
       },
       () => {
-        startNote.value = 'abgelehnt'
+        startNote.value = 'denied'
       },
       { timeout: 8000 },
     )
   }
 
-  return { startQuery, startNote, applyStartQuery, useGeolocation }
+  return { startQuery, startNote, applyStartQuery, locateMe }
 }

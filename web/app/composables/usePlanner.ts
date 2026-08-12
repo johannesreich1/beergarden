@@ -1,5 +1,5 @@
 import type { Filters, Garden, Mode, Plan, PlannerOptions, PlanningMode, StartPoint } from '#core'
-import { LEG_UNCAPPED, at, planFromSlugs, sunsetMinutes } from '#core'
+import { LEG_UNCAPPED, MUNICH, at, planFromSlugs, sunsetMinutesAt } from '#core'
 
 /**
  * The planner's state, shared between the planner and the directory.
@@ -12,8 +12,6 @@ const STORAGE_KEY = 'bg-planer-v5'
 /** Candidplatz, because that is where the question behind this project came up. */
 const DEFAULT_START: StartPoint = { name: 'Candidplatz', lat: 48.1148, lon: 11.5687 }
 
-const MUNICH = { lat: 48.1374, lon: 11.5755 }
-
 export interface PlannerState {
   startPoint: StartPoint
   startMinutes: number
@@ -25,7 +23,7 @@ export interface PlannerState {
   filters: Filters
   visited: string[]
   plan: Plan | null
-  durations: Record<string, number>
+  stayOverrides: Record<string, number>
   skipped: string[]
   lastStop: string | null
 
@@ -92,7 +90,7 @@ function initialState(): PlannerState {
     },
     visited: [],
     plan: null,
-    durations: {},
+    stayOverrides: {},
     skipped: [],
     lastStop: null,
     started: false,
@@ -121,9 +119,17 @@ export function usePlanner() {
     }
 
     try {
+      const parsed = JSON.parse(stored) as Partial<PlannerState> & {
+        /** The field's name before the rename — carried over once, then gone. */
+        durations?: Record<string, number>
+      }
+
+      if (parsed.durations && !parsed.stayOverrides) parsed.stayOverrides = parsed.durations
+      delete parsed.durations
+
       // Merge shallowly rather than replace: a state stored by a version with
       // fewer fields must not swallow the new ones.
-      Object.assign(state.value, JSON.parse(stored) as Partial<PlannerState>)
+      Object.assign(state.value, parsed)
 
       // 25 was the silent default of the leg-cap dial, and nobody ever chose
       // it — the dial lives behind "Alle Regler". Stored states carry it
@@ -138,7 +144,7 @@ export function usePlanner() {
       // would mean data loss for the user.
       if (state.value.plan && !Array.isArray(state.value.plan.stays)) {
         state.value.plan = null
-        state.value.durations = {}
+        state.value.stayOverrides = {}
         state.value.skipped = []
         state.value.lastStop = null
       }
@@ -182,7 +188,7 @@ export function usePlanner() {
 
     droppedTour.value = { plan: state.value.plan }
     state.value.plan = null
-    state.value.durations = {}
+    state.value.stayOverrides = {}
     state.value.skipped = []
     state.value.lastStop = null
     persist()
@@ -194,7 +200,7 @@ export function usePlanner() {
   /** Today's sunset. The prototype had a constant here. */
   const sunset = computed(() =>
     hydrated.value
-      ? sunsetMinutes(new Date(), MUNICH.lat, MUNICH.lon)
+      ? sunsetMinutesAt(new Date(), MUNICH.lat, MUNICH.lon)
       : at(20, 34),
   )
 
@@ -225,14 +231,14 @@ export function usePlanner() {
   function choosePlan(plan: Plan): void {
     droppedTour.value = null
     state.value.plan = plan
-    state.value.durations = {}
+    state.value.stayOverrides = {}
     state.value.skipped = []
     state.value.lastStop = null
     persist()
   }
 
   function resetPlanEdits(): void {
-    state.value.durations = {}
+    state.value.stayOverrides = {}
     state.value.skipped = []
     state.value.lastStop = null
     persist()
@@ -242,7 +248,7 @@ export function usePlanner() {
     () =>
       state.value.skipped.length > 0 ||
       state.value.lastStop !== null ||
-      Object.keys(state.value.durations).length > 0,
+      Object.keys(state.value.stayOverrides).length > 0,
   )
 
   /**
@@ -297,10 +303,10 @@ export function usePlanner() {
       start: state.value.startPoint,
       mode: state.value.mode,
       maxLegMinutes: state.value.maxLegMinutes,
-    }, state.value.durations, state.value.legModes as Record<string, Mode>)
+    }, state.value.stayOverrides, state.value.legModes as Record<string, Mode>)
 
     if (!state.value.plan) {
-      state.value.durations = {}
+      state.value.stayOverrides = {}
       state.value.skipped = []
       state.value.lastStop = null
     }
@@ -351,7 +357,7 @@ export function usePlanner() {
       || value.maxLegMinutes !== fresh.maxLegMinutes
       || value.weekday !== isoWeekday(new Date())
       || Object.keys(value.legModes).length > 0
-      || Object.keys(value.durations).length > 0
+      || Object.keys(value.stayOverrides).length > 0
       || value.skipped.length > 0
   })
 

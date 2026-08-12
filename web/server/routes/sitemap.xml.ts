@@ -7,6 +7,8 @@
  * Prerendered like the pages it lists, so production serves a static file.
  */
 
+import { gardenPath } from '#core'
+
 interface ApiGarden {
   slug: string
   verified_at: string | null
@@ -36,8 +38,10 @@ export default defineEventHandler(async (event) => {
 
   const entries = [
     ...STATIC_PATHS.map((entry) => ({ ...entry, lastmod: null as string | null })),
+    // Through gardenPath, not a template of its own: a URL the sitemap spells
+    // differently from the pages is a 404 published straight to crawlers.
     ...gardens.map((garden) => ({
-      path: `/biergarten/${garden.slug}`,
+      path: gardenPath(garden.slug),
       priority: '0.8',
       changefreq: 'monthly',
       // The date the facts were last checked is the honest lastmod — it says

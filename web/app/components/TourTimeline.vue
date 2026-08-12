@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Garden, Schedule, ScheduleRow } from '#core'
-import { BACK_LEG, formatClock, formatDuration } from '#core'
+import { BACK_LEG, DEFAULT_MANUAL_STAY, formatClock, formatDuration, stayAt } from '#core'
 
 /**
  * The chosen tour, start to way home: beams, map, the timeline of stops and
@@ -42,12 +42,17 @@ const currentDuration = (slug: string) => {
   const planned = state.value.plan
   const index = planned?.slugs.indexOf(slug) ?? -1
 
-  return state.value.durations[slug] ?? (index >= 0 ? planned!.stays[index]! : 90)
+  return state.value.stayOverrides[slug] ?? (index >= 0 ? planned!.stays[index]! : DEFAULT_MANUAL_STAY)
 }
 
-function changeDuration(slug: string, delta: number): void {
-  const next = currentDuration(slug) + delta
-  state.value.durations[slug] = Math.max(30, Math.min(240, next))
+/**
+ * Clamped through `stayAt`, not by numbers of this component's own: the core
+ * owns the stay rule, per garden where bounds are surveyed and 45/150
+ * otherwise. The UI inventing 30/240 here was the drift stay.ts warns about.
+ */
+function changeDuration(garden: Garden, delta: number): void {
+  const next = currentDuration(garden.slug) + delta
+  state.value.stayOverrides[garden.slug] = stayAt(garden, next)
   planner.persist()
 }
 
@@ -133,8 +138,8 @@ function scrollToCard(slug: string): void {
           @skip="toggleSkip(garden.slug)"
           @seen="planner.toggleVisited(garden.slug)"
           @finish="state.lastStop = garden.slug; planner.persist()"
-          @longer="changeDuration(garden.slug, 15)"
-          @shorter="changeDuration(garden.slug, -15)"
+          @longer="changeDuration(garden, 15)"
+          @shorter="changeDuration(garden, -15)"
         />
       </template>
 

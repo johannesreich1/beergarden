@@ -72,14 +72,20 @@ const leg = computed(() =>
  * contradiction this kind of markup gets penalised for. Both read from the
  * same locale key so they cannot drift.
  */
-const SELF_SERVICE = t('garden.selfServiceFact')
+const SELF_SERVICE = t('common.selfService')
 const OWN_FOOD = t('garden.ownFoodFact')
 
-/** "A", "A und B", "A, B und C" — German enumerations, one rule for all of them. */
+/**
+ * "A", "A und B", "A, B und C" — enumerations, one rule for all of them.
+ *
+ * The separators come from the locale file, and the template's linked lists
+ * below read the same two keys: one vocabulary, two renderers (this one
+ * returns a string, the template weaves links between the words).
+ */
 function joinList(parts: string[]): string {
   if (parts.length < 2) return parts[0] ?? ''
 
-  return `${parts.slice(0, -1).join(', ')} und ${parts[parts.length - 1]}`
+  return `${parts.slice(0, -1).join(t('garden.prose.comma'))}${t('garden.prose.and')}${parts[parts.length - 1]}`
 }
 
 /** 1.234 → "1,2 km", 0.42 → "420 m". Below a kilometre the metre is the honest unit. */
@@ -318,14 +324,14 @@ const SCHEMA_WEEKDAYS: Record<number, string> = {
  */
 const openingSpec = computed(() =>
   WEEKDAY_VALUES.flatMap((day) => {
-    const window = openingWindow(garden.value!, day)
+    const hoursWindow = openingWindow(garden.value!, day)
 
-    return window
+    return hoursWindow
       ? [{
           '@type': 'OpeningHoursSpecification',
           dayOfWeek: SCHEMA_WEEKDAYS[day],
-          opens: formatClock(window.opensAt),
-          closes: formatClock(window.closesAt),
+          opens: formatClock(hoursWindow.opensAt),
+          closes: formatClock(hoursWindow.closesAt),
         }]
       : []
   }),
@@ -416,11 +422,13 @@ useJsonLd(() => {
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Startseite', item: absoluteUrl('/') },
+          // The same keys the directory's trail uses — two pages publishing
+          // two names for one breadcrumb node is how search results drift.
+          { '@type': 'ListItem', position: 1, name: t('nav.home'), item: absoluteUrl('/') },
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Alle Biergärten',
+            name: t('nav.directory'),
             item: absoluteUrl('/verzeichnis'),
           },
           { '@type': 'ListItem', position: 3, name: entry.name, item: pageUrl.value },

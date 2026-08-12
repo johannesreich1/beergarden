@@ -1,23 +1,21 @@
-export type ThemeChoice = 'system' | 'light' | 'dark'
+export type ThemeChoice = 'light' | 'dark'
 
 const STORAGE_KEY = 'bg-theme'
 
 /**
- * Light, dark, or whatever the device wants.
+ * Light or dark. Nothing else.
  *
- * Three states, not two: "system" is not a detour but the right answer for
- * most people — dark in the evening, light in the beer garden, without anyone
- * touching a setting. The other two are for those it does not suit.
- *
- * The value lands as `data-theme` on <html>. Without the attribute the system
- * setting applies; that is how the stylesheet is built.
+ * There used to be a third setting, "system", and it was the default. It reads
+ * well in a settings list and badly on a switch: two of the three states look
+ * identical at any given moment, so pressing it appeared to do nothing every
+ * second time. The device preference has not gone away — it decides the first
+ * view, before anybody has chosen. It just is not a state you can land on.
  */
 export function useTheme() {
-  const theme = useState<ThemeChoice>('theme', () => 'system')
+  const theme = useState<ThemeChoice>('theme', () => 'light')
 
   function apply(choice: ThemeChoice): void {
-    if (choice === 'system') delete document.documentElement.dataset.theme
-    else document.documentElement.dataset.theme = choice
+    document.documentElement.dataset.theme = choice
   }
 
   function choose(choice: ThemeChoice): void {
@@ -25,23 +23,15 @@ export function useTheme() {
     apply(choice)
 
     try {
-      if (choice === 'system') localStorage.removeItem(STORAGE_KEY)
-      else localStorage.setItem(STORAGE_KEY, choice)
+      localStorage.setItem(STORAGE_KEY, choice)
     }
     catch {
       // Private mode. The choice then only holds for this session.
     }
   }
 
-  /**
-   * The order the single switch walks through.
-   *
-   * System first, because it is the right answer for most people and the one
-   * the page starts on: dark in the evening, light in the beer garden, without
-   * anyone touching a setting. The other two are the exceptions, and they come
-   * after the rule.
-   */
-  const ORDER: ThemeChoice[] = ['system', 'light', 'dark']
+  /** The switch flips between the two; there is nothing in between. */
+  const ORDER: ThemeChoice[] = ['light', 'dark']
 
   /** The next setting — what one press of the switch will do. */
   const next = computed(() => ORDER[(ORDER.indexOf(theme.value) + 1) % ORDER.length])
@@ -51,9 +41,17 @@ export function useTheme() {
   }
 
   /** Call in the browser only. The head script already set the attribute. */
+  /**
+   * The device decides the first view, the visitor decides every one after.
+   *
+   * The head script has already written the attribute, resolving the device
+   * preference when nothing was stored — reading it back keeps one source for
+   * the answer instead of asking `matchMedia` a second time and risking a
+   * different one.
+   */
   function hydrate(): void {
     const stored = document.documentElement.dataset.theme
-    theme.value = stored === 'light' || stored === 'dark' ? stored : 'system'
+    theme.value = stored === 'dark' ? 'dark' : 'light'
   }
 
   return { theme, next, choose, cycle, hydrate }

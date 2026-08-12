@@ -171,8 +171,8 @@ const size = computed(() => {
  *
  * Where the days differ, the table in the sidebar is the better answer; a
  * summary would have to either simplify or list all seven. Naming the closing
- * days is safe on a page that is built once: "dienstags zu" holds every week,
- * unlike anything derived from what day it happens to be at build time.
+ * days is safe on a page that is built once — a fixed closing day holds every
+ * week, unlike anything derived from what day it happens to be at build time.
  */
 const openingSummary = computed(() => {
   const entry = garden.value
@@ -196,8 +196,22 @@ const openingSummary = computed(() => {
   return closed.length ? `${hours}, ${joinList(closed)} ist zu.` : `${hours}.`
 })
 
+/**
+ * The town this garden is in.
+ *
+ * City gardens are in München by definition of `zone`. For the three in the
+ * Umland the district field carries the town's name ahead of the separator,
+ * which is the only place it is recorded. Prose and postal address both need
+ * it, and neither may invent it: with no district there is no town either.
+ */
+const locality = computed(() => {
+  const entry = garden.value!
+
+  return entry.zone === 'city' ? 'München' : (entry.district?.split('·')[0]?.trim() ?? null)
+})
+
 /*
- * The sentences are built here rather than in the template because German
+ * The sentences below are built here rather than in the template because German
  * needs the right case and the right spacing, and a template that stitches
  * fragments together with `v-if` gets both wrong the moment the compiler drops
  * a whitespace node.
@@ -206,13 +220,16 @@ const openingSummary = computed(() => {
 /** Where it is and how big it is. */
 const placement = computed(() => {
   const entry = garden.value!
-  const zone = entry.zone === 'umland' ? 'im Umland' : 'im Münchner Stadtgebiet'
   const measure = size.value
+  const zone = entry.zone === 'umland' ? 'im Umland' : 'im Münchner Stadtgebiet'
+
+  // In the Umland the district field reads "Baierbrunn · Umland" — a list
+  // entry, not a sentence. There the town goes in and the zone follows in
+  // words; in the city the district is already a name a sentence can use.
+  const place = entry.zone === 'umland' ? locality.value : entry.district
 
   return [
-    entry.district
-      ? `${entry.name} liegt in ${entry.district} und damit ${zone}.`
-      : `${entry.name} liegt ${zone}.`,
+    place ? `${entry.name} liegt in ${place} und damit ${zone}.` : `${entry.name} liegt ${zone}.`,
     measure ? `Er zählt ${formatSeats(measure.seats)}.` : null,
     measure && measure.rank === 1
       ? `Kein anderer der ${measure.counted} erfassten Gärten ist größer.`
@@ -221,7 +238,10 @@ const placement = computed(() => {
       ? `Das ist ${measure.seats >= measure.average ? 'mehr' : 'weniger'} als der Schnitt `
         + `über alle ${measure.counted} erfassten Gärten: ${formatSeats(measure.average)}.`
       : null,
-    brewery.value ? `Ausgeschenkt wird ${brewery.value}.` : null,
+    // A colon rather than "Ausgeschenkt wird X": one of the labels is
+    // "wechselnd", which is not a brewery's name but the statement that there
+    // is no fixed one — and that has to fit in the same sentence.
+    brewery.value ? `Im Ausschank: ${brewery.value}.` : null,
   ]
     .filter((part) => part !== null)
     .join(' ')
@@ -231,16 +251,18 @@ const placement = computed(() => {
 const service = computed(() => {
   const entry = garden.value!
 
+  // `=== true` and `=== false`, not a truthiness test: `null` means the field
+  // was not verified, and "not verified" must not come out as "wird bedient".
   return [
-    entry.selfService
+    entry.selfService === true
       ? 'Es gibt einen Selbstbedienungsbereich: Krug selbst holen, Tisch selbst suchen.'
-      : 'Hier wird bedient.',
-    entry.selfService && entry.ownFoodAllowed
+      : null,
+    entry.selfService === true && entry.ownFoodAllowed
       ? 'Die eigene Brotzeit ist dort erlaubt — Getränke nicht, die kommen vom Haus.'
       : null,
     entry.selfService === false
-      ? 'Eine eigene Brotzeit ist damit nicht vorgesehen: erlaubt ist sie in München nur im '
-        + 'Selbstbedienungsbereich.'
+      ? 'Hier wird bedient. Eine eigene Brotzeit ist damit nicht vorgesehen: erlaubt ist sie in '
+        + 'München nur im Selbstbedienungsbereich.'
       : null,
     openingSummary.value,
   ]
@@ -267,18 +289,11 @@ const character = computed(() => {
 const access = computed(() => {
   const entry = garden.value!
 
-  return [
-    entry.stationWalkMin === null
-      ? 'Wie weit die nächste Haltestelle entfernt ist, ist hier nicht geprüft.'
-      : `Von der nächsten Haltestelle sind es ${entry.stationWalkMin} Minuten zu Fuß. Dieser `
-        + 'Fußweg steckt in der ÖPNV-Zeit mit drin — deshalb ist das Radl bei Gärten ohne '
-        + 'Station vor der Tür oft schneller als die Bahn.',
-    entry.zone === 'umland'
-      ? 'Der Garten liegt im Umland und damit außerhalb des Stadtgebiets.'
-      : null,
-  ]
-    .filter((part) => part !== null)
-    .join(' ')
+  return entry.stationWalkMin === null
+    ? 'Wie weit die nächste Haltestelle entfernt ist, ist hier nicht geprüft.'
+    : `Von der nächsten Haltestelle sind es ${entry.stationWalkMin} Minuten zu Fuß. Dieser `
+      + 'Fußweg steckt in der ÖPNV-Zeit mit drin — deshalb ist das Radl bei Gärten ohne '
+      + 'Station vor der Tür oft schneller als die Bahn.'
 })
 
 /* ---------- Metadata ---------- */
@@ -350,20 +365,6 @@ const amenities = computed(() => {
 })
 
 /**
- * The town for the postal address.
- *
- * City gardens are in München by definition of `zone`. For the three in the
- * Umland the district field carries the town's name ahead of the separator,
- * which is the only place it is recorded. No street and no postcode exist, so
- * nothing else about the address gets claimed.
- */
-const locality = computed(() => {
-  const entry = garden.value!
-
-  return entry.zone === 'city' ? 'München' : (entry.district?.split('·')[0]?.trim() ?? null)
-})
-
-/**
  * The beer prices as a menu. Dormant while none are surveyed — the block
  * appears with the first price the crawler brings in, and not before.
  */
@@ -411,6 +412,9 @@ useJsonLd(() => {
         description: entry.description,
         image: licensed ? absoluteUrl(entry.imageUrl!) : null,
         geo: { '@type': 'GeoCoordinates', latitude: entry.lat, longitude: entry.lon },
+        // Town and country, and not a line more: no street and no postcode are
+        // recorded, so none get claimed. The coordinates above are the precise
+        // part of "where", and those we do have.
         address: locality.value
           ? { '@type': 'PostalAddress', addressLocality: locality.value, addressCountry: 'DE' }
           : null,
@@ -507,7 +511,7 @@ useJsonLd(() => {
         -->
         <ContentSection id="einordnung" class="prose" title="Was für ein Garten das ist">
           <p>{{ placement }}</p>
-          <p>{{ service }}</p>
+          <p v-if="service">{{ service }}</p>
           <p v-if="character">{{ character }}</p>
         </ContentSection>
 

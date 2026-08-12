@@ -62,9 +62,30 @@ export function useMap(
       // by accident is a locator map they have to straighten out again.
       dragRotate: false,
       pitchWithRotate: false,
+      // MapLibre labels its controls in English. Everything a visitor reads on
+      // this site is German, and a screen reader announcing "Zoom in" in the
+      // middle of it is the one place the seam would show.
+      locale: {
+        'NavigationControl.ZoomIn': 'Hineinzoomen',
+        'NavigationControl.ZoomOut': 'Herauszoomen',
+        'AttributionControl.ToggleAttribution': 'Quellenangabe ein- oder ausblenden',
+        'Map.Title': 'Karte',
+        'ScrollZoomBlocker.CtrlMessage': 'Zum Zoomen Strg gedrückt halten',
+        'ScrollZoomBlocker.CmdMessage': 'Zum Zoomen ⌘ gedrückt halten',
+      },
     })
 
     instance.touchZoomRotate.disableRotation()
+
+    /*
+     * Zoom buttons, always.
+     *
+     * Wheel and pinch are shortcuts, not the control — a mouse without a wheel,
+     * a trackpad someone has never pinched on, and every keyboard user were
+     * locked out of the one thing a map is for. No compass: rotation is off, so
+     * a button that undoes a turn nobody can make is a button that lies.
+     */
+    instance.addControl(new maplibre.NavigationControl({ showCompass: false }), 'top-right')
 
     // Without a listener MapLibre swallows source and style failures. A map
     // that stays grey without saying why costs an hour every single time.

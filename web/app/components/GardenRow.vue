@@ -13,9 +13,9 @@ const props = defineProps<{
    * Absent while prerendering, for the same reason the leg is.
    *
    * The directory is built once and served for weeks. Before hydration the
-   * weekday is the planner's default, so "dienstags zu" in the delivered HTML
-   * is not a fact about the garden but about the day the build ran — and that
-   * is what a crawler would index. Everything that depends on the day
+   * weekday is the planner's default, so a closing-day chip in the delivered
+   * HTML would state the build day rather than anything about the garden — and
+   * that is what a crawler indexes. Everything that depends on the day
    * therefore waits for the browser, exactly as `GardenTeaser` does on the
    * landing page.
    */
@@ -39,9 +39,9 @@ const closedLabel = computed(() =>
 <template>
   <div class="g" :class="{ seenrow: visited }" :style="{ '--bc': brewery.color }">
     <div class="gtop">
-      <!-- h3 under the page's h1: the level follows the outline, not the size.
-           `.g h4,.g h3` in the stylesheet already covers both, so nothing about
-           the look changes. -->
+      <!-- h3, not h4: the level follows the page's outline, not the size on
+           screen. The row's heading is styled through `.g`, so the look does
+           not depend on which tag it is. -->
       <h3>
         <NuxtLink :to="`/biergarten/${garden.slug}`">{{ garden.name }}</NuxtLink>
         <span v-if="visited" class="seen">warst du</span>

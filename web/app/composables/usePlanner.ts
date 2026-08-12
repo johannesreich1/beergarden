@@ -1,5 +1,5 @@
-import type { Filters, Plan, PlannerOptions, PlanningMode, StartPoint } from '#core'
-import { at, sunsetMinutes } from '#core'
+import type { Filters, Garden, Mode, Plan, PlannerOptions, PlanningMode, StartPoint } from '#core'
+import { at, planFromSlugs, sunsetMinutes } from '#core'
 
 /**
  * The planner's state, shared between the planner and the directory.
@@ -28,6 +28,35 @@ export interface PlannerState {
   durations: Record<string, number>
   skipped: string[]
   lastStop: string | null
+
+  /**
+   * How the tour comes about: proposed or picked by hand.
+   *
+   * Two modes, not two pages — the tour underneath is the same object either
+   * way, and so are the controls on it. Only the way to it differs, and the
+   * suggestion list steps aside while somebody is picking for themselves.
+   */
+  planMode: 'suggest' | 'self'
+
+  /**
+   * Modes chosen by hand, per leg.
+   *
+   * Keyed by where the leg goes, so removing a stop in the middle does not
+   * hand its choice to the next one. Empty means: let the travel model decide,
+   * which is what it does for every leg nobody has touched.
+   */
+  legModes: Record<string, string>
+
+  /**
+   * Whether the time window is a limit or a note.
+   *
+   * Asked once, before the first pick, because it changes what a tap on the
+   * map means: under `fixed` a garden that would blow the window cannot be
+   * chosen at all, under `flexible` it can and the beam simply grows past the
+   * mark. Both are legitimate — an evening is planned around a last train for
+   * some people and around nothing for others.
+   */
+  timeMode: 'fixed' | 'flexible'
 
   /**
    * Whether the planner has been started once.
@@ -67,6 +96,10 @@ function initialState(): PlannerState {
     skipped: [],
     lastStop: null,
     started: false,
+    planMode: 'suggest',
+    legModes: {},
+    allControls: false,
+    timeMode: 'flexible',
   }
 }
 
@@ -216,6 +249,88 @@ export function usePlanner() {
    */
   const started = computed(() => state.value.started || state.value.plan !== null)
 
+  /**
+   * Switch between proposing and picking.
+   *
+   * A chosen tour survives the switch. The two modes are separate surfaces,
+   * but a setting that silently throws away work is a bug even when the
+   * surfaces are separate — the tour becomes what you carry on building from.
+   */
+  function setPlanMode(next: PlannerState['planMode']): void {
+    state.value.planMode = next
+    persist()
+  }
+
+  function setTimeMode(next: PlannerState['timeMode']): void {
+    state.value.timeMode = next
+    persist()
+  }
+
+  /**
+   * Rebuild the plan from a list of stops.
+   *
+   * Not patched in place: a plan carries its legs and the way home, and those
+   * change with every stop that is added or dropped. Assembling one by hand
+   * from `slugs` and `stays` alone produces an object that looks like a plan
+   * and schedules to nothing — which is exactly what it did before this.
+   */
+  function setStops(slugs: string[], gardens: Garden[]): void {
+    droppedTour.value = null
+    state.value.plan = planFromSlugs(slugs, gardens, {
+      start: state.value.startPoint,
+      mode: state.value.mode,
+      maxLegMinutes: state.value.maxLegMinutes,
+    }, state.value.durations, state.value.legModes as Record<string, Mode>)
+
+    if (!state.value.plan) {
+      state.value.durations = {}
+      state.value.skipped = []
+      state.value.lastStop = null
+    }
+    persist()
+  }
+
+  /**
+   * Choose the mode for one leg, or hand it back to the model.
+   *
+   * Tapping the mode a leg already has clears the override rather than setting
+   * it again — otherwise there is no way back to "let it decide", and the only
+   * escape would be a fourth button nobody would recognise.
+   */
+  function setLegMode(key: string, mode: string, gardens: Garden[]): void {
+    if (state.value.legModes[key] === mode) delete state.value.legModes[key]
+    else state.value.legModes[key] = mode
+
+    setStops(state.value.plan?.slugs ?? [], gardens)
+  }
+
+  const addStop = (slug: string, gardens: Garden[]) =>
+    setStops([...(state.value.plan?.slugs ?? []), slug], gardens)
+
+  const removeStop = (slug: string, gardens: Garden[]) =>
+    setStops((state.value.plan?.slugs ?? []).filter((s) => s !== slug), gardens)
+
+  /**
+   * Everything back to the beginning.
+   *
+   * Filters included, and that is the point: a filter set twenty minutes ago
+   * two columns away is exactly what makes a planner feel broken — nothing
+   * matches and nothing says why. Visits are the one thing that survives.
+   * Those are a record of where somebody has been, not a setting they made,
+   * and losing them to a button meant for a fresh start would be a small
+   * betrayal.
+   */
+  function resetAll(): void {
+    const visited = state.value.visited
+    const started = state.value.started
+    const planMode = state.value.planMode
+
+    state.value = { ...initialState(), visited, started, planMode }
+    state.value.weekday = isoWeekday(new Date())
+    droppedTour.value = null
+    persist()
+  }
+
   /** Leave the start screen. One way only — nothing there is lost by leaving. */
   function start(): void {
     state.value.started = true
@@ -227,6 +342,12 @@ export function usePlanner() {
     hydrated,
     started,
     start,
+    setPlanMode,
+    setTimeMode,
+    setLegMode,
+    resetAll,
+    addStop,
+    removeStop,
     hydrate,
     persist,
     visitedSet,

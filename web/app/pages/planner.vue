@@ -11,6 +11,7 @@ import {
   planFromRoute,
   checkPlan,
   countGardens,
+  BACK_LEG,
 } from '#core'
 
 // English file name, German URL — as with the directory.
@@ -297,9 +298,24 @@ function setMode(mode: typeof state.value.mode): void {
     change is the reason the wide view exists, and a confirm step on every
     change would take exactly that away.
   -->
+  <!--
+    Everything below waits for the browser. The planner reads localStorage and
+    recomputes on every turn of a dial, so there is nothing here a server could
+    render that the client would not immediately replace. What the server does
+    render is the document around it — head, navigation, foot — which is why a
+    shared link now shows a title instead of the bare URL.
+
+    Not indented a level further, like the columns below: the wrapper says when
+    this renders, not where it sits.
+  -->
+  <ClientOnly>
   <section
     class="stage"
-    :class="{ setup: !started, 'three-column': started && !!schedule }"
+    :class="{
+      setup: !started,
+      'self-mode': started && state.planMode === 'self',
+      'three-column': started && !!schedule && state.planMode !== 'self',
+    }"
   >
     <div class="controls">
     <div class="panel">
@@ -351,7 +367,7 @@ function setMode(mode: typeof state.value.mode): void {
         <button class="step" @click="shiftStart(15)">+</button>
       </div>
 
-      <div style="margin-top: 15px">
+      <div v-if="state.allControls" style="margin-top: 15px">
         <div class="sub"><span class="eyebrow">Wochentag</span></div>
         <div class="grid">
           <button
@@ -377,7 +393,7 @@ function setMode(mode: typeof state.value.mode): void {
         </div>
       </div>
 
-      <div style="margin-top: 15px">
+      <div v-if="state.allControls" style="margin-top: 15px">
         <div class="sub"><span class="eyebrow">Stationen</span></div>
         <div class="grid">
           <button
@@ -390,7 +406,7 @@ function setMode(mode: typeof state.value.mode): void {
         </div>
       </div>
 
-      <div style="margin-top: 15px">
+      <div v-if="state.allControls" style="margin-top: 15px">
         <div class="sub"><span class="eyebrow">Unterwegs</span></div>
         <div class="grid">
           <button
@@ -404,7 +420,7 @@ function setMode(mode: typeof state.value.mode): void {
       </div>
 
       <div style="margin-top: 16px">
-        <div class="sub">
+        <div v-if="state.allControls" class="sub">
           <span class="eyebrow">{{ legLabel }}</span>
           <span class="v">{{ state.maxLegMinutes }} min</span>
         </div>
@@ -419,7 +435,26 @@ function setMode(mode: typeof state.value.mode): void {
       </div>
     </div>
 
-    <FilterControls :gardens="gardens" />
+    <!--
+      Three questions carry the tour; the rest are refinements. The switch sits
+      with the controls it opens, not in the head — a control and its effect
+      belong within one glance of each other.
+    -->
+    <button
+      class="alle-regler"
+      type="button"
+      :aria-pressed="state.allControls"
+      @click="state.allControls = !state.allControls; planner.persist()"
+    >
+      <span class="gleis"><i /></span>
+      <span>Alle Regler</span>
+    </button>
+
+    <FilterControls v-if="state.allControls" :gardens="gardens" />
+
+    <button class="btn warn zuruecksetzen" @click="planner.resetAll()">
+      Alles zurücksetzen
+    </button>
 
     <div v-if="!started" class="setup-go">
       <button class="btn on big" @click="planner.start">
@@ -433,6 +468,50 @@ function setMode(mode: typeof state.value.mode): void {
     </div>
 
     <div v-if="started" class="results">
+    <!--
+      Two ways to a tour, one tour. The switch stands above the column it
+      changes, not in the settings — it decides what you are looking at, and a
+      control that changes the view belongs to the view.
+    -->
+    <div class="modes" role="group" aria-label="Wie die Tour entsteht">
+      <button
+        :aria-pressed="state.planMode === 'suggest'"
+        @click="planner.setPlanMode('suggest')"
+      >Vorschlagen lassen</button>
+      <button
+        :aria-pressed="state.planMode === 'self'"
+        @click="planner.setPlanMode('self')"
+      >Selbst planen</button>
+    </div>
+
+    <template v-if="state.planMode === 'self'">
+      <RouteBuilder
+        :gardens="gardens"
+        :options="options"
+        :chosen="state.plan?.slugs ?? []"
+        :legs="state.plan?.legs"
+        :stays="state.durations"
+        :time-mode="state.timeMode"
+        @add="(slug) => planner.addStop(slug, gardens)"
+        @remove="(slug) => planner.removeStop(slug, gardens)"
+      />
+
+      <!-- One line, not a block: it is a setting, and it only changes what a
+           tap on the map is allowed to do. -->
+      <p class="timemode">
+        {{ formatDuration(state.budgetMinutes) }} Zeit —
+        <button
+          :aria-pressed="state.timeMode === 'fixed'"
+          @click="planner.setTimeMode('fixed')"
+        >fest</button>
+        <button
+          :aria-pressed="state.timeMode === 'flexible'"
+          @click="planner.setTimeMode('flexible')"
+        >flexibel</button>
+      </p>
+    </template>
+
+    <template v-else>
     <!--
       The cap counts what stands under it: how many suggestions there are. It
       sits directly before the word "Vorschläge", so that is how it reads — and
@@ -496,17 +575,33 @@ function setMode(mode: typeof state.value.mode): void {
       </div>
     </div>
 
+    </template>
     </div>
 
     <div v-if="started && schedule" id="tour" class="tour-column">
       <div class="section-title"><h2>Deine Tour</h2><div class="rule" /></div>
+
+      <!-- Only while picking by hand. With a proposed tour the generator has
+           already fitted it into the window; here the evening grows under your
+           thumb, and the beam is what shows how much of it is left. -->
+      <TimeBeam
+        v-if="state.planMode === 'self'"
+        :schedule="schedule"
+        :start-minutes="state.startMinutes"
+        :budget-minutes="state.budgetMinutes"
+        :sunset-minutes="sunset"
+        :time-mode="state.timeMode"
+      />
 
       <LightRail
         :arrivals="schedule.rows.map((row) => row.arrive)"
         :sunset="sunset"
       />
 
+      <!-- Not in self mode: the route is already drawn on the map you picked it
+           on, and two maps of one evening never quite agree with each other. -->
       <TourMap
+        v-if="state.planMode !== 'self'"
         :start="state.startPoint"
         :planned="plannedGardens"
         :rows="schedule.rows"
@@ -536,6 +631,8 @@ function setMode(mode: typeof state.value.mode): void {
                 :selected="rowFor(garden.slug)!.legMode"
                 :mode="state.mode"
                 :max-leg-minutes="state.maxLegMinutes"
+                :choosable="state.planMode === 'self'"
+                @choose="(m) => planner.setLegMode(garden.slug, m, gardens)"
               />
             </div>
           </div>
@@ -545,6 +642,8 @@ function setMode(mode: typeof state.value.mode): void {
             :row="rowFor(garden.slug)"
             :weekday="state.weekday"
             :visited="visitedSet.has(garden.slug)"
+            :removable="state.planMode === 'self'"
+            @remove="planner.removeStop(garden.slug, gardens)"
             @skip="toggleSkip(garden.slug)"
             @seen="planner.toggleVisited(garden.slug)"
             @finish="state.lastStop = garden.slug; planner.persist()"
@@ -565,6 +664,8 @@ function setMode(mode: typeof state.value.mode): void {
               :selected="schedule.back.mode"
               :mode="state.mode"
               :max-leg-minutes="state.maxLegMinutes"
+              :choosable="state.planMode === 'self'"
+              @choose="(m) => planner.setLegMode(BACK_LEG, m, gardens)"
             />
           </div>
         </div>
@@ -599,4 +700,5 @@ function setMode(mode: typeof state.value.mode): void {
       </div>
     </div>
   </section>
+  </ClientOnly>
 </template>

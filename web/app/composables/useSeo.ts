@@ -53,7 +53,7 @@ function useCanonical() {
   })
 }
 
-/** Sets title, description, canonical and Open Graph for one page. */
+/** Sets title, description, canonical, robots and Open Graph for one page. */
 export function usePageSeo(input: PageSeo | (() => PageSeo)): void {
   const seo = computed(() => (typeof input === 'function' ? input() : input))
   const canonical = useCanonical()

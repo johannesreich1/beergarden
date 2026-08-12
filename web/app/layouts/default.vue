@@ -23,15 +23,18 @@ const { theme, next, cycle, hydrate } = useTheme()
 useHead({
   script: [{
     innerHTML:
+      // Runs before the first paint. It also resolves the device preference when
+      // nothing is stored, so the attribute is always set — with only two states
+      // left, an absent attribute would be a third one in disguise.
       "try{var t=localStorage.getItem('bg-theme');"
-      + "if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}",
+      + "if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';"
+      + "document.documentElement.dataset.theme=t}catch(e){}",
     tagPosition: 'head',
   }],
 })
 
 /** What each setting is called, in one place — title, label and nothing else. */
 const THEME_LABELS: Record<ThemeChoice, string> = {
-  system: 'System',
   light: 'Hell',
   dark: 'Dunkel',
 }
@@ -81,13 +84,8 @@ const eyebrow = computed(() => {
           @click="cycle"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <!-- system: half sun, half moon — it follows the device -->
-            <template v-if="theme === 'system'">
-              <circle cx="12" cy="12" r="7" />
-              <path class="fill" d="M12 5a7 7 0 0 1 0 14z" />
-            </template>
             <!-- light: the sun, rays as short strokes -->
-            <template v-else-if="theme === 'light'">
+            <template v-if="theme === 'light'">
               <circle class="fill" cx="12" cy="12" r="4.6" />
               <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M19.4 4.6l-2.1 2.1M6.7 17.3l-2.1 2.1" />
             </template>

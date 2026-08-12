@@ -984,3 +984,229 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   .entity-main > .gmeta{margin-top:0}
   .entity-side > .section-title:first-child{margin-top:0}
 }
+
+/* ==========================================================================
+   PICKING A TOUR ON THE MAP
+
+   The beam and the sheet. Both exist because a hand-picked tour raises two
+   questions a list cannot answer: how much of the evening is gone, and what is
+   still within reach from where I am now.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- The beam */
+/*
+ * The evening as one bar: travel and stay alternating, the sun as a fact, the
+ * time window as a decision. Those two are drawn differently on purpose — a
+ * shared line would suggest they are the same kind of thing.
+ */
+.beam{margin:16px 0 0}
+.beam-bar{position:relative;display:flex;height:38px;background:var(--surface);
+  box-shadow:inset 0 0 0 2px var(--edge)}
+.beam-piece{display:block;height:100%;position:relative;min-width:2px}
+.beam-piece.stay{background:color-mix(in srgb, var(--gold) 26%, var(--surface));
+  box-shadow:inset 1px 0 0 var(--edge),inset -1px 0 0 var(--edge);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.beam-piece.stay b{font-family:var(--display);font-size:14px;font-weight:900;
+  white-space:nowrap;padding:0 6px;color:var(--text)}
+/* Travel keeps the colours the legend already teaches: gold on foot, blue by
+   bike, amber for the tram. One vocabulary, not two. */
+.beam-piece.leg{background:repeating-linear-gradient(115deg,
+  var(--leg-walk) 0 3px, transparent 3px 7px)}
+.beam-piece.leg.bike{background:repeating-linear-gradient(115deg,
+  var(--leg-bike) 0 5px, transparent 5px 9px)}
+.beam-piece.leg.transit{background:repeating-linear-gradient(115deg,
+  var(--leg-transit) 0 8px, transparent 8px 12px)}
+
+.beam-sun{position:absolute;top:0;bottom:0;transform:translateX(-50%);pointer-events:none}
+.beam-sun i{position:absolute;top:-4px;bottom:-4px;left:50%;width:3px;
+  background:var(--amber);transform:translateX(-50%)}
+.beam-sun em{position:absolute;top:-21px;left:50%;transform:translateX(-50%);
+  font-style:normal;font-size:14px;color:var(--amber);white-space:nowrap}
+.beam-budget{position:absolute;top:0;bottom:0;transform:translateX(-50%);pointer-events:none}
+.beam-budget i{position:absolute;top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);
+  background:repeating-linear-gradient(var(--text-soft) 0 4px, transparent 4px 8px)}
+
+.beam-scale{position:relative;height:22px;margin-top:5px}
+.beam-scale span{position:absolute;transform:translateX(-50%);font-size:14px;color:var(--text-soft)}
+.beam-note{margin:22px 0 0;font-size:15.5px;color:var(--amber)}
+.beam-note b{color:var(--text);font-weight:400}
+
+/* The map is the whole surface now — the sheet beside it listed the same
+   gardens a second time, with a column of reasons for places nobody had asked
+   about. What a marker needs to say fits on the marker. */
+.builder-map{margin-top:14px}
+.builder-map .map-canvas{aspect-ratio:1/.62}
+@media(max-width:899px){.builder-map .map-canvas{aspect-ratio:1/1.15}}
+.builder-hint{position:absolute;left:14px;right:14px;bottom:14px;margin:0;
+  background:var(--surface);box-shadow:inset 0 0 0 2px var(--edge);padding:12px 14px;
+  font-size:15.5px;color:var(--text-soft)}
+.builder-hint b{color:var(--text);font-weight:400}
+
+/* ------------------------------------------------------- Markers on the map */
+/* Reachable stands in ink, out of reach fades — the strength IS the statement,
+   so nothing else about the marker changes and the eye reads one thing. */
+/* The second line — minutes on a candidate, the stop number on a pick. Block,
+   not inline: beside the name it pushes the label off the edge of the map. */
+.pin b em{display:block;font-family:var(--body);font-style:normal;font-weight:400;
+  font-size:14px;color:var(--gold);letter-spacing:0;text-transform:none}
+.pin b{max-width:19ch}
+.pin.cand{cursor:pointer}
+.pin.cand.faded{opacity:.42;cursor:default}
+.pin.pick{cursor:pointer}
+.pin.pick b em{color:var(--text-soft)}
+
+/*
+ * On a phone the map fills the screen and the sheet sits on the bottom edge,
+ * where the thumb already is. It is the same markup — a second list for the
+ * second layout would be a second thing to keep right.
+ */
+@media(max-width:899px){
+  .builder{position:relative;gap:0}
+  .builder-map .map-canvas{aspect-ratio:auto;height:min(62vh,520px)}
+  .sheet{max-height:38vh;overflow-y:auto;
+    padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+}
+
+/* The two ways to a tour. A segmented pair, not a checkbox: neither is the
+   default state of the other, and both are always one press away. */
+.modes{display:flex;gap:9px;margin:0 0 14px}
+.modes button{flex:1;font-family:var(--display);font-size:14.5px;font-weight:900;
+  letter-spacing:.04em;text-transform:uppercase;padding:12px 10px;border:0;cursor:pointer;
+  background:transparent;color:var(--blue);--tilt:-.8deg;transform:rotate(var(--tilt));
+  position:relative;isolation:isolate}
+.modes button:nth-child(2){--tilt:.7deg}
+.modes button::before{content:'';position:absolute;inset:0;z-index:-1;
+  box-shadow:inset 0 0 0 2.5px var(--blue);
+  -webkit-mask-image:var(--ink-break);-webkit-mask-composite:source-in;
+  mask-image:var(--ink-break);mask-composite:intersect}
+.modes button[aria-pressed="true"]{color:var(--on-accent);
+  background:color-mix(in srgb, var(--blue) 62%, var(--surface))}
+.modes button[aria-pressed="true"]::before{background:var(--blue);box-shadow:none}
+
+.timemode{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 0;
+  font-size:15.5px;color:var(--text-soft)}
+.timemode button{font-family:var(--display);font-size:14px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border:0;cursor:pointer;
+  background:transparent;color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
+.timemode button[aria-pressed="true"]{background:var(--gold);color:var(--on-accent)}
+
+/*
+ * Picking on the map takes the width the suggestions gave up.
+ *
+ * The builder used to sit inside the narrow suggestion column, where its own
+ * two-column split fired on viewport width while the container was 430px —
+ * the sheet then landed on top of the map. A map you pick from has to be the
+ * biggest thing on the page; that is the whole point of the mode.
+ */
+@media(min-width:1000px){
+  .stage.self-mode{grid-template-columns:minmax(290px,320px) minmax(0,1fr)}
+  /* The tour goes under the map, in the map's column — the stops you picked
+     belong beneath the thing you picked them on, not in a third column that
+     would take the width away from the map again.
+
+     The controls span both rows, otherwise the first row is as tall as that
+     long filter column and the tour lands a screen and a half below the map
+     it belongs to. */
+  .stage.self-mode .controls{grid-row:1 / span 2}
+  .stage.self-mode .results{grid-column:2;grid-row:1}
+  .stage.self-mode .tour-column{grid-column:2;grid-row:2}
+}
+
+/* The far ones carry minutes only — short enough that the frame never cuts a
+   name in half, and quiet enough that the near ones stand out. */
+.pin.cand.bare b{font-family:var(--body);font-weight:400;font-size:14px;
+  letter-spacing:0;text-transform:none;color:var(--text-soft);max-width:none}
+
+/* ------------------------------------------------------- Map: zoom buttons */
+/*
+ * MapLibre's own chrome, brought into the palette.
+ *
+ * Selectors are prefixed with `.map-shell` on purpose: MapLibre's stylesheet is
+ * imported at runtime, so it lands after this file and wins on equal
+ * specificity — the first attempt set 40px and got MapLibre's 29px.
+ *
+ * 40px because a control that only the wheel can reach is not a control, and
+ * one too small to hit is the same thing with extra steps.
+ */
+.map-shell .maplibregl-ctrl-group{background:var(--surface);border-radius:0;
+  box-shadow:inset 0 0 0 2px var(--edge)}
+.map-shell .maplibregl-ctrl-group button{width:40px;height:40px;background:transparent}
+.map-shell .maplibregl-ctrl-group button + button{border-top:2px solid var(--edge)}
+.map-shell .maplibregl-ctrl-group button:hover{background:color-mix(in srgb,var(--gold) 18%,transparent)}
+.map-shell .maplibregl-ctrl-group button:focus-visible{outline:3px solid var(--blue);outline-offset:-3px}
+.map-shell .maplibregl-ctrl-icon{background-size:22px 22px}
+/* The icons ship as black SVGs; on dark board they would vanish into it. */
+[data-theme="dark"] .map-shell .maplibregl-ctrl-icon,
+:root:not([data-theme="light"]) .map-shell .maplibregl-ctrl-icon{
+  filter:invert(1) brightness(1.6)}
+
+/* ---------------------------------------------- Map markers: name and reach */
+/*
+ * The name is always in the document; whether it shows is a question about the
+ * device, not about the data.
+ *
+ * With a pointer the map stays quiet and a name appears where the cursor is —
+ * thirty-five names at once is a word list, not a map. Without a pointer there
+ * is no hover, so the nearest few carry theirs outright.
+ */
+.pin.cand b .name{display:block}
+.pin.cand b em{display:block}
+@media (hover:hover){
+  .pin.cand b .name{display:none}
+  .pin.cand:hover{z-index:5}
+  .pin.cand:hover b .name{display:block}
+}
+@media (hover:none){
+  .pin.cand:not(.nah) b .name{display:none}
+}
+
+/*
+ * Out of reach has to stay readable.
+ *
+ * These used to be `--edge` at 42% — a colour meant for hairlines, at less than
+ * half strength, on a dark map. "Not now" is a state, not an absence: it still
+ * has to be found, because tomorrow or with a longer window it is exactly what
+ * somebody is looking for.
+ */
+.pin.cand.reachable i{background:var(--gold)}
+.pin.cand.faded{opacity:.72}
+.pin.cand.faded i{background:var(--text-soft)}
+.pin.cand.faded b{color:var(--text-soft)}
+.pin.cand.faded b em{color:var(--text-soft)}
+
+/* ------------------------------------------------ Leg: choosing the mode */
+/* The three times are buttons while picking by hand, links otherwise — same
+   look either way, because they carry the same numbers and the difference is
+   what a tap does, not what it says. */
+.legmodes button.lm{border:0;cursor:pointer;font:inherit}
+.lm[aria-pressed="true"]{background:var(--gold);color:var(--on-accent);
+  box-shadow:inset 0 0 0 2px var(--gold)}
+.lm[aria-pressed="true"] b{color:inherit}
+
+/* Leaving the page gets its own small control instead of hiding inside the
+   numbers. Which mode it opens follows the leg, so it cannot contradict it. */
+.lm-maps{display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;flex:none;color:var(--blue);
+  box-shadow:inset 0 0 0 2px var(--edge);text-decoration:none}
+.lm-maps svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
+.lm-maps:hover{color:var(--amber);box-shadow:inset 0 0 0 2px var(--amber)}
+.lm-maps:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ----------------------------------------------- Controls: simple or all */
+/* The switch stands with the dials it opens. Same shape as the mode switch
+   above it, because it does the same kind of thing: it changes what you see,
+   not what the tour is. */
+.alle-regler{display:flex;align-items:center;gap:10px;margin:16px 0 0;width:100%;
+  background:transparent;border:0;cursor:pointer;color:var(--text-soft);font:inherit;
+  font-size:15.5px;padding:4px 0}
+.alle-regler .gleis{width:46px;height:24px;background:var(--edge);position:relative;flex:none}
+.alle-regler .gleis i{position:absolute;top:3px;left:3px;width:18px;height:18px;
+  background:var(--surface);transition:left .16s}
+.alle-regler[aria-pressed="true"] .gleis{background:var(--gold)}
+.alle-regler[aria-pressed="true"] .gleis i{left:25px}
+.alle-regler:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+/* Last in the column, after everything it undoes. */
+.zuruecksetzen{display:block;width:100%;margin-top:18px;text-align:center}

@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import type { Schedule } from '#core'
+import { formatClock } from '#core'
+
+/**
+ * The evening as one bar.
+ *
+ * Every stop adds two pieces to it: the way there and the time spent. Reading
+ * that as a bar rather than as a list answers the question a list cannot —
+ * how much of the evening is left, and whether the last stop still lands
+ * before the sun goes.
+ *
+ * Widths are shares of the whole, not minutes, so the bar always fills its
+ * column. The scale underneath carries the actual clock, because a bar without
+ * numbers invites people to measure it with their eyes.
+ */
+const props = defineProps<{
+  schedule: Schedule
+  startMinutes: number
+  budgetMinutes: number
+  sunsetMinutes: number
+  /** Under `fixed` the budget is a wall; under `flexible` it is a mark. */
+  timeMode: 'fixed' | 'flexible'
+}>()
+
+/** Everything the bar has to hold, including the part that runs over. */
+const span = computed(() => {
+  const budgetEnd = props.startMinutes + props.budgetMinutes
+  const end = Math.max(props.schedule.end, budgetEnd, props.sunsetMinutes)
+
+  return { from: props.startMinutes, to: end, length: Math.max(1, end - props.startMinutes) }
+})
+
+const share = (minutes: number) => `${(minutes / span.value.length) * 100}%`
+const at = (minute: number) => `${((minute - span.value.from) / span.value.length) * 100}%`
+
+/** Travel and stay, in the order they happen. */
+const pieces = computed(() => {
+  const raus: Array<{ kind: 'leg' | 'stay', mode?: string, minutes: number, label: string }> = []
+
+  for (const row of props.schedule.rows) {
+    raus.push({ kind: 'leg', mode: row.legMode, minutes: row.legMinutes, label: `${row.legMinutes} min` })
+    raus.push({ kind: 'stay', minutes: row.depart - row.arrive, label: shortName(row.garden.name) })
+  }
+
+  return raus
+})
+
+const overBudget = computed(() => props.schedule.end - props.startMinutes - props.budgetMinutes)
+
+/** Whole hours inside the span — enough to read by, not so many they collide. */
+const ticks = computed(() => {
+  const raus: number[] = []
+  for (let m = Math.ceil(span.value.from / 60) * 60; m <= span.value.to; m += 60) raus.push(m)
+
+  return raus.length > 8 ? raus.filter((_, i) => i % 2 === 0) : raus
+})
+</script>
+
+<template>
+  <div class="beam">
+    <div class="beam-bar">
+      <span
+        v-for="(piece, index) in pieces"
+        :key="index"
+        class="beam-piece"
+        :class="[piece.kind, piece.mode]"
+        :style="{ width: share(piece.minutes) }"
+        :title="piece.label"
+      ><b v-if="piece.kind === 'stay'">{{ piece.label }}</b></span>
+
+      <!-- The sun is a fact about the day, the budget a decision by the user —
+           so they look different and never merge into one line. -->
+      <span class="beam-sun" :style="{ left: at(sunsetMinutes) }">
+        <i /><em>{{ formatClock(sunsetMinutes) }}</em>
+      </span>
+      <span
+        v-if="timeMode === 'flexible' || overBudget > 0"
+        class="beam-budget"
+        :style="{ left: at(startMinutes + budgetMinutes) }"
+      ><i /></span>
+    </div>
+
+    <div class="beam-scale">
+      <span v-for="tick in ticks" :key="tick" :style="{ left: at(tick) }">{{ formatClock(tick) }}</span>
+    </div>
+
+    <p v-if="overBudget > 0" class="beam-note">
+      {{ formatDuration(overBudget) }} über deinem Zeitfenster — zurück um
+      <b>{{ formatClock(schedule.end) }}</b>.
+    </p>
+  </div>
+</template>

@@ -1,5 +1,7 @@
-import { planLeg } from './travel'
-import type { Garden, Leg, Mode, PlanningMode, Route, StartPoint } from './types'
+import { distanceKm } from './geo'
+import { planLeg, travelTimes } from './travel'
+import { stayAt } from './stay'
+import type { Garden, Leg, Mode, Plan, PlannerOptions, PlanningMode, Route, StartPoint, Waypoint } from './types'
 
 /**
  * The schedule of a chosen tour, after the user has adjusted it.
@@ -57,6 +59,76 @@ export function planFromRoute(route: Route): Plan {
     stays: [...route.stays],
   }
 }
+
+/**
+ * A plan from a hand-picked list of stops.
+ *
+ * The counterpart to `planFromRoute`: the generator already knows the legs it
+ * chose, a person picking on a map does not. Everything else about the plan is
+ * identical, and it has to be — a hand-picked tour runs through the same
+ * schedule, the same validation and the same controls as a proposed one. Two
+ * shapes of plan would mean two of each.
+ */
+/**
+ * A mode chosen by hand for a single leg.
+ *
+ * Keyed by where the leg goes — the destination's slug, or `back` for the way
+ * home. Not by index: a stop removed in the middle would silently hand its
+ * choice to whoever took its place.
+ */
+export const BACK_LEG = 'back'
+
+export function planFromSlugs(
+  slugs: string[],
+  gardens: Garden[],
+  options: Pick<PlannerOptions, 'start' | 'mode' | 'maxLegMinutes'>,
+  stays: Record<string, number>,
+  legModes: Record<string, Mode> = {},
+): Plan | null {
+  const stops = slugs
+    .map((slug) => gardens.find((garden) => garden.slug === slug))
+    .filter((garden) => garden !== undefined)
+
+  if (!stops.length) return null
+
+  /**
+   * A hand-picked mode wins over the model's choice.
+   *
+   * The times come from the same table either way — overriding only decides
+   * which of the three counts. That keeps one source for the numbers: nothing
+   * here computes a duration of its own.
+   */
+  const legFor = (a: Waypoint, b: Waypoint, key: string): Leg => {
+    const chosen = legModes[key]
+    if (!chosen) return planLeg(a, b, options.mode, options.maxLegMinutes)
+
+    return { min: travelTimes(a, b)[chosen], mode: chosen, km: distanceKm(a, b) }
+  }
+
+  let previous: Waypoint = options.start
+  const legs = stops.map((garden) => {
+    const leg = legFor(previous, garden, garden.slug)
+    previous = garden
+
+    return { min: leg.min, mode: leg.mode, km: leg.km }
+  })
+
+  const back = legFor(previous, options.start, BACK_LEG)
+
+  return {
+    slugs: stops.map((garden) => garden.slug),
+    legs,
+    back: { min: back.min, mode: back.mode, km: back.km },
+    stays: stops.map((garden) => stayAt(garden, stays[garden.slug] ?? DEFAULT_MANUAL_STAY)),
+  }
+}
+
+/**
+ * What a hand-picked stop starts with. Ninety minutes is a Maß and a Brotzeit
+ * without hurrying; the generator divides a budget, picking by hand has none to
+ * divide. `stayAt` still clamps it to the garden's own bounds.
+ */
+const DEFAULT_MANUAL_STAY = 90
 
 export function buildSchedule(
   plan: Plan,

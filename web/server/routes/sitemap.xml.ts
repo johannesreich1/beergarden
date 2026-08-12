@@ -19,9 +19,10 @@ const STATIC_PATHS = [
 ]
 
 /*
- * The planner is deliberately absent: it renders nothing without JavaScript,
- * so listing it would ask a crawler to index an empty page. It stays reachable
- * through the navigation for people.
+ * The planner is deliberately absent. Its head is prerendered so a shared link
+ * unfurls, but its body renders nothing without JavaScript — listing it would
+ * ask a crawler to index an empty page, which is also why the page itself sends
+ * `noindex`. It stays reachable through the navigation for people.
  */
 
 const xmlEscape = (value: string): string =>

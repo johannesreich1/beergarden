@@ -8,9 +8,18 @@ const props = defineProps<{
   row: ScheduleRow | null
   weekday: number
   visited: boolean
+  /**
+   * Hand-picked tours are removed from, proposed ones are skipped.
+   *
+   * Skipping keeps a stop in the plan and steps over it — that is what you want
+   * when a generator put it there and you are trying its variations. A stop you
+   * chose yourself has no such story: taking it out means taking it out.
+   */
+  removable?: boolean
 }>()
 
 const emit = defineEmits<{
+  remove: []
   skip: []
   seen: []
   finish: []
@@ -59,7 +68,10 @@ const brewery = computed(() => breweryName(brewerySlug(props.garden)))
 
       <div class="actions">
         <NuxtLink class="btn" :to="`/biergarten/${garden.slug}`">Details</NuxtLink>
-        <button class="btn" :class="{ warn: !row }" @click="emit('skip')">
+        <button v-if="removable" class="btn warn" @click="emit('remove')">
+          Aus der Tour
+        </button>
+        <button v-else class="btn" :class="{ warn: !row }" @click="emit('skip')">
           {{ row ? 'Auslassen' : 'Wieder rein' }}
         </button>
         <button class="btn" :class="{ on: visited }" @click="emit('seen')">War ich schon</button>

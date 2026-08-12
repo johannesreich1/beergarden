@@ -154,12 +154,12 @@ const FRAGEN: FaqItem[] = [
         The weekday waits for the browser, like the start point does.
 
         This page is prerendered, so `state.weekday` is the planner's default
-        until `hydrate()` runs — and "dienstags zu" in the delivered HTML would
-        be a statement about the build day that a crawler reads as a statement
-        about the garden. The landing page solved the same problem by giving
-        `GardenTeaser` no day-dependent fields at all. Here the row keeps them,
-        because in the browser they are what the list is read for; it only
-        holds them back until it knows what day it is.
+        until `hydrate()` runs. A closing-day chip in the delivered HTML would
+        therefore name the day the build ran, and a crawler reads that as a
+        fact about the garden. The landing page solved the same problem by
+        giving `GardenTeaser` no day-dependent fields at all. Here the row
+        keeps them, because in the browser they are what the list is read for —
+        it only holds them back until it knows what day it is.
       -->
       <GardenRow
         v-for="entry in list"

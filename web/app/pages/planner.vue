@@ -198,79 +198,8 @@ function toggleSkip(slug: string): void {
   planner.persist()
 }
 
-function shiftStart(delta: number): void {
-  state.value.startMinutes = Math.max(at(11), Math.min(at(20), state.value.startMinutes + delta))
-  planner.persist()
-}
+const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
 
-const startQuery = ref('')
-const startNote = ref('')
-
-watch(
-  () => state.value.startPoint.name,
-  (name) => {
-    startQuery.value = name
-    startNote.value = ''
-  },
-  { immediate: true },
-)
-
-function applyStartQuery(): void {
-  const query = startQuery.value.trim().toLowerCase()
-
-  const hit =
-    startPoints.value.find((point) => point.name.toLowerCase() === query) ??
-    startPoints.value.find((point) => point.name.toLowerCase().includes(query))
-
-  if (!hit) {
-    startNote.value = 'kenne-ich-nicht'
-    return
-  }
-
-  state.value.startPoint = hit
-  planner.persist()
-}
-
-function useGeolocation(): void {
-  if (!navigator.geolocation) {
-    startNote.value = 'kein-standort'
-    return
-  }
-
-  startNote.value = 'suche'
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const here = { lat: position.coords.latitude, lon: position.coords.longitude }
-
-      const nearest = [...startPoints.value]
-        .map((point) => ({ point, distance: distanceKm(here, point) }))
-        .sort((a, b) => a.distance - b.distance)[0]
-
-      // Under 1.2 km, adopt the stop's name — it says more than "my location"
-      // and is recognisable on the timeline.
-      const near = nearest && nearest.distance < 1.2
-
-      state.value.startPoint = near
-        ? nearest.point
-        : { name: 'Mein Standort', lat: here.lat, lon: here.lon }
-
-      startNote.value = 'standort'
-      planner.persist()
-    },
-    () => {
-      startNote.value = 'abgelehnt'
-    },
-    { timeout: 8000 },
-  )
-}
-
-const BUDGETS = [
-  { value: 240, label: '4 h' },
-  { value: 300, label: '5 h' },
-  { value: 360, label: '6 h' },
-  { value: 420, label: '7 h' },
-]
 
 const legLabel = computed(() =>
   state.value.mode === 'bike'
@@ -309,15 +238,18 @@ function setMode(mode: typeof state.value.mode): void {
     this renders, not where it sits.
   -->
   <ClientOnly>
+  <FilterRail v-if="started" :gardens="gardens" />
+
   <section
     class="stage"
     :class="{
       setup: !started,
+      'rail-only': started && !state.allControls,
       'self-mode': started && state.planMode === 'self',
-      'three-column': started && !!schedule && state.planMode !== 'self',
+      'three-column': started && state.allControls && !!schedule && state.planMode !== 'self',
     }"
   >
-    <div class="controls">
+    <div v-if="!started || state.allControls" class="controls">
     <div class="panel">
       <span class="eyebrow">Start und Ziel</span>
       <div class="startrow">
@@ -359,12 +291,12 @@ function setMode(mode: typeof state.value.mode): void {
       <span class="eyebrow">Rahmen</span>
 
       <div class="stepper">
-        <button class="step" @click="shiftStart(-15)">–</button>
+        <button class="step" @click="planner.shiftStart(-15)">–</button>
         <div class="lbl">
           <small>Losgehen</small>
           <strong>{{ formatClock(state.startMinutes) }}</strong>
         </div>
-        <button class="step" @click="shiftStart(15)">+</button>
+        <button class="step" @click="planner.shiftStart(15)">+</button>
       </div>
 
       <div v-if="state.allControls" style="margin-top: 15px">
@@ -434,21 +366,6 @@ function setMode(mode: typeof state.value.mode): void {
         >
       </div>
     </div>
-
-    <!--
-      Three questions carry the tour; the rest are refinements. The switch sits
-      with the controls it opens, not in the head — a control and its effect
-      belong within one glance of each other.
-    -->
-    <button
-      class="alle-regler"
-      type="button"
-      :aria-pressed="state.allControls"
-      @click="state.allControls = !state.allControls; planner.persist()"
-    >
-      <span class="gleis"><i /></span>
-      <span>Alle Regler</span>
-    </button>
 
     <FilterControls v-if="state.allControls" :gardens="gardens" />
 
@@ -558,6 +475,7 @@ function setMode(mode: typeof state.value.mode): void {
         :mode="state.mode"
         :visited="visitedSet"
         :active="routeId(route) === planId"
+        :sunset-minutes="sunset"
         @take="takeRoute(route)"
       />
 

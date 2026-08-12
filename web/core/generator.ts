@@ -1,6 +1,6 @@
 import { candidates, countGardens, isOnWater } from './garden'
 import { openingWindow } from './hours'
-import { planLeg } from './travel'
+import { LEG_UNCAPPED, planLeg } from './travel'
 import { scoreRoute } from './scoring'
 import { MIN_STAY_MINUTES, stayAt, suggestStay } from './stay'
 import { formatDuration } from './time'
@@ -185,6 +185,10 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     routes,
     reason: routes.length
       ? ''
-      : `Mit ${formatDuration(budgetMinutes)}, ${MODE_LABELS[mode]} und maximal ${maxLegMinutes} Minuten pro Etappe geht sich das nicht aus. Mehr Zeit, weniger Stationen, längere Etappen — oder auf Rad umstellen.`,
+      // The reason may only cite dials that are actually set: a message about a
+      // 25-minute cap nobody has seen reads as a bug, not as an explanation.
+      : maxLegMinutes >= LEG_UNCAPPED
+        ? `Mit ${formatDuration(budgetMinutes)} und ${MODE_LABELS[mode]} geht sich das nicht aus. Mehr Zeit — oder auf Rad oder Gemischt umstellen.`
+        : `Mit ${formatDuration(budgetMinutes)}, ${MODE_LABELS[mode]} und maximal ${maxLegMinutes} Minuten pro Etappe geht sich das nicht aus. Mehr Zeit, längere Etappen — oder auf Rad umstellen.`,
   }
 }

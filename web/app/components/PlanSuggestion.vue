@@ -11,6 +11,7 @@ const props = defineProps<{
   mode: PlanningMode
   visited: ReadonlySet<string>
   active: boolean
+  sunsetMinutes: number
 }>()
 
 defineEmits<{ take: [] }>()
@@ -70,35 +71,39 @@ const breweries = computed(() =>
 
 <template>
   <!--
-    The whole card takes the tour — it was the only thing on it worth clicking,
-    so a button underneath just asked twice. `role`/`tabindex`/`keydown` are
-    what a div owes anyone who does not use a mouse; `aria-pressed` says which
-    of the suggestions is the current one.
+    Opened by a click, taken by a button.
+
+    The whole card used to take the tour on any click — fine while the card
+    held nothing else. Now it carries actions, so a click answers the smaller
+    question first: show me. <details> hands the reveal to keyboard and touch
+    for free and keeps no state of ours. The best hit stands open, because one
+    open card explains all the closed ones.
   -->
-  <div
-    class="plan"
-    :class="{ active }"
-    role="button"
-    tabindex="0"
-    :aria-pressed="active"
-    @click="$emit('take')"
-    @keydown.enter.prevent="$emit('take')"
-    @keydown.space.prevent="$emit('take')"
-  >
-    <div class="ptop">
+  <details class="plan" :class="{ active }" :open="rank === 0 || active">
+    <summary>
+    <span class="ptop">
       <span class="rank">{{ rank === 0 ? 'Bester Treffer' : `Alternative ${rank}` }}</span>
+      <span v-if="active" class="seen">deine Tour</span>
       <span class="tot">
         {{ formatClock(startMinutes) }}–{{ formatClock(route.end) }} ·
         {{ formatDuration(route.end - startMinutes) }}
       </span>
-    </div>
+    </span>
 
-    <div class="chain">
+    <span class="chain">
       <template v-for="(stop, index) in chain" :key="stop.name">
         <span v-if="index > 0"> → </span>{{ stop.name
         }}<span v-if="stop.visited" class="seen small">warst du</span>
       </template>
-    </div>
+    </span>
+
+    <MiniBeam :route="route" :start-minutes="startMinutes" :sunset-minutes="sunsetMinutes" />
+    </summary>
+
+    <div class="paktionen">
+    <button class="btn on" @click="$emit('take')">
+      {{ active ? 'Ausgewählt' : 'Diese Tour nehmen' }}
+    </button>
 
     <div class="pmeta">{{ formatStays(route.stays) }} pro Station · {{ route.travel }} min unterwegs</div>
 
@@ -117,11 +122,6 @@ const breweries = computed(() =>
       </span>
       <span class="ptag">{{ breweries }}</span>
     </div>
-
-    <!-- Only the chosen one still says so. On the others the card is the
-         button, and a second "take this tour" would be the same offer twice. -->
-    <div v-if="active" class="pact">
-      <span class="btn big on">Ausgewählt</span>
     </div>
-  </div>
+  </details>
 </template>

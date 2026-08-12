@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Reiter</title>
+<link rel="stylesheet" href="../kombi/basis.css">
+<link rel="stylesheet" href="oben.css">
+<style>
+
+/* REITER — folder tabs on the edge of the sheet. A tab wears small gold
+   lozenges for what is set inside it, so the count survives even when the
+   panel is closed — the tab IS the summary of its drawer. */
+.reiter{display:flex;gap:6px;align-items:flex-end;margin:20px 0 0;overflow-x:auto;
+  padding:2px 2px 0}
+.reiter .chip{box-shadow:inset 0 0 0 2px var(--kante);border-bottom:0;
+  background:var(--flaeche)}
+.reiter .pkte{display:inline-flex;gap:4px;margin-top:3px}
+.reiter .pkte i{width:7px;height:7px;background:var(--gold);transform:rotate(45deg)}
+.blattkante{height:3px;background:var(--kante);margin:0 0 6px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-kopf></header>
+  <div class="riss-kante"></div>
+  <div class="reiter">
+    <button class="chip" popovertarget="p-zeit"><span class="was">Wie lange</span><span class="wert">4 Stunden</span></button><button class="chip" popovertarget="p-ort"><span class="was">Wo los</span><span class="wert">Candidplatz</span></button><button class="chip" popovertarget="p-weg"><span class="was">Unterwegs</span><span class="wert">Fuß &amp; Radl</span></button>
+    <button class="chip" popovertarget="p-was"><span class="was">Wünsche</span>
+      <span class="wert">2 gewählt</span><span class="pkte"><i></i><i></i></span></button>
+    <span class="regler-platz" data-schalter></span>
+  </div>
+  <div class="blattkante"></div>
+
+  <section class="vorschlaege">
+    <h2>Vorschläge</h2>
+    
+    <details class="tour" open>
+      <summary>
+        <span class="kopfzeile"><b class="rang">Bester Treffer</b><span>15:00–20:10 · 5 Std 10</span></span>
+        <span class="kette">Flaucher → Hinterbrühl</span>
+        <span class="mini-beam"><i class="walk" style="flex:18"></i><i class="stay" style="flex:110"></i><i class="bike" style="flex:12"></i><i class="stay" style="flex:90"></i><i class="walk" style="flex:25"></i><u style="left:86%" title="Sonnenuntergang 20:35"></u></span>
+        <span class="spanne"><span>15:00</span><span>20:10</span></span>
+        <span class="meta">2 Stationen · zurück um 20:10 · Maß ab 10,40</span>
+      </summary>
+      <span class="aktionen">
+        <button class="knopf voll">Diese Tour nehmen</button>
+        <button class="knopf">Auf der Karte</button>
+      </span>
+    </details>
+    
+    <details class="tour">
+      <summary>
+        <span class="kopfzeile"><b class="rang">Alternative 1</b><span>15:00–20:25 · 5 Std 25</span></span>
+        <span class="kette">Hirschgarten → Taxisgarten → Augustiner-Keller</span>
+        <span class="mini-beam"><i class="bike" style="flex:22"></i><i class="stay" style="flex:95"></i><i class="walk" style="flex:9"></i><i class="stay" style="flex:80"></i><i class="walk" style="flex:14"></i><i class="stay" style="flex:75"></i><i class="transit" style="flex:14"></i><u style="left:84%" title="Sonnenuntergang 20:35"></u></span>
+        <span class="spanne"><span>15:00</span><span>20:25</span></span>
+        <span class="meta">3 Stationen · zurück um 20:25 · Maß ab 9,90</span>
+      </summary>
+      <span class="aktionen">
+        <button class="knopf voll">Diese Tour nehmen</button>
+        <button class="knopf">Auf der Karte</button>
+      </span>
+    </details>
+    
+    <details class="tour">
+      <summary>
+        <span class="kopfzeile"><b class="rang">Alternative 2</b><span>15:00–19:50 · 4 Std 50</span></span>
+        <span class="kette">Michaeligarten → Hofbräukeller</span>
+        <span class="mini-beam"><i class="walk" style="flex:15"></i><i class="stay" style="flex:105"></i><i class="bike" style="flex:11"></i><i class="stay" style="flex:120"></i><i class="transit" style="flex:20"></i><u style="left:89%" title="Sonnenuntergang 20:35"></u></span>
+        <span class="spanne"><span>15:00</span><span>19:50</span></span>
+        <span class="meta">2 Stationen · zurück um 19:50 · Maß ab 9,80</span>
+      </summary>
+      <span class="aktionen">
+        <button class="knopf voll">Diese Tour nehmen</button>
+        <button class="knopf">Auf der Karte</button>
+      </span>
+    </details>
+    <p class="hinweis">Eine Karte antippen öffnet ihre Aktionen — auf dem Telefon genauso.</p>
+  </section>
+  <div data-profi></div>
+</div>
+<div data-panels></div>
+<script src="../kombi/basis.js"></script>
+</body>
+</html>

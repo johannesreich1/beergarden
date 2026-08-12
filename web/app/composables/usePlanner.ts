@@ -311,6 +311,27 @@ export function usePlanner() {
     setStops((state.value.plan?.slugs ?? []).filter((s) => s !== slug), gardens)
 
   /**
+   * Only the wishes, nothing else.
+   *
+   * "Alle aufheben" on the rail's stamp row clears what the stamps show —
+   * tags and toggles. Start, time and mode are answers, not wishes, and a
+   * row about wishes must not reach into them.
+   */
+  function clearFilters(): void {
+    state.value.filters = initialState().filters
+    persist()
+  }
+
+  /**
+   * Clamped to the afternoon and evening: the model has no opening data for
+   * breakfast hours, and a tour starting at 23:00 outlives every Sperrstunde.
+   */
+  function shiftStart(delta: number): void {
+    state.value.startMinutes = Math.max(at(11), Math.min(at(20), state.value.startMinutes + delta))
+    persist()
+  }
+
+  /**
    * Everything back to the beginning.
    *
    * Filters included, and that is the point: a filter set twenty minutes ago
@@ -346,6 +367,8 @@ export function usePlanner() {
     setTimeMode,
     setLegMode,
     resetAll,
+    clearFilters,
+    shiftStart,
     addStop,
     removeStop,
     hydrate,

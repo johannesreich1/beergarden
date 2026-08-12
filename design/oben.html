@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biergarten Freunde · Filter oben, zehn Layouts</title>
+<style>
+:root{--bg:#121212;--linie:#2E2E2E;--text:#E9E6DF;--mute:#8F8C85;--akzent:#D2A63F;
+  --mono:ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15.5px/1.6 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+header{padding:44px 30px 26px;border-bottom:1px solid var(--linie)}
+h1{margin:0;font-size:15px;font-family:var(--mono);font-weight:500;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--akzent)}
+header p{margin:15px 0 0;max-width:78ch;color:var(--mute)}
+header b{color:var(--text);font-weight:500}
+header a{color:var(--text)}
+.regel{margin:22px 30px 0;padding:17px 19px;border:1px solid var(--linie);max-width:78ch}
+.regel h2{margin:0 0 9px;font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--akzent);font-weight:500}
+.regel ol{margin:0;padding-left:20px;line-height:1.85;color:var(--mute)}
+.regel b{color:var(--text);font-weight:500}
+.row{padding:32px 30px;border-bottom:1px solid var(--linie)}
+.meta{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:5px}
+.num{font-family:var(--mono);font-size:12px;color:var(--akzent);letter-spacing:.18em}
+.name{font-size:20px;font-weight:600}
+.name a{color:inherit;text-decoration:none}
+.name a:hover{color:var(--akzent)}
+.sig{color:var(--mute);max-width:80ch;margin:0 0 18px}
+.sig b{color:var(--text);font-weight:500}
+.frames{display:flex;gap:20px;overflow-x:auto;padding-bottom:6px;align-items:flex-start}
+.device .cap{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--mute);margin-bottom:7px;display:flex;justify-content:space-between;gap:10px}
+.cap a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--linie)}
+.cap a:hover{color:var(--akzent)}
+.shell{position:relative;overflow:hidden;background:#000;border:1px solid var(--linie)}
+.shell iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left}
+.d .shell{width:520px;height:440px}.d iframe{width:1440px;height:1218px;transform:scale(.3611)}
+.m .shell{width:212px;height:440px}.m iframe{width:390px;height:809px;transform:scale(.5436)}
+footer{padding:32px 30px 70px;color:var(--mute);max-width:82ch}
+footer code{font-family:var(--mono);color:var(--text)}
+:focus-visible{outline:2px solid var(--akzent);outline-offset:2px}
+@media(max-width:900px){header,.row,footer,.regel{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Filter oben · zehn Layouts</h1>
+  <p>
+    Die Filter verlassen die linke Spalte und werden ein <b>kleines Menü oben</b> — die Seite
+    gehört den Ergebnissen. Palette, Chips und Panels kommen unverändert aus
+    <a href="kombi.html">Deckel &amp; Korken</a>; die zehn Dateien unterscheiden nur die Form
+    des Menüs. <a href="index.html">Übersicht</a>
+  </p>
+</header>
+
+<div class="regel">
+  <h2>Was in allen zehn gleich ist</h2>
+  <ol>
+    <li><b>Aktionen erst nach dem Antippen.</b> Jede Vorschlagskarte ist ein
+        <code>&lt;details&gt;</code>: zu, bis man sie öffnet — auf dem Desktop per Klick, auf dem
+        Telefon per Tipp, mit Tastatur und Vorleseprogramm gratis. Die erste Karte steht
+        geöffnet da, damit man den Unterschied sieht.</li>
+    <li><b>Der Zeitstrahl kommt zu den Vorschlägen.</b> Jede Karte trägt den Abend als
+        schmalen Balken: Wege gestrichelt in der Modusfarbe, Aufenthalte in Gold, der
+        Sonnenuntergang als Strich. Man vergleicht Touren, bevor man eine öffnet.</li>
+    <li><b>Gewählte Filter schrumpfen zu kleinen Stempeln</b> — massiv statt aufgerissen,
+        weil der Riss bei 14 px die Lesbarkeit frisst; die Schieflage allein sagt Stempel.
+        Antippen entfernt, „alle aufheben" räumt ab.</li>
+    <li><b>„Alle Regler" bleibt</b> und sitzt im Menü, das es erweitert.</li>
+    <li><b>Mobil ist dieselbe Seite:</b> die Zeile scrollt seitlich, Panels werden unter
+        640 px zum Blatt an der Unterkante.</li>
+  </ol>
+</div>
+
+<div id="rows"></div>
+
+<footer>
+  <p>Nichts davon ist gebaut. Die Menüs sind echt bedienbar — Panels öffnen per Klick,
+     Escape schließt, der Fokus kehrt zum Auslöser zurück. Sag, welches es wird, oder
+     welche Teile aus welchem.</p>
+</footer>
+
+<script>
+const L = [
+  ['a','Leiste','oben/a-leiste.html',
+   'Die schlichteste Form, durch eine Eigenschaft wertvoll: <b>die Leiste klebt beim Scrollen oben</b>. Auch bei der dritten Alternative sind die Filter noch unter dem Zeiger.'],
+  ['b','Schnur','oben/b-schnur.html',
+   'Die Filter hängen an einer Leine wie Preisschilder, jedes an seinem Stift, jedes leicht schief. <b>Die Schnur ist die Ordnung:</b> alles daran ist Einstellung, alles darunter Ergebnis.'],
+  ['c','Korkenknopf','oben/c-korkenknopf.html',
+   'Ein Kronkorken trägt alle Wünsche, seine Zahl sagt wie viele. <b>Die drei Pflichtfragen bleiben als Satz sichtbar</b> — nur der optionale Stapel versteckt sich.'],
+  ['d','Reiter','oben/d-reiter.html',
+   'Karteireiter an der Blattkante. <b>Ein Reiter trägt kleine Goldrauten für das, was in ihm gesetzt ist</b> — die Lade zeigt ihren Inhalt, auch wenn sie zu ist.'],
+  ['e','Satzzeile','oben/e-satzzeile.html',
+   'Das ganze Menü ist <b>ein Satz mit Lücken</b>. Nichts sieht nach Formular aus, weil nichts eines ist; die Wünsche hängen sich als kleine Stempel an den Satz.'],
+  ['f','Schankleiste','oben/f-schankleiste.html',
+   'Eine Messingschiene, die Filter hängen daran wie kleine Zapfgriffe. <b>Ein gesetzter Filter kippt seinen Griff</b> — der Zustand ist eine Haltung, kein Abzeichen.'],
+  ['g','Untersetzer','oben/g-untersetzer.html',
+   'Runde Untersetzer als Kategorien. <b>Auf einen gesetzten drückt sich ein kleiner Korken</b>, wie er im Wirtshaus eben auf dem Deckel landet.'],
+  ['h','Stempelkante','oben/h-stempelkante.html',
+   'Das Menü wohnt <b>im Rissband</b>, das Kopf und Seite ohnehin trennt. Keine Rahmen: die Einstellungen sind Abdrücke im Band, Frage und Antwort in einem Atem.'],
+  ['i','Suchzeile','oben/i-suchzeile.html',
+   'Ein Feld, drei Schnell-Chips, alles andere hinter „Mehr". <b>Die minimalste der zehn</b> — sie wettet darauf, dass die meisten Abende einen Wunsch haben.'],
+  ['j','Deckelmenü','oben/j-deckelmenue.html',
+   'Ein einziger Bierdeckel ist das Menü. <b>Die gewählten Wünsche stempeln sich auf seine Ecken</b> — der Deckel sammelt seinen Zustand wie ein echter über den Abend.'],
+]
+const V = [['d','Desktop hell','light','1440'],['d','Desktop dunkel','dark','1440'],
+           ['m','Mobil hell','light','390'],['m','Mobil dunkel','dark','390']]
+
+document.getElementById('rows').innerHTML = L.map(([n, name, datei, sig]) => `
+  <section class="row">
+    <div class="meta"><span class="num">${n}</span><span class="name"><a href="${datei}">${name}</a></span></div>
+    <p class="sig">${sig}</p>
+    <div class="frames">
+      ${V.map(([cls, label, theme, br]) => `
+        <div class="device ${cls}">
+          <div class="cap"><span>${label}</span><a href="${datei}?theme=${theme}">${br} px</a></div>
+          <div class="shell"><iframe src="${datei}?theme=${theme}" title="${name} — ${label}" loading="lazy" scrolling="no"></iframe></div>
+        </div>`).join('')}
+    </div>
+  </section>`).join('')
+</script>
+</body>
+</html>

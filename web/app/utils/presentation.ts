@@ -159,3 +159,11 @@ export function directionsUrl(
 
 export const mapsSearchUrl = (name: string): string =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name}, München`)}`
+
+/** The time windows on offer. One list, wherever the question is asked. */
+export const BUDGETS = [
+  { value: 240, label: '4 h' },
+  { value: 300, label: '5 h' },
+  { value: 360, label: '6 h' },
+  { value: 420, label: '7 h' },
+]

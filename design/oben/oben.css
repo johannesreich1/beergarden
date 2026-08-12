@@ -1,0 +1,92 @@
+/* ============================================================
+   FILTER OBEN — shared pieces for the ten drafts
+
+   What all ten agree on, so the files below only argue about
+   the shape of the menu:
+
+     · Filters live in a compact strip at the top. The wide left
+       column is gone; the page belongs to the results.
+     · A suggestion card shows its actions only once it is
+       opened. <details> does that natively — click to reveal on
+       desktop and touch alike, keyboard and screen reader for
+       free, no state to keep right.
+     · Every suggestion carries the mini time beam: travel and
+       stay as one bar, the sun as a tick. The beam earned its
+       place on the hand-picked tour; here it comes to the
+       proposed ones.
+     · Chosen filters shrink to small solid stamps. Solid on
+       purpose: at 14px the ink break eats legibility, and the
+       tilt alone already says stamp.
+   ============================================================ */
+
+/* ------------------------------------------------------ The strip */
+.filterzeile{display:flex;gap:9px;align-items:center;margin:16px 0 0;
+  overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch}
+.filterzeile > *{flex:none}
+.filterzeile .chip{min-height:50px;padding:6px 12px}
+.filterzeile .chip .was{font-size:14px}
+.filterzeile .chip .wert{font-size:16px}
+
+/* The advanced switch stays, but it lives inside the menu it extends. */
+.regler-platz{margin-left:auto;display:flex}
+.regler-platz .profi-schalter{margin-left:0;font-size:14.5px;white-space:nowrap}
+
+/* --------------------------------------- Chosen filters, small */
+.klein{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0 0}
+.klein b{font-family:var(--display);font-size:14px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.03em;color:var(--schaum);
+  background:var(--akzent);padding:4px 9px;transform:rotate(-1.2deg);
+  white-space:nowrap;cursor:pointer}
+.klein b:nth-child(2n){transform:rotate(1deg);background:var(--akzent-2)}
+.klein .aufheben{border:0;background:none;cursor:pointer;font:14.5px var(--text);
+  color:var(--weich);text-decoration:underline;text-underline-offset:3px}
+
+/* ------------------------------------------- Inline gap chips
+   For the sentence-shaped menus: only the answer, underlined,
+   no frame — the sentence is the frame. */
+.chip.luecke{display:inline-flex;flex-direction:row;min-height:0;
+  padding:0 2px;background:none;box-shadow:none}
+.chip.luecke .wert{font-size:16.5px;box-shadow:inset 0 -3px 0 var(--akzent)}
+.chip.luecke .wert::after{display:none}
+.satzchen{font-size:16px;color:var(--weich);display:flex;align-items:center;
+  gap:4px;flex-wrap:wrap}
+
+/* ------------------------------------------------ The mini beam */
+/* The evening in one bar. Non-interactive here — it answers "how does
+   this tour spend my time" before anybody opens the card. */
+.mini-beam{position:relative;display:flex;height:16px;margin:10px 0 4px;
+  background:var(--grund);box-shadow:inset 0 0 0 1.5px var(--kante);overflow:hidden}
+.mini-beam i{display:block;height:100%;min-width:2px}
+.mini-beam .stay{background:color-mix(in srgb, var(--gold) 32%, var(--flaeche))}
+.mini-beam .walk{background:repeating-linear-gradient(115deg,var(--gold) 0 2px,transparent 2px 5px)}
+.mini-beam .bike{background:repeating-linear-gradient(115deg,var(--akzent) 0 4px,transparent 4px 7px)}
+.mini-beam .transit{background:repeating-linear-gradient(115deg,var(--akzent-2) 0 6px,transparent 6px 9px)}
+.mini-beam u{position:absolute;top:-2px;bottom:-2px;width:2.5px;
+  background:var(--akzent-2);text-decoration:none}
+.spanne{display:flex;justify-content:space-between;font-size:14px;color:var(--weich)}
+
+/* ------------------------------------- Suggestions as <details> */
+.vorschlaege{margin-top:8px}
+.tour{background:var(--flaeche);box-shadow:inset 0 0 0 2px var(--kante);
+  margin:0 0 12px}
+.tour[open]{box-shadow:inset 0 0 0 3px var(--akzent)}
+.tour summary{list-style:none;cursor:pointer;padding:14px 16px;display:block}
+.tour summary::-webkit-details-marker{display:none}
+.tour summary:focus-visible{outline:3px solid var(--akzent);outline-offset:2px}
+.tour .kopfzeile{display:flex;justify-content:space-between;gap:12px;
+  font-size:14.5px;color:var(--weich);flex-wrap:wrap}
+.tour .rang{color:var(--akzent-2);font-family:var(--display);font-weight:900;
+  font-size:14.5px;text-transform:uppercase;letter-spacing:.03em}
+.tour .kette{display:block;margin-top:3px;font-family:var(--display);
+  font-weight:900;font-size:18px;line-height:1.2;color:var(--schrift)}
+.tour .meta{display:block;font-size:14.5px;color:var(--weich);margin-top:2px}
+.tour .aktionen{display:flex;gap:9px;flex-wrap:wrap;padding:0 16px 15px}
+.hinweis{font-size:14.5px;color:var(--weich);margin:6px 0 0}
+
+/* Buttons for the opened card. */
+.knopf{font-family:var(--display);font-size:14.5px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;padding:10px 14px;border:0;
+  cursor:pointer;background:transparent;color:var(--akzent);
+  box-shadow:inset 0 0 0 2.5px var(--akzent)}
+.knopf.voll{background:var(--akzent);color:var(--schaum)}
+.knopf:focus-visible{outline:3px solid var(--akzent-2);outline-offset:2px}

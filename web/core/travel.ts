@@ -66,6 +66,20 @@ export function travelTimes(a: Waypoint, b: Waypoint): TravelTimes {
  * Otherwise public transport. With a fixed mode what counts instead is whether
  * the limit holds — `feasible` is then the condition the generator prunes on.
  */
+/**
+ * The leg cap's "egal" value — and the default.
+ *
+ * A cap of 25 minutes used to be the silent default, set by a dial that only
+ * exists behind "Alle Regler". Pure walking tours then produced zero results,
+ * and the empty-state message cited a number the user had never seen. A limit
+ * is a refinement somebody reaches for, not a constraint they start under.
+ *
+ * Under `mix` the cap still matters even at "egal": the walk-or-transit choice
+ * keeps its own comparison (walk unless transit is clearly faster), so an
+ * uncapped mix does not degenerate into walking everything.
+ */
+export const LEG_UNCAPPED = 999
+
 export function planLeg(
   a: Waypoint,
   b: Waypoint,

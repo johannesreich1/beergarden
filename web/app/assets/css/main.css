@@ -1210,3 +1210,106 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 
 /* Last in the column, after everything it undoes. */
 .zuruecksetzen{display:block;width:100%;margin-top:18px;text-align:center}
+
+/* ==========================================================================
+   THE SCHANKLEISTE — filters as a small menu on a brass rail
+
+   The wide controls column steps aside; the page belongs to the results. What
+   remains hangs from the rail like tap handles. Chosen from ten drafts in
+   design/oben/ — the rail carries the chips the way a bar carries its taps.
+   ========================================================================== */
+.rail{margin:18px 0 0}
+.rail .schiene{height:7px;background:var(--gold)}
+.rail-zeile{display:flex;gap:10px;align-items:flex-start;overflow-x:auto;
+  padding:14px 2px 6px;-webkit-overflow-scrolling:touch}
+.rail-zeile > *{flex:none}
+
+/* A handle: question above, current answer below, its pin on the rail. */
+.rchip{position:relative;display:flex;flex-direction:column;gap:1px;
+  align-items:flex-start;text-align:left;background:var(--surface);
+  box-shadow:inset 0 0 0 2px var(--edge);border:0;cursor:pointer;
+  padding:8px 13px;min-height:52px;color:inherit;font:inherit}
+.rchip::before{content:'';position:absolute;top:-14px;left:50%;
+  transform:translateX(-50%);width:7px;height:14px;background:var(--gold)}
+.rchip .was{font-size:14px;color:var(--text-soft)}
+.rchip .wert{font-family:var(--display);font-weight:900;font-size:16px;
+  letter-spacing:-.01em;display:flex;gap:7px;align-items:center;white-space:nowrap}
+.rchip .wert::after{content:'';width:0;height:0;border:5px solid transparent;
+  border-top-color:currentColor;margin-top:3px}
+/* A set handle tips: the state is a posture, not a badge. */
+.rchip.an{transform:rotate(-2.2deg)}
+.rchip[aria-expanded="true"]{box-shadow:inset 0 0 0 3px var(--blue)}
+.rchip:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.rail-rest{margin-left:auto;display:flex;align-items:center}
+.rail-rest .alle-regler{margin:0;width:auto;white-space:nowrap}
+
+/* Chosen wishes, small. Solid ink on purpose: at this size the break eats
+   legibility, and the tilt alone already says stamp. */
+.klein{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0 0}
+.klein b{font-family:var(--display);font-size:14px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.03em;color:var(--on-accent);
+  background:var(--blue);padding:4px 9px;transform:rotate(-1.2deg);
+  white-space:nowrap;cursor:pointer}
+.klein b:nth-child(2n){transform:rotate(1deg);background:var(--amber)}
+.klein b:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.klein .aufheben{border:0;background:none;cursor:pointer;font:14.5px var(--body);
+  color:var(--text-soft);text-decoration:underline;text-underline-offset:3px}
+
+/* ------------------------------------------------------------- The panels */
+/* Native popovers: light dismiss, Escape and the top layer come from the
+   browser. Positioned from script, because a popover with no position lands
+   in the corner of the screen. */
+.rpanel{position:fixed;inset:auto;margin:0;border:0;
+  background:var(--surface);color:var(--text);
+  box-shadow:inset 0 0 0 3px var(--edge),0 14px 34px rgba(0,0,0,.3);
+  padding:16px;min-width:min(320px,92vw);max-width:min(440px,94vw)}
+.rpanel::backdrop{background:rgba(0,0,0,.28)}
+.rpanel h3{margin:0 0 4px;font-family:var(--display);font-size:17px;font-weight:900;
+  letter-spacing:.02em;text-transform:uppercase}
+.rpanel p{margin:0 0 12px;font-size:15px;color:var(--text-soft)}
+.rpanel .grid{display:flex;flex-wrap:wrap;gap:8px}
+.rpanel .note{margin:10px 0 0}
+.rpanel .fertig{margin-top:14px;width:100%;border:0;cursor:pointer;
+  background:var(--amber);color:var(--on-accent);font-family:var(--display);
+  font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;
+  padding:12px}
+/* Under 640px it is a sheet on the bottom edge, where the thumb already is. */
+.rpanel.als-blatt{left:0;right:0;bottom:0;top:auto;width:100%;max-width:none;
+  box-shadow:inset 0 3px 0 var(--edge),0 -14px 34px rgba(0,0,0,.34);
+  padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+
+/* ----------------------------------------------------------- The mini beam */
+/* A suggestion's evening as a sliver: travel dashed in the mode colour, stays
+   in gold, the sun as a tick. Comparison happens before a card is opened. */
+.mini-beam{position:relative;display:flex;height:16px;margin:10px 0 4px;
+  background:var(--ground);box-shadow:inset 0 0 0 1.5px var(--edge);overflow:hidden}
+.mini-beam i{display:block;height:100%;min-width:2px}
+.mini-beam .stay{background:color-mix(in srgb, var(--gold) 32%, var(--surface))}
+.mini-beam .leg.walk{background:repeating-linear-gradient(115deg,var(--leg-walk) 0 2px,transparent 2px 5px)}
+.mini-beam .leg.bike{background:repeating-linear-gradient(115deg,var(--leg-bike) 0 4px,transparent 4px 7px)}
+.mini-beam .leg.transit{background:repeating-linear-gradient(115deg,var(--leg-transit) 0 6px,transparent 6px 9px)}
+.mini-beam u{position:absolute;top:-2px;bottom:-2px;width:2.5px;
+  background:var(--amber);text-decoration:none}
+.spanne{display:flex;justify-content:space-between;font-size:14px;color:var(--text-soft)}
+
+/* ------------------------------------------- Suggestions: open to act */
+/* The card is a <details>: closed it compares, open it acts. */
+.plan summary{list-style:none;cursor:pointer;margin:-15px;padding:15px;display:block}
+.plan summary::-webkit-details-marker{display:none}
+.plan summary:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.plan[open]{box-shadow:inset 0 0 0 2px var(--edge)}
+.plan.active{box-shadow:inset 0 0 0 3px var(--blue)}
+.plan .paktionen{padding:15px 0 0;display:flex;flex-direction:column;gap:10px;
+  align-items:flex-start}
+
+/* ------------------------------------------------- Layout without column */
+/* With the rail up top the stage needs no first column: suggestions and tour
+   share the width; picking on the map takes all of it. */
+@media(min-width:1000px){
+  .stage.rail-only{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr)}
+  .stage.rail-only .results{grid-column:1;grid-row:1}
+  .stage.rail-only .tour-column{grid-column:2;grid-row:1}
+  .stage.rail-only.self-mode{grid-template-columns:minmax(0,1fr)}
+  .stage.rail-only.self-mode .results{grid-column:1;grid-row:1}
+  .stage.rail-only.self-mode .tour-column{grid-column:1;grid-row:2}
+}

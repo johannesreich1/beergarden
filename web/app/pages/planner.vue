@@ -12,6 +12,7 @@ import {
   checkPlan,
   countGardens,
   BACK_LEG,
+  LEG_UNCAPPED,
 } from '#core'
 
 // English file name, German URL — as with the directory.
@@ -52,6 +53,36 @@ const suggestions = computed(() => generateRoutes(gardens.value, options.value))
 
 const poolSize = computed(
   () => candidates(gardens.value, state.value.filters, visitedSet.value, state.value.weekday).length,
+)
+
+/*
+ * Before any tour is taken, the right column previews the best hit.
+ *
+ * It used to be blank until a choice was made — a page whose right half is
+ * empty looks unfinished, and the map is exactly what distinguishes the
+ * suggestions. Once a card is clicked the real tour replaces the preview, so
+ * this only ever shows the first answer to "what would I get".
+ */
+const previewRoute = computed(() => suggestions.value.routes[0] ?? null)
+
+const previewSchedule = computed(() => {
+  if (!previewRoute.value) return null
+
+  return buildSchedule(planFromRoute(previewRoute.value), gardens.value, {
+    start: state.value.startPoint,
+    startMinutes: state.value.startMinutes,
+    mode: state.value.mode,
+    maxLegMinutes: state.value.maxLegMinutes,
+    skipped: new Set(),
+    durations: {},
+    lastStop: null,
+  })
+})
+
+const previewGardens = computed(() =>
+  (previewRoute.value?.slugs ?? [])
+    .map((slug) => gardens.value.find((garden) => garden.slug === slug))
+    .filter((garden) => garden !== undefined),
 )
 
 const planId = computed(() =>
@@ -200,6 +231,12 @@ function toggleSkip(slug: string): void {
 
 const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
 
+
+/** 50 on the slider is the "egal" stop; everything below is a real cap. */
+function setLegCap(value: number): void {
+  state.value.maxLegMinutes = value >= 50 ? LEG_UNCAPPED : value
+  planner.persist()
+}
 
 const legLabel = computed(() =>
   state.value.mode === 'bike'
@@ -354,24 +391,22 @@ function setMode(mode: typeof state.value.mode): void {
       <div style="margin-top: 16px">
         <div v-if="state.allControls" class="sub">
           <span class="eyebrow">{{ legLabel }}</span>
-          <span class="v">{{ state.maxLegMinutes }} min</span>
+          <span class="v">{{ state.maxLegMinutes >= LEG_UNCAPPED ? 'egal' : `${state.maxLegMinutes} min` }}</span>
         </div>
+        <!-- The rightmost stop means "egal" — a limit is a refinement somebody
+             reaches for, not a wall they start against. -->
         <input
-          v-model.number="state.maxLegMinutes"
+          :value="Math.min(state.maxLegMinutes, 50)"
           type="range"
           min="5"
           max="50"
           step="5"
-          @change="planner.persist()"
+          @input="setLegCap(Number(($event.target as HTMLInputElement).value))"
         >
       </div>
     </div>
 
     <FilterControls v-if="state.allControls" :gardens="gardens" />
-
-    <button class="btn warn zuruecksetzen" @click="planner.resetAll()">
-      Alles zurücksetzen
-    </button>
 
     <div v-if="!started" class="setup-go">
       <button class="btn on big" @click="planner.start">
@@ -494,6 +529,22 @@ function setMode(mode: typeof state.value.mode): void {
     </div>
 
     </template>
+    </div>
+
+    <div
+      v-if="started && !schedule && state.planMode !== 'self' && previewSchedule"
+      class="tour-column vorschau"
+    >
+      <div class="section-title"><h2>Vorschau</h2><div class="rule" /></div>
+      <TourMap
+        :start="state.startPoint"
+        :planned="previewGardens"
+        :rows="previewSchedule.rows"
+      />
+      <p class="vorschau-meta">
+        {{ previewGardens.map((garden) => shortName(garden.name)).join(' → ') }} ·
+        zurück um <b>{{ formatClock(previewSchedule.end) }}</b>
+      </p>
     </div>
 
     <div v-if="started && schedule" id="tour" class="tour-column">

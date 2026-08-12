@@ -1,5 +1,5 @@
 import type { Filters, Garden, Mode, Plan, PlannerOptions, PlanningMode, StartPoint } from '#core'
-import { at, planFromSlugs, sunsetMinutes } from '#core'
+import { LEG_UNCAPPED, at, planFromSlugs, sunsetMinutes } from '#core'
 
 /**
  * The planner's state, shared between the planner and the directory.
@@ -76,7 +76,7 @@ function initialState(): PlannerState {
     budgetMinutes: 360,
     stops: 3,
     mode: 'mix',
-    maxLegMinutes: 25,
+    maxLegMinutes: LEG_UNCAPPED,
     // A fixed default rather than `new Date()`: the state is also created
     // during prerendering, and a build date baked into the HTML would be wrong
     // from tomorrow on. The real weekday arrives in hydrate().
@@ -125,6 +125,13 @@ export function usePlanner() {
       // Merge shallowly rather than replace: a state stored by a version with
       // fewer fields must not swallow the new ones.
       Object.assign(state.value, JSON.parse(stored) as Partial<PlannerState>)
+
+      // 25 was the silent default of the leg-cap dial, and nobody ever chose
+      // it — the dial lives behind "Alle Regler". Stored states carry it
+      // anyway, so it is migrated to the new default rather than kept as a
+      // constraint the user never saw. A deliberate 25 is lost with it;
+      // deliberate values were impossible to set apart from the default.
+      if (state.value.maxLegMinutes === 25) state.value.maxLegMinutes = LEG_UNCAPPED
 
       // Older plans only knew one stay for every stop. That cannot be
       // translated sensibly into per-garden bounds — so it goes. But only the
@@ -311,6 +318,28 @@ export function usePlanner() {
     setStops((state.value.plan?.slugs ?? []).filter((s) => s !== slug), gardens)
 
   /**
+   * Show or hide the dense dials — and forget them when they go.
+   *
+   * A dial that is not on screen must not constrain what is: a weekday, a
+   * stop count or a leg cap set twenty minutes ago behind a switch is exactly
+   * what makes the planner look broken. Closing the switch returns those
+   * dials to their defaults. The rail's own answers — start, time, mode,
+   * wishes — stay, because they remain visible.
+   */
+  function setAllControls(next: boolean): void {
+    state.value.allControls = next
+
+    if (!next) {
+      const fresh = initialState()
+      state.value.weekday = isoWeekday(new Date())
+      state.value.stops = fresh.stops
+      state.value.maxLegMinutes = fresh.maxLegMinutes
+      state.value.filters.breweries = []
+    }
+    persist()
+  }
+
+  /**
    * Only the wishes, nothing else.
    *
    * "Alle aufheben" on the rail's stamp row clears what the stamps show —
@@ -366,6 +395,7 @@ export function usePlanner() {
     setPlanMode,
     setTimeMode,
     setLegMode,
+    setAllControls,
     resetAll,
     clearFilters,
     shiftStart,

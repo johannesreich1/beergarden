@@ -171,10 +171,15 @@ function pickAndClose(id: string, action: () => void): void {
           class="alle-regler"
           type="button"
           :aria-pressed="state.allControls"
-          @click="state.allControls = !state.allControls; planner.persist()"
+          @click="planner.setAllControls(!state.allControls)"
         >
           <span class="gleis"><i /></span>
           <span>Alle Regler</span>
+        </button>
+        <!-- Always within reach, not only behind the switch it also undoes:
+             a reset that first needs the dense view defeats its own purpose. -->
+        <button class="aufheben rail-reset" @click="planner.resetAll()">
+          Alles zurücksetzen
         </button>
       </span>
     </div>

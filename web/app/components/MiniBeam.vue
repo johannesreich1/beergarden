@@ -18,15 +18,17 @@ const props = defineProps<{
   route: Route
   startMinutes: number
   sunsetMinutes: number
+  /** Stop names, in tour order. A beam without them reads as shape only. */
+  labels?: string[]
 }>()
 
 const pieces = computed(() => {
-  const raus: Array<{ kind: 'leg' | 'stay', mode?: string, min: number }> = []
+  const raus: Array<{ kind: 'leg' | 'stay', mode?: string, min: number, label?: string }> = []
 
   props.route.slugs.forEach((_, index) => {
     const leg = props.route.legs[index]
     raus.push({ kind: 'leg', mode: leg.mode, min: leg.min })
-    raus.push({ kind: 'stay', min: props.route.stays[index] })
+    raus.push({ kind: 'stay', min: props.route.stays[index], label: props.labels?.[index] })
   })
   raus.push({ kind: 'leg', mode: props.route.back.mode, min: props.route.back.min })
 
@@ -50,7 +52,7 @@ const sunShare = computed(() => {
       :key="index"
       :class="[piece.kind, piece.mode]"
       :style="{ flex: piece.min }"
-    />
+    ><b v-if="piece.label">{{ piece.label }}</b></i>
     <u
       v-if="sunShare !== null"
       :style="{ left: `${sunShare}%` }"

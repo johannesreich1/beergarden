@@ -1240,7 +1240,8 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 .rchip.an{transform:rotate(-2.2deg)}
 .rchip[aria-expanded="true"]{box-shadow:inset 0 0 0 3px var(--blue)}
 .rchip:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.rail-rest{margin-left:auto;display:flex;align-items:center}
+.rail-rest{margin-left:auto;display:flex;align-items:center;gap:16px}
+.rail-rest .aufheben{white-space:nowrap}
 .rail-rest .alle-regler{margin:0;width:auto;white-space:nowrap}
 
 /* Chosen wishes, small. Solid ink on purpose: at this size the break eats
@@ -1281,10 +1282,15 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 /* ----------------------------------------------------------- The mini beam */
 /* A suggestion's evening as a sliver: travel dashed in the mode colour, stays
    in gold, the sun as a tick. Comparison happens before a card is opened. */
-.mini-beam{position:relative;display:flex;height:16px;margin:10px 0 4px;
+.mini-beam{position:relative;display:flex;height:24px;margin:10px 0 4px;
   background:var(--ground);box-shadow:inset 0 0 0 1.5px var(--edge);overflow:hidden}
 .mini-beam i{display:block;height:100%;min-width:2px}
-.mini-beam .stay{background:color-mix(in srgb, var(--gold) 32%, var(--surface))}
+/* The stay carries its stop's name — a beam without names reads as shape only.
+   Short stays clip theirs rather than growing: the width IS the information. */
+.mini-beam .stay{background:color-mix(in srgb, var(--gold) 32%, var(--surface));
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mini-beam .stay b{font-family:var(--display);font-size:14px;font-weight:900;
+  white-space:nowrap;padding:0 5px;color:var(--text)}
 .mini-beam .leg.walk{background:repeating-linear-gradient(115deg,var(--leg-walk) 0 2px,transparent 2px 5px)}
 .mini-beam .leg.bike{background:repeating-linear-gradient(115deg,var(--leg-bike) 0 4px,transparent 4px 7px)}
 .mini-beam .leg.transit{background:repeating-linear-gradient(115deg,var(--leg-transit) 0 6px,transparent 6px 9px)}
@@ -1313,3 +1319,9 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   .stage.rail-only.self-mode .results{grid-column:1;grid-row:1}
   .stage.rail-only.self-mode .tour-column{grid-column:1;grid-row:2}
 }
+
+/* The preview beside the suggestions: the map of whichever card is open, a
+   one-line summary under it. Never blank — it falls back to the best hit. */
+.vorschau .map-shell{margin-top:0}
+.vorschau-meta{margin:10px 0 0;font-size:15.5px;color:var(--text-soft)}
+.vorschau-meta b{color:var(--gold);font-weight:400}

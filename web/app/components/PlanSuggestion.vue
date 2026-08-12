@@ -71,16 +71,24 @@ const breweries = computed(() =>
 
 <template>
   <!--
-    Opened by a click, taken by a button.
+    A click takes the tour — no button in between.
 
-    The whole card used to take the tour on any click — fine while the card
-    held nothing else. Now it carries actions, so a click answers the smaller
-    question first: show me. <details> hands the reveal to keyboard and touch
-    for free and keeps no state of ours. The best hit stands open, because one
-    open card explains all the closed ones.
+    The first cut opened the card and asked for a second click on "Diese Tour
+    nehmen". That read as one step too many, because it was one: choosing IS
+    the action here. The card still unfolds, but as a consequence of being
+    chosen — the details of the tour you took appear on the card you took it
+    from. `open` is bound, and the summary click is prevented, so the element
+    cannot drift out of step with the choice.
   -->
-  <details class="plan" :class="{ active }" :open="rank === 0 || active">
-    <summary>
+  <details
+    class="plan"
+    :class="{ active }"
+    :open="active"
+  >
+    <summary
+      :title="active ? 'Deine Tour' : 'Diese Tour nehmen'"
+      @click.prevent="$emit('take')"
+    >
     <span class="ptop">
       <span class="rank">{{ rank === 0 ? 'Bester Treffer' : `Alternative ${rank}` }}</span>
       <span v-if="active" class="seen">deine Tour</span>
@@ -97,14 +105,15 @@ const breweries = computed(() =>
       </template>
     </span>
 
-    <MiniBeam :route="route" :start-minutes="startMinutes" :sunset-minutes="sunsetMinutes" />
+    <MiniBeam
+      :route="route"
+      :start-minutes="startMinutes"
+      :sunset-minutes="sunsetMinutes"
+      :labels="chain.map((stop) => stop.name)"
+    />
     </summary>
 
     <div class="paktionen">
-    <button class="btn on" @click="$emit('take')">
-      {{ active ? 'Ausgewählt' : 'Diese Tour nehmen' }}
-    </button>
-
     <div class="pmeta">{{ formatStays(route.stays) }} pro Station · {{ route.travel }} min unterwegs</div>
 
     <div class="legmodes">

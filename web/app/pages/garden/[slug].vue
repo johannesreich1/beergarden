@@ -22,12 +22,15 @@ definePageMeta({ path: '/biergarten/:slug()' })
 const route = useRoute()
 const { data: gardens } = await useGardens()
 
+const { t, te } = useI18n()
+const { seats: formatSeatCount, tagLabel, beerKind, beerSize } = useFormats()
+
 const garden = computed(() => gardens.value.find((entry) => entry.slug === route.params.slug))
 
 if (!garden.value) {
   throw createError({
     statusCode: 404,
-    statusMessage: 'Diesen Biergarten kenne ich nicht.',
+    statusMessage: t('garden.notFound'),
     fatal: true,
   })
 }
@@ -66,27 +69,11 @@ const leg = computed(() =>
 /*
  * One name per fact. The chip prints it and the schema.org block states it —
  * a feature the markup names differently from the page is exactly the
- * contradiction this kind of markup gets penalised for.
+ * contradiction this kind of markup gets penalised for. Both read from the
+ * same locale key so they cannot drift.
  */
-const SELF_SERVICE = 'Selbstbedienung'
-const OWN_FOOD = 'Eigene Brotzeit erlaubt'
-
-/**
- * What a character tag is worth for an evening, as a sentence fragment.
- *
- * `TAG_LABELS` stays the one place a tag is *named*; this says what it means.
- * Two different statements about the same tag, so two lists — and the sentence
- * below quotes the label rather than inventing a second wording for it.
- */
-const TAG_PURPOSE: Record<string, string> = {
-  wasser: 'einen späten Abend am Wasser',
-  wald: 'einen langen Nachmittag im Schatten',
-  stadt: 'einen kurzen Abend ohne Anfahrt',
-  aussicht: 'den freien Blick, wenn die Sonne tiefer steht',
-  keller: 'schattige Plätze über den alten Lagerkellern',
-  spielplatz: 'einen Nachmittag mit Kindern',
-  musik: 'Blasmusik oder Band',
-}
+const SELF_SERVICE = t('garden.selfServiceFact')
+const OWN_FOOD = t('garden.ownFoodFact')
 
 /** "A", "A und B", "A, B und C" — German enumerations, one rule for all of them. */
 function joinList(parts: string[]): string {
@@ -101,8 +88,6 @@ function formatKm(km: number): string {
 
   return `${km.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`
 }
-
-const gardenLink = (entry: Garden): string => `/biergarten/${entry.slug}`
 
 /* ---------- Cross-references, all of them start-point independent ---------- */
 
@@ -178,7 +163,7 @@ const openingSummary = computed(() => {
   const entry = garden.value
   if (!entry) return null
 
-  const windows = WEEKDAYS.map((day) => openingWindow(entry, day.value))
+  const windows = WEEKDAY_VALUES.map((day) => openingWindow(entry, day))
   const open = windows.filter((window) => window !== null)
   const first = open[0]
 
@@ -187,13 +172,18 @@ const openingSummary = computed(() => {
     return null
   }
 
-  const closed = WEEKDAYS.filter((_, index) => windows[index] === null).map(
-    (day) => WEEKDAY_NAMES[day.value] ?? '',
+  const closed = WEEKDAY_VALUES.filter((_, index) => windows[index] === null).map(
+    (day) => t(`weekdays.adverb.${day}`),
   )
 
-  const hours = `Geöffnet ist der Garten von ${formatClock(first.opensAt)} bis ${formatClock(first.closesAt)} Uhr`
+  const hours = t('garden.prose.hours', {
+    from: formatClock(first.opensAt),
+    to: formatClock(first.closesAt),
+  })
 
-  return closed.length ? `${hours}, ${joinList(closed)} ist zu.` : `${hours}.`
+  return closed.length
+    ? t('garden.prose.hoursClosed', { hours, days: joinList(closed) })
+    : t('garden.prose.hoursPlain', { hours })
 })
 
 /**
@@ -221,7 +211,7 @@ const locality = computed(() => {
 const placement = computed(() => {
   const entry = garden.value!
   const measure = size.value
-  const zone = entry.zone === 'umland' ? 'im Umland' : 'im Münchner Stadtgebiet'
+  const zone = entry.zone === 'umland' ? t('garden.prose.zoneUmland') : t('garden.prose.zoneCity')
 
   // In the Umland the district field reads "Baierbrunn · Umland" — a list
   // entry, not a sentence. There the town goes in and the zone follows in
@@ -229,19 +219,24 @@ const placement = computed(() => {
   const place = entry.zone === 'umland' ? locality.value : entry.district
 
   return [
-    place ? `${entry.name} liegt in ${place} und damit ${zone}.` : `${entry.name} liegt ${zone}.`,
-    measure ? `Er zählt ${formatSeats(measure.seats)}.` : null,
+    place
+      ? t('garden.prose.placementPlace', { name: entry.name, place, zone })
+      : t('garden.prose.placementBare', { name: entry.name, zone }),
+    measure ? t('garden.prose.seats', { seats: formatSeatCount(measure.seats) }) : null,
     measure && measure.rank === 1
-      ? `Kein anderer der ${measure.counted} erfassten Gärten ist größer.`
+      ? t('garden.prose.largest', { counted: measure.counted })
       : null,
     measure && measure.rank > 1
-      ? `Das ist ${measure.seats >= measure.average ? 'mehr' : 'weniger'} als der Schnitt `
-        + `über alle ${measure.counted} erfassten Gärten: ${formatSeats(measure.average)}.`
+      ? t('garden.prose.vsAverage', {
+          relation: measure.seats >= measure.average ? t('garden.prose.more') : t('garden.prose.less'),
+          counted: measure.counted,
+          average: formatSeatCount(measure.average),
+        })
       : null,
     // A colon rather than "Ausgeschenkt wird X": one of the labels is
     // "wechselnd", which is not a brewery's name but the statement that there
     // is no fixed one — and that has to fit in the same sentence.
-    brewery.value ? `Im Ausschank: ${brewery.value}.` : null,
+    brewery.value ? t('garden.prose.pour', { brewery: brewery.value }) : null,
   ]
     .filter((part) => part !== null)
     .join(' ')
@@ -254,16 +249,9 @@ const service = computed(() => {
   // `=== true` and `=== false`, not a truthiness test: `null` means the field
   // was not verified, and "not verified" must not come out as "wird bedient".
   return [
-    entry.selfService === true
-      ? 'Es gibt einen Selbstbedienungsbereich: Krug selbst holen, Tisch selbst suchen.'
-      : null,
-    entry.selfService === true && entry.ownFoodAllowed
-      ? 'Die eigene Brotzeit ist dort erlaubt — Getränke nicht, die kommen vom Haus.'
-      : null,
-    entry.selfService === false
-      ? 'Hier wird bedient. Eine eigene Brotzeit ist damit nicht vorgesehen: erlaubt ist sie in '
-        + 'München nur im Selbstbedienungsbereich.'
-      : null,
+    entry.selfService === true ? t('garden.prose.selfService') : null,
+    entry.selfService === true && entry.ownFoodAllowed ? t('garden.prose.ownFood') : null,
+    entry.selfService === false ? t('garden.prose.served') : null,
     openingSummary.value,
   ]
     .filter((part) => part !== null)
@@ -275,14 +263,14 @@ const character = computed(() => {
   const tags = garden.value?.tags ?? []
   if (!tags.length) return null
 
-  const labels = joinList(tags.map((tag) => TAG_LABELS[tag] ?? tag))
+  const labels = joinList(tags.map(tagLabel))
   const purposes = joinList(
-    tags.map((tag) => TAG_PURPOSE[tag]).filter((purpose) => purpose !== undefined),
+    tags.filter((tag) => te(`garden.purpose.${tag}`)).map((tag) => t(`garden.purpose.${tag}`)),
   )
 
   return purposes
-    ? `Eingeordnet ist er unter ${labels} — gut also für ${purposes}.`
-    : `Eingeordnet ist er unter ${labels}.`
+    ? t('garden.prose.characterPurpose', { labels, purposes })
+    : t('garden.prose.characterPlain', { labels })
 })
 
 /** The walk from the stop, which is the one arrival fact that holds for everybody. */
@@ -290,10 +278,8 @@ const access = computed(() => {
   const entry = garden.value!
 
   return entry.stationWalkMin === null
-    ? 'Wie weit die nächste Haltestelle entfernt ist, ist hier nicht geprüft.'
-    : `Von der nächsten Haltestelle sind es ${entry.stationWalkMin} Minuten zu Fuß. Dieser `
-      + 'Fußweg steckt in der ÖPNV-Zeit mit drin — deshalb ist das Radl bei Gärten ohne '
-      + 'Station vor der Tür oft schneller als die Bahn.'
+    ? t('garden.prose.accessUnknown')
+    : t('garden.prose.accessKnown', { min: entry.stationWalkMin })
 })
 
 /* ---------- Metadata ---------- */
@@ -302,12 +288,12 @@ usePageSeo(() => ({
   title: garden.value?.name,
   description:
     garden.value?.description
-    ?? `${garden.value?.name} in München — Öffnungszeiten, Ausschank und Anfahrt.`,
+    ?? t('garden.seoFallback', { name: garden.value?.name }),
   type: 'article',
 }))
 
 const absoluteUrl = useAbsoluteUrl()
-const pageUrl = computed(() => absoluteUrl(gardenLink(garden.value!)))
+const pageUrl = computed(() => absoluteUrl(gardenPath(garden.value!.slug)))
 
 /** schema.org's day URLs, keyed the way the database keys them: 1 = Monday. */
 const SCHEMA_WEEKDAYS: Record<number, string> = {
@@ -331,13 +317,13 @@ const SCHEMA_WEEKDAYS: Record<number, string> = {
  * rather than more entries here.
  */
 const openingSpec = computed(() =>
-  WEEKDAYS.flatMap((day) => {
-    const window = openingWindow(garden.value!, day.value)
+  WEEKDAY_VALUES.flatMap((day) => {
+    const window = openingWindow(garden.value!, day)
 
     return window
       ? [{
           '@type': 'OpeningHoursSpecification',
-          dayOfWeek: SCHEMA_WEEKDAYS[day.value],
+          dayOfWeek: SCHEMA_WEEKDAYS[day],
           opens: formatClock(window.opensAt),
           closes: formatClock(window.closesAt),
         }]
@@ -355,7 +341,7 @@ const amenities = computed(() => {
   const entry = garden.value!
 
   return [
-    ...entry.tags.map((tag) => ({ name: TAG_LABELS[tag] ?? tag, value: true })),
+    ...entry.tags.map((tag) => ({ name: tagLabel(tag), value: true })),
     // Both cases are on the page — "nur Bedienung" is the same statement as
     // `value: false`, written the way a chip has to write it.
     ...(entry.selfService === null ? [] : [{ name: SELF_SERVICE, value: entry.selfService }]),
@@ -376,7 +362,7 @@ const menu = computed(() => {
     '@type': 'Menu',
     hasMenuItem: prices.map((price) => ({
       '@type': 'MenuItem',
-      name: `${BEER_KIND_LABELS[price.kind] ?? price.kind}, ${formatBeerSize(price.sizeMl)}`,
+      name: `${beerKind(price.kind)}, ${beerSize(price.sizeMl)}`,
       offers: {
         '@type': 'Offer',
         price: (price.cents / 100).toFixed(2),
@@ -424,7 +410,7 @@ useJsonLd(() => {
         amenityFeature: amenities.value,
         hasMenu: menu.value,
         additionalProperty: brewery.value
-          ? { '@type': 'PropertyValue', name: 'Ausschank', value: brewery.value }
+          ? { '@type': 'PropertyValue', name: t('garden.pour'), value: brewery.value }
           : null,
       }),
       {
@@ -457,7 +443,7 @@ useJsonLd(() => {
       <div class="hero-plate">
         <!-- The garden's name is what this page is about, so it is the h1. -->
         <h1>{{ garden.name }}</h1>
-        <span v-if="visited" class="seen">warst du</span>
+        <span v-if="visited" class="seen">{{ t('common.seen') }}</span>
       </div>
     </div>
 
@@ -467,39 +453,39 @@ useJsonLd(() => {
           {{ metaLine(
             brewery,
             garden.district,
-            formatSeats(garden.seats),
-            leg ? `≈${leg.min} min ab ${state.startPoint.name}` : null,
+            formatSeatCount(garden.seats),
+            leg ? t('garden.travelLine', { min: leg.min, start: state.startPoint.name }) : null,
           ) }}
         </div>
-        <div v-if="isOnWater(garden)" class="water">Am Wasser</div>
+        <div v-if="isOnWater(garden)" class="water">{{ t('common.onWater') }}</div>
 
         <p v-if="garden.description" class="desc">{{ garden.description }}</p>
         <div v-if="garden.caveat" class="warnbox">{{ garden.caveat }}</div>
 
-        <div class="section-title"><h2>Ausstattung</h2><div class="rule" /></div>
+        <SectionTitle :title="t('garden.equipment')" />
         <div class="facts">
           <span
             v-for="tag in garden.tags"
             :key="tag"
             class="fact"
-          >{{ TAG_LABELS[tag] ?? tag }}</span>
-          <span class="fact">{{ garden.selfService ? SELF_SERVICE : 'nur Bedienung' }}</span>
+          >{{ tagLabel(tag) }}</span>
+          <span class="fact">{{ garden.selfService ? SELF_SERVICE : t('common.servedOnly') }}</span>
           <span v-if="garden.ownFoodAllowed" class="fact">{{ OWN_FOOD }}</span>
           <span v-if="garden.stationWalkMin !== null" class="fact">
-            {{ garden.stationWalkMin }} min von der Haltestelle
+            {{ t('garden.stationWalk', { min: garden.stationWalkMin }) }}
           </span>
-          <span class="fact">{{ garden.zone === 'umland' ? 'Umland' : 'Stadtgebiet' }}</span>
+          <span class="fact">{{ garden.zone === 'umland' ? t('garden.zoneUmland') : t('garden.zoneCity') }}</span>
         </div>
 
         <div class="actions">
-          <NuxtLink class="btn on" to="/planer">Tour hierhin bauen</NuxtLink>
+          <NuxtLink class="btn on" to="/planer">{{ t('garden.planHere') }}</NuxtLink>
           <button
             class="btn"
             :class="{ warn: visited }"
             @click="planner.toggleVisited(garden.slug)"
-          >{{ visited ? 'Warst du schon' : 'War ich schon' }}</button>
+          >{{ visited ? t('garden.seenAlready') : t('common.markSeen') }}</button>
           <a class="btn gold" :href="mapsSearchUrl(garden.name)" target="_blank" rel="noopener">
-            Auf Google Maps
+            {{ t('garden.onGoogleMaps') }}
           </a>
         </div>
 
@@ -509,13 +495,13 @@ useJsonLd(() => {
           reason: this is the page a search by name lands on, and until now it
           said less about the garden than the directory row that links to it.
         -->
-        <ContentSection id="einordnung" class="prose" title="Was für ein Garten das ist">
+        <ContentSection id="einordnung" class="prose" :title="t('garden.aboutTitle')">
           <p>{{ placement }}</p>
           <p v-if="service">{{ service }}</p>
           <p v-if="character">{{ character }}</p>
         </ContentSection>
 
-        <ContentSection id="anfahrt" class="prose" title="Anfahrt">
+        <ContentSection id="anfahrt" class="prose" :title="t('garden.accessTitle')">
           <p>{{ access }}</p>
 
           <!--
@@ -525,9 +511,13 @@ useJsonLd(() => {
           -->
           <template v-if="leg">
             <p>
-              Ab {{ state.startPoint.name }} rechnet der Planer mit ≈{{ leg.walk }} min zu Fuß,
-              ≈{{ leg.bike }} min mit dem Radl und ≈{{ leg.transit }} min mit dem ÖPNV, bei
-              {{ formatKm(leg.km) }} Luftlinie. Für die echte Verbindung:
+              {{ t('garden.prose.plannerTimes', {
+                start: state.startPoint.name,
+                walk: leg.walk,
+                bike: leg.bike,
+                transit: leg.transit,
+                km: formatKm(leg.km),
+              }) }}
             </p>
             <ModeLinks
               :from="state.startPoint"
@@ -539,12 +529,14 @@ useJsonLd(() => {
           </template>
         </ContentSection>
 
-        <ContentSection id="in-der-naehe" class="prose" title="Biergärten in der Nähe">
+        <ContentSection id="in-der-naehe" class="prose" :title="t('garden.nearbyTitle')">
           <p v-if="nearest">
-            Der nächste andere Biergarten ist
-            <NuxtLink :to="gardenLink(nearest.garden)">{{ nearest.garden.name }}</NuxtLink>,
-            {{ formatKm(nearest.km) }} Luftlinie entfernt. Für eine Tour über mehrere Stationen
-            sind diese die naheliegenden Nachbarn:
+            <i18n-t keypath="garden.prose.nearest">
+              <template #link>
+                <NuxtLink :to="gardenPath(nearest.garden.slug)">{{ nearest.garden.name }}</NuxtLink>
+              </template>
+              <template #km>{{ formatKm(nearest.km) }}</template>
+            </i18n-t>
           </p>
 
           <div class="glist">
@@ -552,41 +544,45 @@ useJsonLd(() => {
           </div>
 
           <p v-if="sameDistrict.length">
-            Im selben Stadtteil {{ sameDistrict.length === 1 ? 'liegt' : 'liegen' }} außerdem
+            {{ sameDistrict.length === 1 ? t('garden.prose.sameDistrictOne') : t('garden.prose.sameDistrictMany') }}
             <template v-for="(entry, index) in sameDistrict" :key="entry.slug"><span
               v-if="index > 0"
-            >{{ index === sameDistrict.length - 1 ? ' und ' : ', ' }}</span><NuxtLink
-              :to="gardenLink(entry)"
+            >{{ index === sameDistrict.length - 1 ? t('garden.prose.and') : t('garden.prose.comma') }}</span><NuxtLink
+              :to="gardenPath(entry.slug)"
             >{{ entry.name }}</NuxtLink></template>.
           </p>
 
           <p v-if="sameBrewery.length">
-            Denselben Ausschank {{ sameBrewery.length === 1 ? 'hat' : 'haben' }}
+            {{ sameBrewery.length === 1 ? t('garden.prose.sameBreweryOne') : t('garden.prose.sameBreweryMany') }}
             <template v-for="(entry, index) in sameBrewery" :key="entry.slug"><span
               v-if="index > 0"
-            >{{ index === sameBrewery.length - 1 ? ' und ' : ', ' }}</span><NuxtLink
-              :to="gardenLink(entry)"
+            >{{ index === sameBrewery.length - 1 ? t('garden.prose.and') : t('garden.prose.comma') }}</span><NuxtLink
+              :to="gardenPath(entry.slug)"
             >{{ entry.name }}</NuxtLink></template>.
           </p>
 
           <p>
-            Alle {{ gardens.length }} erfassten Gärten, filterbar nach Ausschank, Lage und
-            Selbstbedienung, stehen im
-            <NuxtLink to="/verzeichnis">Verzeichnis</NuxtLink>. Wer daraus einen ganzen Abend machen
-            will, lässt sich im <NuxtLink to="/planer">Planer</NuxtLink> eine Tour über mehrere
-            Stationen bauen.
+            <i18n-t keypath="garden.prose.allGardens">
+              <template #count>{{ gardens.length }}</template>
+              <template #directory>
+                <NuxtLink to="/verzeichnis">{{ t('garden.prose.allGardensDirectory') }}</NuxtLink>
+              </template>
+              <template #planner>
+                <NuxtLink to="/planer">{{ t('garden.prose.allGardensPlanner') }}</NuxtLink>
+              </template>
+            </i18n-t>
           </p>
         </ContentSection>
       </div>
 
       <aside class="entity-side">
-        <div class="section-title"><h2>Was die Maß kostet</h2><div class="rule" /></div>
+        <SectionTitle :title="t('garden.priceTitle')" />
         <BeerPriceList :garden="garden" />
 
-        <div class="section-title"><h2>Öffnungszeiten</h2><div class="rule" /></div>
+        <SectionTitle :title="t('garden.hoursTitle')" />
         <OpeningHoursTable :garden="garden" :today="today" />
 
-        <div class="section-title"><h2>Wo es liegt</h2><div class="rule" /></div>
+        <SectionTitle :title="t('garden.whereTitle')" />
         <ClientOnly>
           <GardenMap :garden="garden" />
         </ClientOnly>

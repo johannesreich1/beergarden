@@ -24,7 +24,24 @@ export const priceFor = (garden: Garden, kind: string, sizeMl: number): BeerPric
 export const massPrice = (garden: Garden): BeerPrice | undefined =>
   priceFor(garden, REFERENCE_KIND, MASS_ML)
 
-export const isOnWater = (garden: Garden): boolean => garden.tags.includes('wasser')
+/**
+ * The tag vocabulary of the dataset.
+ *
+ * Tags are data, and the data speaks German — that stays. What must not
+ * happen is code comparing against a loose 'wasser' in five places: which
+ * slug means what is stated here, once, and everything else refers to it.
+ */
+export const TAGS = {
+  water: 'wasser',
+  forest: 'wald',
+  city: 'stadt',
+  view: 'aussicht',
+  cellar: 'keller',
+  playground: 'spielplatz',
+  music: 'musik',
+} as const
+
+export const isOnWater = (garden: Garden): boolean => garden.tags.includes(TAGS.water)
 
 /**
  * "ein Biergarten" or "17 Biergärten".

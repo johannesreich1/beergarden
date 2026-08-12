@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Garden, Mode, PlanningMode, Route, StartPoint } from '#core'
-import { brewerySlug, formatClock, formatDuration, isOnWater, travelTimes } from '#core'
+import { TAGS, brewerySlug, formatClock, formatDuration, isOnWater, travelTimes } from '#core'
 
 const props = defineProps<{
   route: Route
@@ -16,9 +16,10 @@ const props = defineProps<{
 
 defineEmits<{ take: [] }>()
 
-const stops = computed(() => props.route.slugs.map(
-  (slug) => props.gardens.find((garden) => garden.slug === slug)!,
-))
+const { t } = useI18n()
+const { stays: formatStays } = useFormats()
+
+const stops = computed(() => gardensFor(props.route.slugs, props.gardens))
 
 // Not just "you know some of these" but which ones. Otherwise you have to
 // pick the tour first to see what the hint refers to.
@@ -33,7 +34,7 @@ const totals = computed(() => {
   const sums: Record<Mode, number> = { walk: 0, bike: 0, transit: 0 }
 
   for (let i = 0; i < points.length - 1; i++) {
-    const times = travelTimes(points[i], points[i + 1])
+    const times = travelTimes(points[i]!, points[i + 1]!)
     sums.walk += times.walk
     sums.bike += times.bike
     sums.transit += times.transit
@@ -41,8 +42,6 @@ const totals = computed(() => {
 
   return sums
 })
-
-const MODES: Mode[] = ['walk', 'bike', 'transit']
 
 const isSelectedMode = (candidate: Mode) =>
   props.mode === candidate ||
@@ -53,12 +52,12 @@ const isSelectedMode = (candidate: Mode) =>
 const tags = computed(() => {
   const labels: { text: string, water: boolean }[] = []
 
-  if (stops.value.some(isOnWater)) labels.push({ text: 'am Wasser', water: true })
-  if (stops.value.some((g) => g.tags.includes('wald'))) labels.push({ text: 'Grün', water: false })
-  if (stops.value.some((g) => g.tags.includes('stadt'))) labels.push({ text: 'Stadt', water: false })
-  if (stops.value.some((g) => g.tags.includes('aussicht'))) labels.push({ text: 'Aussicht', water: false })
+  if (stops.value.some(isOnWater)) labels.push({ text: t('suggestion.tagWater'), water: true })
+  if (stops.value.some((g) => g.tags.includes(TAGS.forest))) labels.push({ text: t('suggestion.tagGreen'), water: false })
+  if (stops.value.some((g) => g.tags.includes(TAGS.city))) labels.push({ text: t('suggestion.tagCity'), water: false })
+  if (stops.value.some((g) => g.tags.includes(TAGS.view))) labels.push({ text: t('suggestion.tagView'), water: false })
   if (stops.value.some((g) => props.visited.has(g.slug))) {
-    labels.push({ text: 'kennst du teilweise', water: false })
+    labels.push({ text: t('suggestion.partlyKnown'), water: false })
   }
 
   return labels
@@ -86,12 +85,16 @@ const breweries = computed(() =>
     :open="active"
   >
     <summary
-      :title="active ? 'Deine Tour' : 'Diese Tour nehmen'"
+      :title="active ? t('suggestion.yours') : t('suggestion.take')"
+      :aria-label="t('suggestion.takeAria', {
+        action: active ? t('suggestion.yours') : t('suggestion.take'),
+        chain: chain.map((stop) => stop.name).join(', '),
+      })"
       @click.prevent="$emit('take')"
     >
     <span class="ptop">
-      <span class="rank">{{ rank === 0 ? 'Bester Treffer' : `Alternative ${rank}` }}</span>
-      <span v-if="active" class="seen">deine Tour</span>
+      <span class="rank">{{ rank === 0 ? t('suggestion.best') : t('suggestion.alternative', { n: rank }) }}</span>
+      <span v-if="active" class="seen">{{ t('suggestion.yoursStamp') }}</span>
       <span class="tot">
         {{ formatClock(startMinutes) }}–{{ formatClock(route.end) }} ·
         {{ formatDuration(route.end - startMinutes) }}
@@ -101,7 +104,7 @@ const breweries = computed(() =>
     <span class="chain">
       <template v-for="(stop, index) in chain" :key="stop.name">
         <span v-if="index > 0"> → </span>{{ stop.name
-        }}<span v-if="stop.visited" class="seen small">warst du</span>
+        }}<span v-if="stop.visited" class="seen small">{{ t('common.seen') }}</span>
       </template>
     </span>
 
@@ -114,7 +117,7 @@ const breweries = computed(() =>
     </summary>
 
     <div class="paktionen">
-    <div class="pmeta">{{ formatStays(route.stays) }} pro Station · {{ route.travel }} min unterwegs</div>
+    <div class="pmeta">{{ t('suggestion.perStation', { stays: formatStays(route.stays), travel: route.travel }) }}</div>
 
     <div class="legmodes">
       <span
@@ -122,7 +125,7 @@ const breweries = computed(() =>
         :key="option"
         class="lm"
         :class="{ sel: isSelectedMode(option) }"
-      >{{ MODE_LABELS[option] }} <b>{{ totals[option] }}</b> min</span>
+      >{{ t(`modes.${option}`) }} <b>{{ totals[option] }}</b> min</span>
     </div>
 
     <div class="ptags">

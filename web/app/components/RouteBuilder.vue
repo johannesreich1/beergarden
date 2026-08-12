@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Marker } from 'maplibre-gl'
 import type { Candidate, Garden, PlannerOptions } from '#core'
 import { formatClock, nextStops } from '#core'
 
@@ -34,6 +33,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{ add: [slug: string], remove: [slug: string] }>()
 
+const { t } = useI18n()
+
 const container = ref<HTMLElement>()
 
 const candidates = computed(() =>
@@ -44,11 +45,7 @@ const candidates = computed(() =>
 const pickable = (candidate: Candidate) =>
   props.timeMode === 'flexible' ? candidate.reason !== 'closed' : candidate.fits
 
-const chosenGardens = computed(() =>
-  props.chosen
-    .map((slug) => props.gardens.find((garden) => garden.slug === slug))
-    .filter((garden) => garden !== undefined),
-)
+const chosenGardens = computed(() => gardensFor(props.chosen, props.gardens))
 
 /*
  * Framed once, then left alone.
@@ -67,7 +64,7 @@ const { map } = useMap(container, {
   zoom: 11.6,
 })
 
-const markers: Marker[] = []
+const { markers, clear } = useMapMarkers()
 
 /**
  * A marker's label: the name, and under it the minutes.
@@ -111,33 +108,12 @@ function drawLegs(instance: NonNullable<typeof map.value>): void {
   // early this throws — and because it ran first, it took every marker with it.
   if (!instance.isStyleLoaded()) return
 
-  const stops = chosenGardens.value
-  let previous: { lat: number, lon: number } = props.options.start
+  const stops = chosenGardens.value.map((garden, index) => ({
+    place: garden,
+    mode: props.legs?.[index]?.mode ?? 'walk',
+  }))
 
-  const features: GeoJSON.Feature[] = stops.map((garden, index) => {
-    const leg = props.legs?.[index]
-    const feature: GeoJSON.Feature = {
-      type: 'Feature',
-      properties: { mode: leg?.mode ?? 'walk' },
-      geometry: { type: 'LineString', coordinates: [point(previous), point(garden)] },
-    }
-    previous = garden
-
-    return feature
-  })
-
-  ensureSource(instance, 'legs', { type: 'FeatureCollection', features })
-
-  for (const [mode, paint] of Object.entries(legPaint())) {
-    ensureLayer(instance, {
-      id: `leg-${mode}`,
-      type: 'line',
-      source: 'legs',
-      filter: ['==', ['get', 'mode'], mode],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': paint.color, 'line-width': 3, 'line-dasharray': paint.dash },
-    })
-  }
+  drawLegLayers(instance, legFeatures(props.options.start, stops))
 }
 
 async function draw(): Promise<void> {
@@ -148,7 +124,7 @@ async function draw(): Promise<void> {
   // down must not be able to take them with it again.
 
   const { Marker } = await import('maplibre-gl')
-  for (const marker of markers.splice(0)) marker.remove()
+  clear()
 
   markers.push(
     new Marker(mapPin('start', props.options.start.name))
@@ -159,9 +135,13 @@ async function draw(): Promise<void> {
   chosenGardens.value.forEach((garden, index) => {
     // The number is what fits on a marker; what a tap does belongs in the
     // tooltip. A marker that explains itself is a marker that runs off the map.
-    const pin = label(mapPin('on', ''), shortName(garden.name), `Station ${index + 1}`)
+    const pin = label(
+      mapPin('on', '', t('builder.removePin', { name: garden.name })),
+      shortName(garden.name),
+      t('builder.station', { n: index + 1 }),
+    )
     pin.element.classList.add('pick')
-    pin.element.title = 'Aus der Tour nehmen'
+    pin.element.title = t('builder.removeTitle')
     pin.element.addEventListener('click', () => emit('remove', garden.slug))
     markers.push(new Marker(pin).setLngLat(point(garden)).addTo(instance))
   })
@@ -172,14 +152,27 @@ async function draw(): Promise<void> {
 
   candidates.value.forEach((candidate, index) => {
     const offen = pickable(candidate)
-    const pin = label(mapPin('off', ''), shortName(candidate.garden.name), `${candidate.legMinutes} min`)
+    const pin = label(
+      mapPin('off', '', offen
+        ? t('builder.addPin', {
+            name: candidate.garden.name,
+            minutes: candidate.legMinutes,
+            arrival: formatClock(candidate.arrival),
+          })
+        : undefined),
+      shortName(candidate.garden.name),
+      t('common.minutes', { min: candidate.legMinutes }),
+    )
     pin.element.classList.add('cand', offen ? 'reachable' : 'faded')
     if (index < NAH) pin.element.classList.add('nah')
 
     if (offen) {
       pin.element.addEventListener('click', () => emit('add', candidate.garden.slug))
       // The unnamed ones say who they are here instead.
-      pin.element.title = `${candidate.garden.name} · Ankunft ${formatClock(candidate.arrival)}`
+      pin.element.title = t('builder.arrivalTitle', {
+        name: candidate.garden.name,
+        arrival: formatClock(candidate.arrival),
+      })
     }
     markers.push(new Marker(pin).setLngLat(point(candidate.garden)).addTo(instance))
   })
@@ -193,30 +186,21 @@ watch([map, candidates], () => { if (map.value) draw() }, { immediate: true })
 watch(map, (instance) => {
   instance?.on('load', () => draw())
 })
-
-
-onBeforeUnmount(() => {
-  for (const marker of markers.splice(0)) marker.remove()
-})
 </script>
 
 <template>
   <div class="map-shell builder-map">
     <div ref="container" class="map-canvas" />
 
-    <div v-if="chosen.length" class="map-legend">
-      <div><i style="border-color: var(--leg-walk); border-top-style: dotted" />zu Fuß</div>
-      <div><i style="border-color: var(--leg-bike); border-top-style: dashed" />Rad</div>
-      <div><i style="border-color: var(--leg-transit); border-top-style: dashed" />ÖPNV</div>
-    </div>
+    <MapLegend v-if="chosen.length" />
 
     <!-- An empty map has to say why it is empty. Filters are set on the left,
          two columns away, and nothing on the map itself hints at them. -->
     <p v-if="!candidates.length && !chosen.length" class="builder-hint">
-      <b>Keiner passt zu deinen Filtern.</b> Nimm links eine Bedingung raus.
+      <b>{{ t('builder.emptyFiltered') }}</b> {{ t('builder.emptyFilteredHint') }}
     </p>
     <p v-else-if="!chosen.length" class="builder-hint">
-      <b>Tipp einen Biergarten an.</b> Danach zeigt dir die Karte, was von dort aus noch geht.
+      <b>{{ t('builder.emptyStart') }}</b> {{ t('builder.emptyStartHint') }}
     </p>
   </div>
 </template>

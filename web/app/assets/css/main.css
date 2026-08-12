@@ -514,6 +514,9 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
 .plan .pmeta{margin-top:8px;font-family:var(--mono);font-size:14.5px;letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted)}
 .plan .ptags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+/* A closing-day note wears the amber of every other caution on the page.
+   The token, not a copied value: the two themes need two ambers. */
+.ptag.zu{color:var(--amber)}
 .ptag{font-family:var(--mono);font-size:14px;letter-spacing:.06em;text-transform:uppercase;
   padding:4px 9px;color:var(--text-soft);box-shadow:inset 0 0 0 1px var(--edge-soft)}
 .ptag.w{color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
@@ -581,6 +584,11 @@ input[type=range]{width:100%;accent-color:var(--gold);background:transparent}
  * back upright inside a rotated box costs more than putting it next to one.
  */
 .pin{display:flex;align-items:center;gap:6px;cursor:pointer}
+/* An interactive pin is a real <button> — on the builder the map IS the list,
+   and a div-only map is a list the keyboard cannot reach. The reset keeps it
+   looking like every other pin; the outline is the keyboard's place marker. */
+button.pin{background:none;border:0;padding:0;margin:0;font:inherit;text-align:left}
+.pin:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .pin i{width:13px;height:13px;flex:none;transform:rotate(45deg);
   background:var(--gold);box-shadow:0 0 0 1.5px var(--map-ground)}
 .pin b{font-family:var(--display);font-size:14.5px;font-weight:900;letter-spacing:.04em;
@@ -971,9 +979,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   /* Stretching two switches across 1400 px does not make them more important,
      only harder to hit — the mouse has further to travel. */
   .seg{max-width:640px}
-  /* Only once a tour is chosen is there a third column. Otherwise an empty
-     gutter would sit there and the grid would look broken. */
-  .stage.three-column{grid-template-columns:330px minmax(0,.85fr) minmax(0,1.2fr)}
   .glist{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 }
 
@@ -1090,28 +1095,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   background:transparent;color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold)}
 .timemode button[aria-pressed="true"]{background:var(--gold);color:var(--on-accent)}
 
-/*
- * Picking on the map takes the width the suggestions gave up.
- *
- * The builder used to sit inside the narrow suggestion column, where its own
- * two-column split fired on viewport width while the container was 430px —
- * the sheet then landed on top of the map. A map you pick from has to be the
- * biggest thing on the page; that is the whole point of the mode.
- */
-@media(min-width:1000px){
-  .stage.self-mode{grid-template-columns:minmax(290px,320px) minmax(0,1fr)}
-  /* The tour goes under the map, in the map's column — the stops you picked
-     belong beneath the thing you picked them on, not in a third column that
-     would take the width away from the map again.
-
-     The controls span both rows, otherwise the first row is as tall as that
-     long filter column and the tour lands a screen and a half below the map
-     it belongs to. */
-  .stage.self-mode .controls{grid-row:1 / span 2}
-  .stage.self-mode .results{grid-column:2;grid-row:1}
-  .stage.self-mode .tour-column{grid-column:2;grid-row:2}
-}
-
 /* The far ones carry minutes only — short enough that the frame never cuts a
    name in half, and quiet enough that the near ones stand out. */
 .pin.cand.bare b{font-family:var(--body);font-weight:400;font-size:14px;
@@ -1194,23 +1177,6 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
-/* ----------------------------------------------- Controls: simple or all */
-/* The switch stands with the dials it opens. Same shape as the mode switch
-   above it, because it does the same kind of thing: it changes what you see,
-   not what the tour is. */
-.alle-regler{display:flex;align-items:center;gap:10px;margin:16px 0 0;width:100%;
-  background:transparent;border:0;cursor:pointer;color:var(--text-soft);font:inherit;
-  font-size:15.5px;padding:4px 0}
-.alle-regler .gleis{width:46px;height:24px;background:var(--edge);position:relative;flex:none}
-.alle-regler .gleis i{position:absolute;top:3px;left:3px;width:18px;height:18px;
-  background:var(--surface);transition:left .16s}
-.alle-regler[aria-pressed="true"] .gleis{background:var(--gold)}
-.alle-regler[aria-pressed="true"] .gleis i{left:25px}
-.alle-regler:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
-
-/* Last in the column, after everything it undoes. */
-.zuruecksetzen{display:block;width:100%;margin-top:18px;text-align:center}
-
 /* ==========================================================================
    THE SCHANKLEISTE — filters as a small menu on a brass rail
 
@@ -1240,26 +1206,33 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
 .rchip.an{transform:rotate(-2.2deg)}
 .rchip[aria-expanded="true"]{box-shadow:inset 0 0 0 3px var(--blue)}
 .rchip:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
-.rail-zeile .alle-regler{margin:0;width:auto;white-space:nowrap;align-self:center}
 .rail-rest{margin-left:auto;display:flex;align-items:center}
 /* The reset speaks the same stamp language as every other button — a bare
    underlined link next to a stamped switch looked borrowed from another site.
    Smaller than a regular stamp: it undoes, it does not invite. */
 .rail-rest .rail-reset{font-size:14px;padding:5px 9px;letter-spacing:.05em;
   white-space:nowrap;align-self:center}
-.rail-rest .alle-regler{margin:0;width:auto;white-space:nowrap}
 
 /* Chosen wishes, small. Solid ink on purpose: at this size the break eats
-   legibility, and the tilt alone already says stamp. */
+   legibility, and the tilt alone already says stamp. Real <button>s: a div
+   with a role gets Enter wired by hand and forgets Space every time. */
 .klein{display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:10px 0 0}
-.klein b{font-family:var(--display);font-size:14px;font-weight:900;
+.klein .wunsch{border:0;font-family:var(--display);font-size:14px;font-weight:900;
   text-transform:uppercase;letter-spacing:.03em;color:var(--on-accent);
   background:var(--blue);padding:4px 9px;transform:rotate(-1.2deg);
   white-space:nowrap;cursor:pointer}
-.klein b:nth-child(2n){transform:rotate(1deg);background:var(--amber)}
-.klein b:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.klein .wunsch:nth-child(2n){transform:rotate(1deg);background:var(--amber)}
+.klein .wunsch:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .klein .aufheben{border:0;background:none;cursor:pointer;font:14.5px var(--body);
   color:var(--text-soft);text-decoration:underline;text-underline-offset:3px}
+
+/* Compact controls keep their compact look, not their compact target: the
+   invisible pad brings each one toward the 44px a finger needs. */
+.klein .wunsch,.klein .aufheben,.step,.dur button,.rail-reset{position:relative}
+.klein .wunsch::after,.klein .aufheben::after{content:'';position:absolute;inset:-5px}
+.step::after{content:'';position:absolute;inset:-3px}
+.dur button::after{content:'';position:absolute;inset:-7px -4px}
+.rail-reset::after{content:'';position:absolute;inset:-8px -4px}
 
 /* ------------------------------------------------------------- The panels */
 /* Native popovers: light dismiss, Escape and the top layer come from the
@@ -1270,7 +1243,9 @@ table.prices .amount{text-align:right;color:var(--gold);font-weight:700;white-sp
   box-shadow:inset 0 0 0 3px var(--edge),0 14px 34px rgba(0,0,0,.3);
   padding:16px;min-width:min(320px,92vw);max-width:min(440px,94vw)}
 .rpanel::backdrop{background:rgba(0,0,0,.28)}
-.rpanel h3{margin:0 0 4px;font-family:var(--display);font-size:17px;font-weight:900;
+/* An h2, not an h3: the panels sit before the page's other h2 sections, and
+   a document that jumps h1 → h3 reads as if a level went missing. */
+.rpanel h2{margin:0 0 4px;font-family:var(--display);font-size:17px;font-weight:900;
   letter-spacing:.02em;text-transform:uppercase}
 .rpanel p{margin:0 0 12px;font-size:15px;color:var(--text-soft)}
 .rpanel .grid{display:flex;flex-wrap:wrap;gap:8px}

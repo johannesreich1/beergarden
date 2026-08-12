@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Map as MapLibreMap, Marker } from 'maplibre-gl'
+import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { Garden, ScheduleRow, StartPoint } from '#core'
 
 /**
@@ -20,47 +20,18 @@ const props = defineProps<{
 
 const emit = defineEmits<{ select: [slug: string] }>()
 
+const { t } = useI18n()
+
 const container = ref<HTMLElement>()
 
 const activeSlugs = computed(() => new Set(props.rows.map((row) => row.garden.slug)))
 
 /** The legs actually travelled, one line each, tagged with their mode. */
-const legs = computed<GeoJSON.FeatureCollection>(() => {
-  let previous: StartPoint | Garden = props.start
+const legs = computed(() =>
+  legFeatures(props.start, props.rows.map((row) => ({ place: row.garden, mode: row.legMode }))),
+)
 
-  return {
-    type: 'FeatureCollection',
-    features: props.rows.map((row) => {
-      const feature: GeoJSON.Feature = {
-        type: 'Feature',
-        properties: { mode: row.legMode },
-        geometry: { type: 'LineString', coordinates: [point(previous), point(row.garden)] },
-      }
-      previous = row.garden
-
-      return feature
-    }),
-  }
-})
-
-function drawLegs(map: MapLibreMap): void {
-  ensureSource(map, 'legs', legs.value)
-
-  for (const [mode, paint] of Object.entries(legPaint())) {
-    ensureLayer(map, {
-      id: `leg-${mode}`,
-      type: 'line',
-      source: 'legs',
-      filter: ['==', ['get', 'mode'], mode],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: {
-        'line-color': paint.color,
-        'line-width': 3,
-        'line-dasharray': paint.dash,
-      },
-    })
-  }
-}
+const drawLegs = (map: MapLibreMap): void => drawLegLayers(map, legs.value)
 
 /** Everything the map has to show: the start and every stop drawn on it. */
 const framed = computed(() => [props.start, ...props.planned].map(point))
@@ -88,19 +59,19 @@ watch(framed, (points) => fit(points))
 // An edit to the plan moves the legs, not their styling: updating the source
 // keeps the map from flickering on every turn of a dial.
 watch(legs, (value) => {
-  const source = map.value?.getSource('legs')
-  if (source && 'setData' in source) source.setData(value)
+  const source = map.value?.getSource<import('maplibre-gl').GeoJSONSource>('legs')
+  source?.setData(value)
 })
 
 /** One marker per stop, rebuilt whenever the plan changes. */
-const markers: Marker[] = []
+const { markers, clear } = useMapMarkers()
 
 async function placeMarkers(): Promise<void> {
   if (!map.value) return
 
   const { Marker } = await import('maplibre-gl')
 
-  for (const marker of markers.splice(0)) marker.remove()
+  clear()
 
   markers.push(
     new Marker(mapPin('start', props.start.name))
@@ -109,7 +80,11 @@ async function placeMarkers(): Promise<void> {
   )
 
   for (const garden of props.planned) {
-    const options = mapPin(activeSlugs.value.has(garden.slug) ? 'on' : 'off', shortName(garden.name))
+    const options = mapPin(
+      activeSlugs.value.has(garden.slug) ? 'on' : 'off',
+      shortName(garden.name),
+      t('tourMap.showStop', { name: garden.name }),
+    )
     options.element.addEventListener('click', () => emit('select', garden.slug))
 
     markers.push(new Marker(options).setLngLat(point(garden)).addTo(map.value))
@@ -121,20 +96,11 @@ async function placeMarkers(): Promise<void> {
 watch([map, () => props.planned, activeSlugs, () => props.start], () => {
   if (map.value) placeMarkers()
 }, { immediate: true })
-
-onBeforeUnmount(() => {
-  for (const marker of markers.splice(0)) marker.remove()
-})
 </script>
 
 <template>
   <div class="map-shell">
     <div ref="container" class="map-canvas" />
-
-    <div class="map-legend">
-      <div><i style="border-color: var(--leg-walk); border-top-style: dotted" />zu Fuß</div>
-      <div><i style="border-color: var(--leg-bike); border-top-style: dashed" />Rad</div>
-      <div><i style="border-color: var(--leg-transit); border-top-style: dashed" />ÖPNV</div>
-    </div>
+    <MapLegend />
   </div>
 </template>

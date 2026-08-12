@@ -1,7 +1,6 @@
-import { distanceKm } from './geo'
 import { planLeg, travelTimes } from './travel'
 import { stayAt } from './stay'
-import type { Garden, Leg, Mode, Plan, PlannerOptions, PlanningMode, Route, StartPoint, Waypoint } from './types'
+import type { Garden, Leg, Mode, PlannerOptions, PlanningMode, Route, StartPoint, Waypoint } from './types'
 
 /**
  * The schedule of a chosen tour, after the user has adjusted it.
@@ -100,9 +99,11 @@ export function planFromSlugs(
    */
   const legFor = (a: Waypoint, b: Waypoint, key: string): Leg => {
     const chosen = legModes[key]
-    if (!chosen) return planLeg(a, b, options.mode, options.maxLegMinutes)
+    const leg = planLeg(a, b, options.mode, options.maxLegMinutes)
+    if (!chosen) return leg
 
-    return { min: travelTimes(a, b)[chosen], mode: chosen, km: distanceKm(a, b) }
+    // Same table, different pick: only which of the three counts changes.
+    return { ...leg, min: travelTimes(a, b)[chosen], mode: chosen }
   }
 
   let previous: Waypoint = options.start
@@ -145,20 +146,22 @@ export function buildSchedule(
   const active: { garden: Garden; legMinutes: number; legMode: Mode; stay: number }[] = []
   let carried = 0
 
+  // The `!` on each index is the plan's own shape: slugs, legs and stays are
+  // three views of the same list, so an index valid for one holds for all.
   for (const [index, garden] of (planned as Garden[]).entries()) {
     if (options.skipped.has(garden.slug)) {
-      carried += plan.legs[index].min
+      carried += plan.legs[index]!.min
       continue
     }
 
     active.push({
       garden,
-      stay: plan.stays[index],
-      legMinutes: plan.legs[index].min + carried,
+      stay: plan.stays[index]!,
+      legMinutes: plan.legs[index]!.min + carried,
       // A skipped stop makes the leg longer, and the originally chosen mode no
       // longer fits. Public transport is the conservative assumption: better to
       // overestimate than to leave the user walking in the rain.
-      legMode: carried ? 'transit' : plan.legs[index].mode,
+      legMode: carried ? 'transit' : plan.legs[index]!.mode,
     })
 
     carried = 0
@@ -175,7 +178,7 @@ export function buildSchedule(
   const rows: ScheduleRow[] = []
 
   for (let i = 0; i <= cut; i++) {
-    const entry = active[i]
+    const entry = active[i]!
     clock += entry.legMinutes
     const arrive = clock
 
@@ -184,7 +187,7 @@ export function buildSchedule(
 
     rows.push({
       garden: entry.garden,
-      from: i === 0 ? options.start : active[i - 1].garden,
+      from: i === 0 ? options.start : active[i - 1]!.garden,
       legMinutes: entry.legMinutes,
       legMode: entry.legMode,
       arrive,
@@ -196,7 +199,7 @@ export function buildSchedule(
 
   if (!rows.length) return null
 
-  const back = planLeg(rows[rows.length - 1].garden, options.start, options.mode, options.maxLegMinutes)
+  const back = planLeg(rows[rows.length - 1]!.garden, options.start, options.mode, options.maxLegMinutes)
 
   return {
     rows,

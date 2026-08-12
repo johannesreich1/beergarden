@@ -1,0 +1,475 @@
+{
+  "site": {
+    "tagline": "Sag, wo du losgehst, wie lange du Zeit hast und was du willst — die Tour baut sich selbst, samt Alternativen. {stamped}",
+    "taglineStamped": "Wo du warst, wird abgestempelt.",
+    "description": "Biergarten-Touren für München: Sag, wo du losgehst und wie lange du Zeit hast — der Planer baut die Tour, mit Öffnungszeiten, Fahrzeiten und Sonnenuntergang."
+  },
+  "head": {
+    "eyebrow": "{date} · Sonnenuntergang {sunset}",
+    "eyebrowFallback": "Tourenplaner · München",
+    "sealAria": "Siegel: Biergarten Freunde, München"
+  },
+  "theme": {
+    "light": "Hell",
+    "dark": "Dunkel",
+    "switchTitle": "Ansicht: {current} — umschalten auf {next}",
+    "switchAria": "Ansicht: {current}. Umschalten auf {next}"
+  },
+  "nav": {
+    "plan": "Tour bauen",
+    "directory": "Alle Biergärten",
+    "info": "Informationen",
+    "groupAria": "Fußzeile"
+  },
+  "footer": {
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "contact": "Kontakt",
+    "accuracy": "Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte Verbindung auf die Modus-Angabe tippen. Wo beim Ausschank {ka} steht, war die Brauerei nicht sicher zu verifizieren. „Bei schönem Wetter“ heißt: der Wirt entscheidet morgens um neun.",
+    "accuracyKa": "k. A.",
+    "mapData": "Kartendaten",
+    "mapContributors": "© OpenStreetMap-Mitwirkende",
+    "mapLicence": "(ODbL) · Kacheln: Protomaps"
+  },
+  "tags": {
+    "wasser": "Am Wasser",
+    "wald": "Wald & Grün",
+    "stadt": "Stadtfeeling",
+    "aussicht": "Aussicht",
+    "keller": "Bierkeller",
+    "spielplatz": "Spielplatz",
+    "musik": "Live-Musik"
+  },
+  "modes": {
+    "walk": "zu Fuß",
+    "bike": "Rad",
+    "transit": "ÖPNV"
+  },
+  "planningModes": {
+    "mix": "Gemischt",
+    "walk": "Zu Fuß",
+    "bike": "Rad",
+    "transit": "ÖPNV"
+  },
+  "weekdays": {
+    "short": { "1": "Mo", "2": "Di", "3": "Mi", "4": "Do", "5": "Fr", "6": "Sa", "7": "So" },
+    "name": { "1": "Montag", "2": "Dienstag", "3": "Mittwoch", "4": "Donnerstag", "5": "Freitag", "6": "Samstag", "7": "Sonntag" },
+    "adverb": { "1": "montags", "2": "dienstags", "3": "mittwochs", "4": "donnerstags", "5": "freitags", "6": "samstags", "7": "sonntags" }
+  },
+  "extras": {
+    "waterRequired": "Mind. einer am Wasser",
+    "selfServiceOnly": "Selbstbedienung",
+    "ownFoodOnly": "Eigene Brotzeit",
+    "cityOnly": "Nur Stadtgebiet",
+    "unvisitedOnly": "Wo ich war: raus"
+  },
+  "beer": {
+    "kind": {
+      "hell": "Helles",
+      "weizen": "Weißbier",
+      "alkoholfrei": "Alkoholfrei",
+      "radler": "Radler",
+      "dunkel": "Dunkles"
+    },
+    "sizeMass": "Maß",
+    "sizeHalf": "Halbe",
+    "sizeMl": "{ml} ml",
+    "noPrices": "Noch keine Preise erhoben. Sie kommen mit dem Crawler — geschätzt wird hier nichts.",
+    "unverified": "Gegen keine Quelle verifiziert."
+  },
+  "seats": {
+    "unknown": "Größe unbekannt",
+    "count": "{n} Plätze"
+  },
+  "common": {
+    "details": "Details",
+    "seen": "warst du",
+    "markSeen": "War ich schon",
+    "onWater": "Am Wasser",
+    "selfService": "Selbstbedienung",
+    "servedOnly": "nur Bedienung",
+    "sunsetAt": "Sonnenuntergang {time}",
+    "minutes": "{min} min",
+    "minutesRange": "{min}–{max} min"
+  },
+  "rail": {
+    "whereQuestion": "Wo los",
+    "whenQuestion": "Wann & wie lange",
+    "howQuestion": "Unterwegs",
+    "wishesQuestion": "Wünsche",
+    "wishesNone": "egal",
+    "wishesCount": "{n} gewählt",
+    "reset": "Alles zurücksetzen",
+    "removeStamp": "{label} entfernen",
+    "clearAll": "alle aufheben",
+    "done": "Passt",
+    "where": {
+      "title": "Wo gehst du los?",
+      "hint": "Haltestelle oder Viertel — oder nimm deinen Standort.",
+      "inputLabel": "Haltestelle oder Viertel",
+      "locate": "Standort",
+      "unknown": "Kenne ich nicht — nimm eine Haltestelle aus der Liste.",
+      "locating": "Suche Position …",
+      "denied": "Standort nicht freigegeben — Haltestelle eintippen."
+    },
+    "when": {
+      "title": "Wann, und wie lange?",
+      "leave": "Losgehen",
+      "earlier": "15 Minuten früher losgehen",
+      "later": "15 Minuten später losgehen",
+      "dayQuestion": "Welcher Tag?",
+      "stopsQuestion": "Wie viele Stationen?"
+    },
+    "how": {
+      "title": "Wie bist du unterwegs?",
+      "hint": "Fahrzeiten sind Schätzungen — die echte Verbindung steht an jeder Etappe.",
+      "legCap": "Längste Etappe:",
+      "legCapLabel": "Längste Etappe",
+      "legCapNone": "egal",
+      "legCapMinutes": "{min} Minuten"
+    },
+    "wishes": {
+      "title": "Was soll dabei sein?",
+      "hint": "Nichts gewählt heißt: alles ist recht.",
+      "breweryQuestion": "Brauerei?"
+    }
+  },
+  "planner": {
+    "seoTitle": "Tour bauen",
+    "seoDescription": "Biergarten-Tour für München planen: Startpunkt, Zeitfenster und Verkehrsmittel wählen — der Planer schlägt Touren vor und rechnet Öffnungszeiten mit.",
+    "title": "Tour bauen",
+    "start": "Tour bauen",
+    "startNote": "{count} passen dazu. Ändern kannst du alles danach weiter — die Vorschläge rechnen dann live mit.",
+    "modeGroupAria": "Wie die Tour entsteht",
+    "suggestMode": "Vorschlagen lassen",
+    "selfMode": "Selbst planen",
+    "timeModeLine": "{budget} Zeit —",
+    "timeFixed": "fest",
+    "timeFixedAria": "Zeitfenster fest",
+    "timeFlexible": "flexibel",
+    "timeFlexibleAria": "Zeitfenster flexibel",
+    "suggestionsTitle": "Vorschläge",
+    "suggestionsNote": "Aus {count}, {weekday} geöffnet, Öffnungszeiten berücksichtigt.",
+    "previewTitle": "Vorschau",
+    "previewBack": "zurück um"
+  },
+  "dropped": {
+    "worksAgainTitle": "Tour geht wieder",
+    "worksAgainBody": "Mit diesen Einstellungen passt sie erneut. Unten bei den Alternativen kannst du sie zurückholen.",
+    "droppedTitle": "Tour verworfen",
+    "droppedBody": "{reason} Sie steht unten bei den Alternativen.",
+    "worksAgainRank": "Geht wieder",
+    "goneRank": "Geht nicht mehr",
+    "retake": "Wieder aufnehmen",
+    "closed": "{name} hat {weekday} geschlossen.",
+    "tooEarly": "{name}: Du wärst um {arrival} da, aufgesperrt wird erst um {opens}.",
+    "tooLate": "{name}: Sperrstunde {closes}, du kämst erst um {arrival} an. Für den Aufenthalt bliebe nichts übrig.",
+    "overBudget": "Die Tour dauert jetzt {total} und passt nicht mehr in dein Zeitfenster von {budget}.",
+    "missing": "{name} steht nicht mehr im Bestand."
+  },
+  "suggestion": {
+    "best": "Bester Treffer",
+    "alternative": "Alternative {n}",
+    "yours": "Deine Tour",
+    "yoursStamp": "deine Tour",
+    "take": "Diese Tour nehmen",
+    "takeAria": "{action}: {chain}",
+    "perStation": "{stays} pro Station · {travel} min unterwegs",
+    "tagGreen": "Grün",
+    "tagCity": "Stadt",
+    "tagView": "Aussicht",
+    "tagWater": "am Wasser",
+    "partlyKnown": "kennst du teilweise"
+  },
+  "stop": {
+    "open": "offen {from}–{to}",
+    "closedToday": "heute geschlossen",
+    "skipped": "ausgelassen",
+    "remove": "Aus der Tour",
+    "skip": "Auslassen",
+    "unskip": "Wieder rein",
+    "finish": "Hier Schluss",
+    "shorterAria": "Aufenthalt 15 Minuten kürzer",
+    "longerAria": "Aufenthalt 15 Minuten länger"
+  },
+  "timeline": {
+    "title": "Deine Tour",
+    "start": "Start",
+    "target": "Ziel",
+    "from": "ab {name}",
+    "transfers": "· Umstiege nicht gerechnet",
+    "back": "Zurück nach {name}",
+    "doorToDoor": "Von Tür zu Tür",
+    "overBudget": "Über deinem Zeitfenster von {budget}.",
+    "stations": "eine Station | {count} Stationen",
+    "totals": "{stations}, {walk} Minuten zu Fuß, zurück um {end}.",
+    "sunsetFinale": "Letzte Station geht in den Sonnenuntergang.",
+    "resetEdits": "Änderungen zurücksetzen"
+  },
+  "beam": {
+    "over": "{over} über deinem Zeitfenster — zurück um {end}."
+  },
+  "builder": {
+    "emptyFiltered": "Keiner passt zu deinen Filtern.",
+    "emptyFilteredHint": "Nimm links eine Bedingung raus.",
+    "emptyStart": "Tipp einen Biergarten an.",
+    "emptyStartHint": "Danach zeigt dir die Karte, was von dort aus noch geht.",
+    "removePin": "{name} aus der Tour nehmen",
+    "removeTitle": "Aus der Tour nehmen",
+    "addPin": "{name} in die Tour, ≈{minutes} min, Ankunft {arrival}",
+    "arrivalTitle": "{name} · Ankunft {arrival}",
+    "station": "Station {n}"
+  },
+  "tourMap": {
+    "showStop": "{name} im Ablauf zeigen"
+  },
+  "map": {
+    "zoomIn": "Hineinzoomen",
+    "zoomOut": "Herauszoomen",
+    "toggleAttribution": "Quellenangabe ein- oder ausblenden",
+    "title": "Karte",
+    "ctrlZoom": "Zum Zoomen Strg gedrückt halten",
+    "cmdZoom": "Zum Zoomen ⌘ gedrückt halten"
+  },
+  "modeLinks": {
+    "auto": "Wieder automatisch wählen",
+    "choose": "Diese Etappe {mode}",
+    "maps": "Echte Verbindung bei Google Maps nachsehen"
+  },
+  "photo": {
+    "alt": "{name}, Biergarten in München",
+    "placeholderLine1": "Bild folgt",
+    "placeholderLine2": "lizenziert",
+    "placeholderLine3": "mit Credit"
+  },
+  "hours": {
+    "day": "Tag",
+    "open": "Geöffnet",
+    "closed": "geschlossen",
+    "unverified": "Diese Zeiten stammen aus der ersten Recherche und sind gegen keine Quelle verifiziert. Biergarten-Öffnungszeiten sind ohnehin Wetterangaben — bei zweifelhaftem Wetter entscheidet der Wirt morgens um neun."
+  },
+  "directoryPage": {
+    "seoTitle": "Alle Biergärten",
+    "seoDescription": "Alle {count} Biergärten in München und Umgebung im Überblick — mit Öffnungszeiten, Ausschank, Selbstbedienung und Fahrzeit ab deinem Startpunkt.",
+    "title": "Alle Biergärten in München",
+    "breadcrumbHome": "Startseite",
+    "breadcrumbSelf": "Alle Biergärten",
+    "searchAria": "Biergärten durchsuchen: Name, Stadtteil oder Brauerei",
+    "searchPlaceholder": "Suchen: Name, Stadtteil, Brauerei …",
+    "countLine": "{shown} von {total}",
+    "travelFrom": "· Fahrzeit ab {start}",
+    "empty": "Nichts gefunden. Filter lockern.",
+    "faqTitle": "Häufige Fragen",
+    "closedOn": "{weekday} zu",
+    "faq": {
+      "q1": "Stimmen die angezeigten Fahrzeiten?",
+      "a1": "Die Minuten kommen aus Luftlinie plus Umwegfaktor, nicht aus dem MVV-Fahrplan. Jede Etappe zeigt alle drei Zeiten — Antippen öffnet die echte Route in Google Maps.",
+      "q2": "Warum ist das Radl so oft schneller als die Bahn?",
+      "a2": "Flaucher, Hinterbrühl, Aumeister und Insel Mühle haben keine Haltestelle vor der Tür. Mit dem Radl fällt der Fußweg von der Station weg, deshalb sind die Radzeiten dort auffällig kürzer. Wer Radl und U-Bahn mischen will: die Fahrradmitnahme ist werktags von 6 bis 9 und von 16 bis 18 Uhr gesperrt.",
+      "q3": "Darf ich meine eigene Brotzeit mitbringen?",
+      "a3": "Im Selbstbedienungsbereich ja, das Essen betreffend — Getränke nicht. Der Filter zeigt, wo das geht.",
+      "q4": "Welches MVV-Ticket brauche ich?",
+      "a4": "Im Stadtgebiet reicht eine Tageskarte für die Zone M. Für Pullach, Baierbrunn und Unterföhring eine Zone mehr.",
+      "q5": "Wie lange kann ich abends draußen sitzen?",
+      "a5": "Der Planer kennt den Sonnenuntergang des jeweiligen Tages und legt Wasser- und Aussichtsplätze ans Ende der Tour. Brauchbares Tageslicht gibt es danach noch etwa eine halbe Stunde."
+    }
+  },
+  "filterControls": {
+    "whatYouWant": "Was du willst",
+    "whereIWas": "Wo ich schon war",
+    "includeVisited": "Dabei",
+    "excludeVisited": "Raus",
+    "stamped": "{n} abgestempelt",
+    "nothingYet": "· noch nichts",
+    "waterLabel": "Am Wasser"
+  },
+  "home": {
+    "seoTitle": "Biergärten in München",
+    "seoDescription": "{total} Biergärten in München mit Öffnungszeiten, Ausschank und Anfahrt — plus Tourenplaner: Startpunkt und Zeitfenster angeben, fertige Biergarten-Tour bekommen.",
+    "title": "Biergärten in München",
+    "lede": "{total} Biergärten in und um München: Öffnungszeiten, Ausschank, Lage — und zu jeder Angabe die Quelle, aus der sie stammt. Wer nicht stöbern, sondern losgehen will, lässt sich daraus eine Tour über mehrere Stationen bauen.",
+    "itemListName": "Bekannte Biergärten in München",
+    "planning": {
+      "title": "Wie die Tourenplanung funktioniert",
+      "p1": "Ein Biergartenabend scheitert selten am Biergarten und fast immer an der Reihenfolge: der schöne liegt am anderen Ende der Stadt, der nächste hat montags zu, und der mit dem Blick aufs Wasser wäre erst nach Sonnenuntergang dran. Genau das nimmt der Planer ab.",
+      "p2": "Du gibst einen Startpunkt an — eine Haltestelle, ein Viertel oder deine Position —, dazu Uhrzeit, Wochentag, Zeitfenster und ob du zu Fuß, mit dem Rad oder mit der Bahn unterwegs bist. Daraus baut er Touren über zwei bis vier Stationen und zeigt sie mit Alternativen nebeneinander.",
+      "p3": "Dabei gilt: {strong}, für den Wochentag, den du gewählt hast. Wer erst um sieben losgeht, bekommt keine Tour vorgeschlagen, deren letzte Station um acht zusperrt. Änderst du hinterher die Startzeit oder den Wochentag, prüft der Planer die gewählte Tour erneut und verwirft sie mit Begründung, statt sie stillschweigend falsch stehen zu lassen.",
+      "p3Strong": "Öffnungszeiten werden mitgerechnet",
+      "p4": "Der Sonnenuntergang des jeweiligen Tages ist Teil der Rechnung: Plätze am Wasser und mit Aussicht wandern ans Ende der Tour, weil sie dann am meisten hergeben. Brauchbares Licht gibt es noch etwa eine halbe Stunde danach."
+    },
+    "types": {
+      "title": "Biergarten-Typen in München",
+      "p1": "Der wichtigste Unterschied ist nicht die Brauerei, sondern die Bedienung. {selfService} der {total} erfassten Biergärten haben einen Selbstbedienungsbereich: Krug selbst holen, Tisch selbst suchen — und die eigene Brotzeit ist erlaubt. Getränke nicht, die kommen vom Haus. Im bedienten Teil desselben Hauses gilt das nicht, weshalb Restaurant und Selbstbedienung oft unterschiedliche Zeiten haben.",
+      "p2": "Danach sortiert sich der Rest nach Lage und Charakter:",
+      "green": "Im Grünen",
+      "greenText": "— {n} Gärten liegen im Wald, im Park oder am Waldrand. Der Englische Garten und der Hirschgarten sind die bekanntesten, aber längst nicht die einzigen.",
+      "water": "Am Wasser",
+      "waterText": "— {n} liegen an Isar, Kanal oder See. Die lohnen sich am Abend am meisten, deshalb legt der Planer sie nach hinten.",
+      "city": "Mitten in der Stadt",
+      "cityText": "— {n} sind zu Fuß aus der Innenstadt erreichbar, gut für einen kurzen Abend ohne Anfahrt.",
+      "cellar": "Bierkeller",
+      "cellarText": "— {n} Gärten stehen über den alten Lagerkellern, in deren Schatten die Kastanien überhaupt erst gepflanzt wurden.",
+      "playground": "Mit Spielplatz",
+      "playgroundText": "— {n} haben einen, was mit Kindern die einzige Frage ist, die wirklich zählt.",
+      "music": "Mit Live-Musik",
+      "musicText": "— {n} haben regelmäßig Blasmusik oder Band.",
+      "view": "Mit Aussicht",
+      "viewText": "— {n} liegen erhöht oder mit freiem Blick.",
+      "outro": "Im {link} lassen sich diese Merkmale einzeln filtern und mit der Fahrzeit ab deinem Startpunkt kombinieren.",
+      "outroLink": "Verzeichnis"
+    },
+    "famous": {
+      "title": "Die bekanntesten Biergärten",
+      "p1": "Wer zum ersten Mal hier ist, landet meist bei diesen — zu Recht, aber sie sind auch die vollsten. Jeder Eintrag führt auf eine Seite mit Öffnungszeiten, Ausschank und Anfahrt.",
+      "p2": "Das sind sechs von {total}. Die übrigen — darunter die kleineren, an denen man abends noch einen Platz bekommt — stehen im {link}.",
+      "p2Link": "Verzeichnis"
+    },
+    "bike": {
+      "title": "Mit dem Radl von Garten zu Garten",
+      "p1": "Für eine Tour über mehrere Stationen ist das Rad in München fast immer das schnellste Verkehrsmittel — nicht weil es schneller führe als die U-Bahn, sondern weil der Fußweg von der Haltestelle wegfällt. Bei Flaucher, Hinterbrühl, Aumeister und Insel Mühle macht das den Unterschied: Sie haben keine Station vor der Tür, und die Radzeiten sind dort deshalb auffällig kürzer als die ÖPNV-Zeiten.",
+      "p2": "Wer Rad und Bahn mischen will, muss die Sperrzeiten kennen: Die Fahrradmitnahme im MVV ist werktags von 6 bis 9 Uhr und von 16 bis 18 Uhr nicht erlaubt. Genau in dem Fenster, in dem man losfahren würde.",
+      "p3": "Im Planer stellst du das Verkehrsmittel um und bekommst dieselbe Auswahl neu gerechnet. Jede Etappe zeigt weiterhin alle drei Zeiten nebeneinander, sodass sich einzelne Abschnitte auch anders lösen lassen als der Rest der Tour."
+    },
+    "hoursSection": {
+      "title": "Öffnungszeiten, Wetter und Sperrstunde",
+      "p1": "Die meisten Münchner Biergärten sperren zwischen 10 und 12 Uhr auf und zwischen 22 und 23.30 Uhr zu. Das ist der Rahmen — verlässlich ist er nur bei schönem Wetter. „Bei schönem Wetter“ heißt in der Praxis: Der Wirt entscheidet morgens gegen neun, ob der Garten aufmacht. Keine Datenbank der Welt bildet das zuverlässig ab, auch diese nicht.",
+      "p2": "Was wir abbilden können, ist der reguläre Wochenplan, und zwar getrennt nach Bereich, weil Restaurant und Selbstbedienung im selben Haus unterschiedliche Zeiten haben. Wo eine Angabe nicht sicher zu verifizieren war, steht sie nicht da — an ihrer Stelle steht {ka} Das betrifft auch den Ausschank: Bei Gärten ohne belegte Brauerei raten wir nicht.",
+      "p2Ka": "k. A.",
+      "p3": "Jede Angabe auf den Detailseiten trägt die Quelle, aus der sie stammt, und das Datum, an dem sie zuletzt geprüft wurde. Wenn eine Zahl älter aussieht, als dir lieb ist: Sie ist es vermutlich, und das steht dann auch dran."
+    },
+    "faqTitle": "Häufige Fragen",
+    "faq": {
+      "q1": "Wie viele Biergärten sind erfasst?",
+      "a1": "{total} — {city} im Stadtgebiet und {umland} im Umland. Jeder mit Öffnungszeiten, Ausschank, Lage und einer Quelle, aus der die Angaben stammen.",
+      "q2": "Darf ich eigene Brotzeit mitbringen?",
+      "a2": "Im Selbstbedienungsbereich ja, Getränke nicht — das ist die Münchner Regel und der Grund, warum es den Selbstbedienungsteil überhaupt gibt. Im bedienten Bereich gilt sie nicht. {ownFood} der {total} erfassten Biergärten haben einen solchen Bereich.",
+      "q3": "Welcher ist der größte Biergarten?",
+      "a3": "{name} in {district} mit {seats} Plätzen.",
+      "a3Unknown": "Dazu liegen gerade keine Platzzahlen vor.",
+      "q4": "Wie genau sind die Fahrzeiten?",
+      "a4": "Sie sind geschätzt: Luftlinie plus Umwegfaktor, nicht der MVV-Fahrplan. Deshalb steht überall ein ≈ davor. Jede Etappe zeigt Fuß-, Rad- und ÖPNV-Zeit, und ein Tippen darauf öffnet die echte Verbindung. Umstiege sind in der ÖPNV-Zeit nicht enthalten.",
+      "q5": "Wann haben Münchner Biergärten geöffnet?",
+      "a5": "Die meisten sperren zwischen 10 und 12 Uhr auf und zwischen 22 und 23.30 Uhr zu. Verlässlich ist das nur bei schönem Wetter — bei Regen entscheidet der Wirt morgens, ob überhaupt aufgesperrt wird. Der Planer rechnet mit den hinterlegten Zeiten des jeweiligen Wochentags und verwirft Touren, die daran scheitern.",
+      "q6": "Brauche ich ein MVV-Ticket für die Tour?",
+      "a6": "Im Stadtgebiet reicht eine Tageskarte für die Zone M. Für Pullach, Baierbrunn und Unterföhring brauchst du eine Zone mehr.",
+      "q7": "Kostet der Planer etwas oder brauche ich ein Konto?",
+      "a7": "Nein. Kein Login, keine Anmeldung. Was du gesehen hast und wie du unterwegs bist, bleibt im Browser auf deinem Gerät."
+    },
+    "go": {
+      "title": "Losgehen",
+      "p1": "Der Planer braucht drei Angaben und liefert eine fertige Tour samt Alternativen. Wenn du lieber selbst suchst, führt das Verzeichnis alle {total} Gärten mit Fahrzeit ab deinem Startpunkt.",
+      "plan": "Tour bauen",
+      "browse": "Alle Biergärten ansehen"
+    }
+  },
+  "garden": {
+    "notFound": "Diesen Biergarten kenne ich nicht.",
+    "seoFallback": "{name} in München — Öffnungszeiten, Ausschank und Anfahrt.",
+    "travelLine": "≈{min} min ab {start}",
+    "selfServiceFact": "Selbstbedienung",
+    "ownFoodFact": "Eigene Brotzeit erlaubt",
+    "stationWalk": "{min} min von der Haltestelle",
+    "zoneUmland": "Umland",
+    "zoneCity": "Stadtgebiet",
+    "equipment": "Ausstattung",
+    "planHere": "Tour hierhin bauen",
+    "seenAlready": "Warst du schon",
+    "onGoogleMaps": "Auf Google Maps",
+    "pour": "Ausschank",
+    "priceTitle": "Was die Maß kostet",
+    "hoursTitle": "Öffnungszeiten",
+    "whereTitle": "Wo es liegt",
+    "aboutTitle": "Was für ein Garten das ist",
+    "accessTitle": "Anfahrt",
+    "nearbyTitle": "Biergärten in der Nähe",
+    "purpose": {
+      "wasser": "einen späten Abend am Wasser",
+      "wald": "einen langen Nachmittag im Schatten",
+      "stadt": "einen kurzen Abend ohne Anfahrt",
+      "aussicht": "den freien Blick, wenn die Sonne tiefer steht",
+      "keller": "schattige Plätze über den alten Lagerkellern",
+      "spielplatz": "einen Nachmittag mit Kindern",
+      "musik": "Blasmusik oder Band"
+    },
+    "prose": {
+      "placementPlace": "{name} liegt in {place} und damit {zone}.",
+      "placementBare": "{name} liegt {zone}.",
+      "zoneCity": "im Münchner Stadtgebiet",
+      "zoneUmland": "im Umland",
+      "seats": "Er zählt {seats}.",
+      "largest": "Kein anderer der {counted} erfassten Gärten ist größer.",
+      "vsAverage": "Das ist {relation} als der Schnitt über alle {counted} erfassten Gärten: {average}.",
+      "more": "mehr",
+      "less": "weniger",
+      "pour": "Im Ausschank: {brewery}.",
+      "selfService": "Es gibt einen Selbstbedienungsbereich: Krug selbst holen, Tisch selbst suchen.",
+      "ownFood": "Die eigene Brotzeit ist dort erlaubt — Getränke nicht, die kommen vom Haus.",
+      "served": "Hier wird bedient. Eine eigene Brotzeit ist damit nicht vorgesehen: erlaubt ist sie in München nur im Selbstbedienungsbereich.",
+      "hours": "Geöffnet ist der Garten von {from} bis {to} Uhr",
+      "hoursClosed": "{hours}, {days} ist zu.",
+      "hoursPlain": "{hours}.",
+      "characterPurpose": "Eingeordnet ist er unter {labels} — gut also für {purposes}.",
+      "characterPlain": "Eingeordnet ist er unter {labels}.",
+      "accessUnknown": "Wie weit die nächste Haltestelle entfernt ist, ist hier nicht geprüft.",
+      "accessKnown": "Von der nächsten Haltestelle sind es {min} Minuten zu Fuß. Dieser Fußweg steckt in der ÖPNV-Zeit mit drin — deshalb ist das Radl bei Gärten ohne Station vor der Tür oft schneller als die Bahn.",
+      "plannerTimes": "Ab {start} rechnet der Planer mit ≈{walk} min zu Fuß, ≈{bike} min mit dem Radl und ≈{transit} min mit dem ÖPNV, bei {km} Luftlinie. Für die echte Verbindung:",
+      "nearest": "Der nächste andere Biergarten ist {link}, {km} Luftlinie entfernt. Für eine Tour über mehrere Stationen sind diese die naheliegenden Nachbarn:",
+      "sameDistrictOne": "Im selben Stadtteil liegt außerdem",
+      "sameDistrictMany": "Im selben Stadtteil liegen außerdem",
+      "sameBreweryOne": "Denselben Ausschank hat",
+      "sameBreweryMany": "Denselben Ausschank haben",
+      "and": " und ",
+      "comma": ", ",
+      "allGardens": "Alle {count} erfassten Gärten, filterbar nach Ausschank, Lage und Selbstbedienung, stehen im {directory}. Wer daraus einen ganzen Abend machen will, lässt sich im {planner} eine Tour über mehrere Stationen bauen.",
+      "allGardensDirectory": "Verzeichnis",
+      "allGardensPlanner": "Planer"
+    }
+  },
+  "legal": {
+    "imprint": {
+      "seoTitle": "Impressum",
+      "seoDescription": "Anbieterkennzeichnung und Kontakt für Biergarten Freunde.",
+      "title": "Impressum",
+      "todo": "Name, Anschrift und Vertretungsberechtigter müssen vor dem Livegang eingetragen werden — hier steht bewusst nichts Erfundenes.",
+      "todoLead": "Noch auszufüllen.",
+      "providerTitle": "Angaben gemäß § 5 DDG",
+      "contactTitle": "Kontakt",
+      "email": "E-Mail:",
+      "phone": "Telefon:",
+      "responsibleTitle": "Verantwortlich für den Inhalt",
+      "contentLiabilityTitle": "Haftung für Inhalte",
+      "contentLiability": "Öffnungszeiten, Bierpreise und Ausstattung sind nach bestem Wissen zusammengetragen und können sich jederzeit ändern. Wo eine Angabe nicht gegen eine Quelle geprüft werden konnte, sagt die Seite das an Ort und Stelle. Fahrzeiten sind Schätzungen und kein Fahrplan. Wer sich auf eine Angabe verlässt, prüft sie bitte beim Wirt nach.",
+      "linkLiabilityTitle": "Haftung für Links",
+      "linkLiability": "Diese Seite verlinkt auf fremde Seiten, etwa auf Google Maps und auf die Auftritte der Wirtschaften. Auf deren Inhalte haben wir keinen Einfluss und übernehmen dafür keine Gewähr.",
+      "mapTitle": "Kartendaten",
+      "map": "Die Karten beruhen auf Daten von {osm} und dessen Mitwirkenden, veröffentlicht unter der Open Database License (ODbL). Die Kacheln werden aus einem Auszug der Protomaps-Basiskarte erzeugt und von unserem eigenen Server ausgeliefert."
+    },
+    "privacy": {
+      "seoTitle": "Datenschutz",
+      "seoDescription": "Was Biergarten Freunde speichert: nichts auf dem Server, zwei Einträge im Browser. Keine Cookies, kein Analytics, keine fremden Schriften.",
+      "title": "Datenschutz",
+      "lead": "Kurz: Diese Seite setzt {noCookie}, misst nichts und lädt nichts von fremden Servern. Was du einstellst, bleibt in deinem Browser.",
+      "leadNoCookie": "kein einziges Cookie",
+      "todoLead": "Noch auszufüllen.",
+      "todo": "Verantwortlicher, Anschrift und die Angaben zu Server-Logfiles hängen vom Hoster ab und müssen vor dem Livegang ergänzt werden.",
+      "controllerTitle": "Verantwortlicher",
+      "storageTitle": "Was im Browser gespeichert wird",
+      "storageIntro": "Zwei Einträge im {code}. Sie liegen auf deinem Gerät, werden nie an einen Server geschickt und lassen sich in den Browsereinstellungen jederzeit löschen:",
+      "storagePlanner": "— Startpunkt, Startzeit, Zeitfenster, Zahl der Stationen, Fortbewegungsart, Wochentag, Filter, abgestempelte Biergärten und die gewählte Tour.",
+      "storageTheme": "— ob du die helle oder die dunkle Ansicht gewählt hast.",
+      "storageOutro": "Cookies werden nicht gesetzt. Eine Einwilligung nach § 25 TDDDG ist dafür nicht nötig, weil diese Speicherung genau die Funktion erbringt, die du aufgerufen hast: Du bittest um eine Tour, und die Seite merkt sich deine Tour.",
+      "locationTitle": "Standort",
+      "location": "Nur, wenn du auf {button} drückst. Dein Browser fragt dann selbst um Erlaubnis, die Koordinaten werden im Browser zur Berechnung der Fahrzeiten benutzt und weder gespeichert noch übertragen.",
+      "locationButton": "Standort",
+      "mapsTitle": "Karten",
+      "maps": "Die Karten laufen mit MapLibre und werden aus einem Kartenausschnitt gezeichnet, der von unserem eigenen Server kommt. Es besteht keine Verbindung zu einem fremden Kartendienst — insbesondere nicht zu Google. Datengrundlage ist {osm} (ODbL).",
+      "googleTitle": "Links zu Google Maps",
+      "google": "Auf den Detailseiten und an den Etappen gibt es Links zu Google Maps. Sie werden erst aufgerufen, wenn du sie anklickst. Ab dann gelten die Bedingungen und die Datenschutzerklärung von Google; wir übertragen von uns aus nichts dorthin.",
+      "noTrackingTitle": "Keine Messung, keine fremden Ressourcen",
+      "noTracking": "Kein Analytics, kein Tracking, keine Werbenetzwerke, keine eingebetteten Videos. Die Schriften sind die deines Geräts, es wird keine Schrift nachgeladen. Auch sonst wird nichts von einem Content-Delivery-Network geholt.",
+      "logsTitle": "Server-Logfiles",
+      "rightsTitle": "Deine Rechte",
+      "rights": "Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch — zu erreichen über die Adresse im Impressum. Außerdem steht dir eine Beschwerde bei einer Aufsichtsbehörde zu; für Bayern ist das das Bayerische Landesamt für Datenschutzaufsicht."
+    }
+  }
+}

@@ -13,6 +13,7 @@ const MUNICH = { lat: 48.1374, lon: 11.5755 }
  * explicitly forbids itself elsewhere.
  */
 const today = ref<Date | null>(null)
+const { t } = useI18n()
 const { theme, next, cycle, hydrate } = useTheme()
 
 /*
@@ -33,11 +34,8 @@ useHead({
   }],
 })
 
-/** What each setting is called, in one place — title, label and nothing else. */
-const THEME_LABELS: Record<ThemeChoice, string> = {
-  light: 'Hell',
-  dark: 'Dunkel',
-}
+/** What each setting is called lives under `theme.*` in the locale file. */
+const themeLabel = (choice: ThemeChoice) => t(`theme.${choice}`)
 
 /** True on a garden's detail page — the only route with a third segment. */
 const route = useRoute()
@@ -49,7 +47,7 @@ onMounted(() => {
 })
 
 const eyebrow = computed(() => {
-  if (!today.value) return 'Tourenplaner · München'
+  if (!today.value) return t('head.eyebrowFallback')
 
   const date = new Intl.DateTimeFormat('de-DE', {
     weekday: 'long',
@@ -59,7 +57,7 @@ const eyebrow = computed(() => {
 
   const sunset = formatClock(sunsetMinutes(today.value, MUNICH.lat, MUNICH.lon))
 
-  return `${date} · Sonnenuntergang ${sunset}`
+  return t('head.eyebrow', { date, sunset })
 })
 </script>
 
@@ -79,8 +77,8 @@ const eyebrow = computed(() => {
         <button
           class="theme-switch"
           type="button"
-          :title="`Ansicht: ${THEME_LABELS[theme]} — umschalten auf ${THEME_LABELS[next]}`"
-          :aria-label="`Ansicht: ${THEME_LABELS[theme]}. Umschalten auf ${THEME_LABELS[next]}`"
+          :title="t('theme.switchTitle', { current: themeLabel(theme), next: themeLabel(next) })"
+          :aria-label="t('theme.switchAria', { current: themeLabel(theme), next: themeLabel(next) })"
           @click="cycle"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -107,7 +105,7 @@ const eyebrow = computed(() => {
             class="seal stamped"
             viewBox="0 0 132 132"
             role="img"
-            aria-label="Siegel: Biergarten Freunde, München"
+            :aria-label="t('head.sealAria')"
           >
             <defs>
               <path id="siegelring" d="M66,66 m-49,0 a49,49 0 1,1 98,0 a49,49 0 1,1 -98,0" />
@@ -136,8 +134,9 @@ const eyebrow = computed(() => {
         </div>
 
         <p>
-          Sag, wo du losgehst, wie lange du Zeit hast und was du willst — die Tour baut
-          sich selbst, samt Alternativen. <b>Wo du warst, wird abgestempelt.</b>
+          <i18n-t keypath="site.tagline">
+            <template #stamped><b>{{ t('site.taglineStamped') }}</b></template>
+          </i18n-t>
         </p>
       </div>
     </div>
@@ -154,9 +153,9 @@ const eyebrow = computed(() => {
         It is a span, not a link: it points at the page you are already on.
       -->
       <nav class="seg">
-        <NuxtLink to="/planer">Tour bauen</NuxtLink>
-        <NuxtLink to="/verzeichnis">Alle Biergärten</NuxtLink>
-        <span v-if="onGarden" aria-current="page">Informationen</span>
+        <NuxtLink to="/planer">{{ t('nav.plan') }}</NuxtLink>
+        <NuxtLink to="/verzeichnis">{{ t('nav.directory') }}</NuxtLink>
+        <span v-if="onGarden" aria-current="page">{{ t('nav.info') }}</span>
       </nav>
 
       <slot />
@@ -168,27 +167,26 @@ const eyebrow = computed(() => {
         exact is this?" looks at the foot, not at the middle of a list.
       -->
       <footer class="fuss">
-        <nav class="fuss-wege" aria-label="Fußzeile">
-          <NuxtLink to="/planer">Tour bauen</NuxtLink>
-          <NuxtLink to="/verzeichnis">Alle Biergärten</NuxtLink>
-          <NuxtLink to="/impressum">Impressum</NuxtLink>
-          <NuxtLink to="/datenschutz">Datenschutz</NuxtLink>
-          <a href="mailto:servus@biergarten-freunde.de">Kontakt</a>
+        <nav class="fuss-wege" :aria-label="t('nav.groupAria')">
+          <NuxtLink to="/planer">{{ t('nav.plan') }}</NuxtLink>
+          <NuxtLink to="/verzeichnis">{{ t('nav.directory') }}</NuxtLink>
+          <NuxtLink to="/impressum">{{ t('footer.imprint') }}</NuxtLink>
+          <NuxtLink to="/datenschutz">{{ t('footer.privacy') }}</NuxtLink>
+          <a href="mailto:servus@biergarten-freunde.de">{{ t('footer.contact') }}</a>
         </nav>
 
         <p class="fuss-genau">
-          Fahrzeiten sind Schätzungen aus Luftlinie plus Umwegfaktor — für die echte
-          Verbindung auf die Modus-Angabe tippen. Wo beim Ausschank <b>k.&nbsp;A.</b> steht,
-          war die Brauerei nicht sicher zu verifizieren. „Bei schönem Wetter“ heißt: der
-          Wirt entscheidet morgens um neun.
+          <i18n-t keypath="footer.accuracy">
+            <template #ka><b>{{ t('footer.accuracyKa') }}</b></template>
+          </i18n-t>
         </p>
 
         <p class="fuss-quelle">
-          Kartendaten
+          {{ t('footer.mapData') }}
           <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
-            © OpenStreetMap-Mitwirkende
+            {{ t('footer.mapContributors') }}
           </a>
-          (ODbL) · Kacheln: Protomaps
+          {{ t('footer.mapLicence') }}
         </p>
       </footer>
     </div>

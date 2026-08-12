@@ -53,7 +53,7 @@ export function checkPlan(
 
   const missing = stops.findIndex((garden) => garden === undefined)
   if (missing >= 0) {
-    return { kind: 'missing', slug: plan.slugs[missing], arrival: options.startMinutes }
+    return { kind: 'missing', slug: plan.slugs[missing]!, arrival: options.startMinutes }
   }
 
   let clock = options.startMinutes
@@ -68,7 +68,8 @@ export function checkPlan(
       return { kind: 'closed', slug: garden.slug, arrival }
     }
 
-    const stay = durations[garden.slug] ?? plan.stays[index]
+    // Stays mirror slugs index for index — the plan's own shape.
+    const stay = durations[garden.slug] ?? plan.stays[index]!
 
     if (arrival < window.opensAt) {
       return { kind: 'too-early', slug: garden.slug, arrival, ...window }
@@ -87,7 +88,7 @@ export function checkPlan(
   if (totalMinutes > options.budgetMinutes) {
     return {
       kind: 'over-budget',
-      slug: plan.slugs[plan.slugs.length - 1],
+      slug: plan.slugs[plan.slugs.length - 1]!,
       arrival: clock,
       totalMinutes,
     }

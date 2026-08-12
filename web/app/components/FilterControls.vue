@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { Filters, Garden } from '#core'
-import { brewerySlug } from '#core'
+import type { Garden } from '#core'
 
 const props = defineProps<{
   gardens: Garden[]
@@ -10,36 +9,23 @@ const props = defineProps<{
 
 const { state, toggle, persist } = usePlanner()
 
-type BooleanFilter = Extract<
-  keyof Filters,
-  'waterRequired' | 'selfServiceOnly' | 'ownFoodOnly' | 'unvisitedOnly' | 'cityOnly'
->
+const { t } = useI18n()
+const { tagLabel } = useFormats()
 
-const breweryCounts = computed(() => {
-  const counts: Record<string, number> = {}
+const counts = computed(() => breweryCounts(props.gardens))
+const breweries = computed(() => presentBreweries(props.gardens))
 
-  for (const garden of props.gardens) {
-    const slug = brewerySlug(garden)
-    counts[slug] = (counts[slug] ?? 0) + 1
-  }
-
-  return counts
-})
-
-// Only show breweries that occur in the data. A tile with a zero on it is not
-// a filter but a dead end.
-const breweries = computed(() =>
-  Object.keys(BREWERY_STYLES).filter((slug) => breweryCounts.value[slug] > 0),
+/*
+ * The shared labels, minus `unvisitedOnly` — that one has its own place below.
+ * Only the water label bends: in this list it filters rows, in the planner it
+ * wishes for a stop, and the two sentences differ because the meanings do.
+ */
+const extras = computed<{ key: ExtraFilter, label: string }[]>(() =>
+  (['waterRequired', 'selfServiceOnly', 'ownFoodOnly', 'cityOnly'] as ExtraFilter[]).map((key) => ({
+    key,
+    label: key === 'waterRequired' && props.waterLabel ? props.waterLabel : t(`extras.${key}`),
+  })),
 )
-
-// "Nur neue" used to sit among the other switches and was also named
-// differently from what it does. It gets its own place now.
-const extras = computed<{ key: BooleanFilter, label: string }[]>(() => [
-  { key: 'waterRequired', label: props.waterLabel ?? 'Mind. einer am Wasser' },
-  { key: 'selfServiceOnly', label: 'Selbstbedienung' },
-  { key: 'ownFoodOnly', label: 'Eigene Brotzeit' },
-  { key: 'cityOnly', label: 'Nur Stadtgebiet' },
-])
 
 const visitedCount = computed(() => state.value.visited.length)
 
@@ -49,7 +35,7 @@ function setVisitedFilter(exclude: boolean): void {
   persist()
 }
 
-function toggleExtra(key: BooleanFilter): void {
+function toggleExtra(key: ExtraFilter): void {
   state.value.filters[key] = !state.value.filters[key]
   persist()
 }
@@ -57,17 +43,17 @@ function toggleExtra(key: BooleanFilter): void {
 
 <template>
   <div class="panel">
-    <span class="eyebrow">Was du willst</span>
+    <span class="eyebrow">{{ t('filterControls.whatYouWant') }}</span>
 
     <div class="frow">
       <button
-        v-for="(label, tag) in TAG_LABELS"
+        v-for="tag in TAG_KEYS"
         :key="tag"
         class="chip"
         :aria-pressed="state.filters.tags.includes(tag)"
         @click="toggle(state.filters.tags, tag)"
       >
-        {{ label }}
+        {{ tagLabel(tag) }}
       </button>
     </div>
 
@@ -84,7 +70,7 @@ function toggleExtra(key: BooleanFilter): void {
           <template v-for="(line, index) in breweryStyle(slug).short" :key="index">
             {{ line }}<br v-if="index < breweryStyle(slug).short.length - 1">
           </template>
-          <small>{{ breweryCounts[slug] }}</small>
+          <small>{{ counts[slug] }}</small>
         </span>
       </button>
     </div>
@@ -102,22 +88,22 @@ function toggleExtra(key: BooleanFilter): void {
     </div>
 
     <div class="visited-filter">
-      <span class="eyebrow">Wo ich schon war</span>
+      <span class="eyebrow">{{ t('filterControls.whereIWas') }}</span>
       <div class="pair">
         <button
           class="chip gold"
           :aria-pressed="!state.filters.unvisitedOnly"
           @click="setVisitedFilter(false)"
-        >Dabei</button>
+        >{{ t('filterControls.includeVisited') }}</button>
         <button
           class="chip gold"
           :aria-pressed="state.filters.unvisitedOnly"
           @click="setVisitedFilter(true)"
-        >Raus</button>
+        >{{ t('filterControls.excludeVisited') }}</button>
       </div>
       <div class="tally">
-        {{ visitedCount }} abgestempelt
-        <template v-if="visitedCount === 0"> · noch nichts</template>
+        {{ t('filterControls.stamped', { n: visitedCount }) }}
+        <template v-if="visitedCount === 0"> {{ t('filterControls.nothingYet') }}</template>
       </div>
     </div>
   </div>

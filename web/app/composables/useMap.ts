@@ -22,6 +22,9 @@ export function useMap(
   },
   draw?: (map: MapLibreMap) => void,
 ) {
+  // Bound here, in setup context — the async build below runs long after it.
+  const { t } = useI18n()
+
   const map = shallowRef<MapLibreMap | null>(null)
   let resize: ResizeObserver | null = null
   let unmounted = false
@@ -66,12 +69,12 @@ export function useMap(
       // this site is German, and a screen reader announcing "Zoom in" in the
       // middle of it is the one place the seam would show.
       locale: {
-        'NavigationControl.ZoomIn': 'Hineinzoomen',
-        'NavigationControl.ZoomOut': 'Herauszoomen',
-        'AttributionControl.ToggleAttribution': 'Quellenangabe ein- oder ausblenden',
-        'Map.Title': 'Karte',
-        'ScrollZoomBlocker.CtrlMessage': 'Zum Zoomen Strg gedrückt halten',
-        'ScrollZoomBlocker.CmdMessage': 'Zum Zoomen ⌘ gedrückt halten',
+        'NavigationControl.ZoomIn': t('map.zoomIn'),
+        'NavigationControl.ZoomOut': t('map.zoomOut'),
+        'AttributionControl.ToggleAttribution': t('map.toggleAttribution'),
+        'Map.Title': t('map.title'),
+        'ScrollZoomBlocker.CtrlMessage': t('map.ctrlZoom'),
+        'ScrollZoomBlocker.CmdMessage': t('map.cmdZoom'),
       },
     })
 

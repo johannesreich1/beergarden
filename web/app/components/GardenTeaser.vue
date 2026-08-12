@@ -17,31 +17,20 @@ import { brewerySlug } from '#core'
 const props = defineProps<{ garden: Garden }>()
 
 const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
-const name = computed(() => breweryName(brewerySlug(props.garden)))
 </script>
 
 <template>
   <div class="g" :style="{ '--bc': brewery.color }">
     <div class="gtop">
       <h3>
-        <NuxtLink :to="`/biergarten/${garden.slug}`">{{ garden.name }}</NuxtLink>
+        <NuxtLink :to="gardenPath(garden.slug)">{{ garden.name }}</NuxtLink>
       </h3>
     </div>
 
-    <div class="gmeta">
-      <b v-if="name">{{ name }} · </b>{{ metaLine(garden.district, formatSeats(garden.seats)) }}
-    </div>
+    <GardenMeta :garden="garden" />
 
     <p v-if="garden.description">{{ garden.description }}</p>
 
-    <div class="gtags">
-      <span
-        v-for="tag in garden.tags"
-        :key="tag"
-        class="ptag"
-        :class="{ w: tag === 'wasser' }"
-      >{{ TAG_LABELS[tag] ?? tag }}</span>
-      <span v-if="garden.selfService" class="ptag">Selbstbedienung</span>
-    </div>
+    <GardenTags :garden="garden" />
   </div>
 </template>

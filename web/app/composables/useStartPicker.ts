@@ -4,10 +4,9 @@ import { distanceKm } from '#core'
 /**
  * Picking the start point.
  *
- * Extracted because two surfaces ask the same question: the dense controls
- * column and the filter rail's Ort panel. The matching rules and the
- * geolocation behaviour must not drift apart — one instance per surface is
- * fine, one implementation is mandatory.
+ * Only the rail's Ort panel asks this today, but the matching rules and the
+ * geolocation behaviour are policy, not presentation — they stay out of the
+ * component so the next surface that asks (the app, a widget) cannot drift.
  */
 export function useStartPicker(startPoints: Ref<StartPoint[]>) {
   const planner = usePlanner()

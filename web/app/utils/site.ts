@@ -6,13 +6,11 @@
  * Name, claim and locale belong together, so they live together.
  */
 export const SITE = {
+  // The name is the brand, not a translation — it reads the same in every
+  // language, which is why it lives here and not in the locale file. The
+  // site's description does translate and sits under `site.description`.
   name: 'Biergarten Freunde',
   locale: 'de_DE',
-
-  /** Fallback description for pages that bring none of their own. */
-  description:
-    'Biergarten-Touren für München: Sag, wo du losgehst und wie lange du Zeit hast — '
-    + 'der Planer baut die Tour, mit Öffnungszeiten, Fahrzeiten und Sonnenuntergang.',
 } as const
 
 /** "Alle Biergärten · Biergarten Freunde". Without a title just the name. */

@@ -83,7 +83,7 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
 
   /** A complete path — check it, score it, keep it or drop it. */
   const collect = (path: Garden[], travelled: number): void => {
-    const back = legFrom(path[path.length - 1].slug)
+    const back = legFrom(path[path.length - 1]!.slug)
     if (!back.feasible) return
 
     const travelMinutes = travelled + back.min
@@ -103,15 +103,17 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
     let clock = startMinutes
     const legs: Leg[] = []
 
+    // The `!` on each index states the loop's own invariant: `i` never
+    // leaves the array, and `stays` was mapped from `path` one line up.
     for (let i = 0; i < path.length; i++) {
-      const step = i === 0 ? legFrom(path[0].slug) : legBetween(path[i - 1], path[i])
+      const step = i === 0 ? legFrom(path[0]!.slug) : legBetween(path[i - 1]!, path[i]!)
       clock += step.min
 
-      const window = openingWindow(path[i], weekday)
-      if (!window || clock < window.opensAt || clock + stays[i] > window.closesAt) return
+      const window = openingWindow(path[i]!, weekday)
+      if (!window || clock < window.opensAt || clock + stays[i]! > window.closesAt) return
 
       legs.push(step)
-      clock += stays[i]
+      clock += stays[i]!
     }
 
     if (filters.waterRequired && !path.some(isOnWater)) return
@@ -143,7 +145,8 @@ export function generateRoutes(gardens: Garden[], options: PlannerOptions): Gene
       return
     }
 
-    const last = path[path.length - 1]
+    // `extend` is only ever entered with at least the first stop in the path.
+    const last = path[path.length - 1]!
 
     for (const next of nearest(last)) {
       if (path.includes(next)) continue

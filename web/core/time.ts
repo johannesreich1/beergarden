@@ -9,7 +9,7 @@ export const at = (hours: number, minutes = 0): number => hours * 60 + minutes
  */
 export function parseClock(value: string): number {
   const [hours, minutes] = value.split(':').map(Number)
-  return hours * 60 + (minutes || 0)
+  return (hours ?? 0) * 60 + (minutes || 0)
 }
 
 /** 1470 → "00:30". For display, not for arithmetic. */

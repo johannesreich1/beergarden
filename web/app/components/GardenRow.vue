@@ -23,15 +23,16 @@ const props = defineProps<{
   visited: boolean
 }>()
 
+const { t } = useI18n()
+
 const brewery = computed(() => breweryStyle(brewerySlug(props.garden)))
-const name = computed(() => breweryName(brewerySlug(props.garden)))
 const window = computed(() =>
   props.weekday === null ? null : openingWindow(props.garden, props.weekday),
 )
 /** "dienstags zu", or null when the garden is open or the day is not known yet. */
 const closedLabel = computed(() =>
   props.weekday !== null && !isOpenOn(props.garden, props.weekday)
-    ? `${WEEKDAY_NAMES[props.weekday]} zu`
+    ? t('directoryPage.closedOn', { weekday: t(`weekdays.adverb.${props.weekday}`) })
     : null,
 )
 </script>
@@ -43,15 +44,13 @@ const closedLabel = computed(() =>
            screen. The row's heading is styled through `.g`, so the look does
            not depend on which tag it is. -->
       <h3>
-        <NuxtLink :to="`/biergarten/${garden.slug}`">{{ garden.name }}</NuxtLink>
-        <span v-if="visited" class="seen">warst du</span>
+        <NuxtLink :to="gardenPath(garden.slug)">{{ garden.name }}</NuxtLink>
+        <span v-if="visited" class="seen">{{ t('common.seen') }}</span>
       </h3>
       <span v-if="leg" class="away">≈{{ leg.min }} min</span>
     </div>
 
-    <div class="gmeta">
-      <b v-if="name">{{ name }} · </b>{{ metaLine(garden.district, formatSeats(garden.seats)) }}
-    </div>
+    <GardenMeta :garden="garden" />
 
     <ModeLinks
       v-if="leg && start"
@@ -65,22 +64,15 @@ const closedLabel = computed(() =>
     <p v-if="garden.description">{{ garden.description }}</p>
     <p v-if="garden.caveat" class="gnote">{{ garden.caveat }}</p>
 
-    <div class="gtags">
-      <span
-        v-for="tag in garden.tags"
-        :key="tag"
-        class="ptag"
-        :class="{ w: tag === 'wasser' }"
-      >{{ TAG_LABELS[tag] ?? tag }}</span>
-      <span v-if="garden.selfService" class="ptag">Selbstbedienung</span>
+    <GardenTags :garden="garden">
       <span v-if="window" class="ptag">
         {{ formatClock(window.opensAt) }}–{{ formatClock(window.closesAt) }}
       </span>
-      <span v-if="closedLabel" class="ptag" style="color: #E09A55">{{ closedLabel }}</span>
-    </div>
+      <span v-if="closedLabel" class="ptag zu">{{ closedLabel }}</span>
+    </GardenTags>
 
     <div class="gact">
-      <NuxtLink class="btn" :to="`/biergarten/${garden.slug}`">Details</NuxtLink>
+      <NuxtLink class="btn" :to="gardenPath(garden.slug)">{{ t('common.details') }}</NuxtLink>
     </div>
   </div>
 </template>

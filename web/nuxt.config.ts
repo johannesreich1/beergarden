@@ -11,6 +11,18 @@ export default defineNuxtConfig({
     '#core': fileURLToPath(new URL('./core', import.meta.url)),
   },
 
+  modules: ['@nuxtjs/i18n'],
+
+  // One language today, and still no string lives in a template: the words
+  // sit in i18n/locales/de.json, the code holds keys. `no_prefix` keeps the
+  // German URLs exactly as they are — a second language would decide its own
+  // strategy when it arrives, not inherit one guessed today.
+  i18n: {
+    locales: [{ code: 'de', language: 'de-DE', file: 'de.json' }],
+    defaultLocale: 'de',
+    strategy: 'no_prefix',
+  },
+
   css: ['~/assets/css/main.css'],
 
   vite: {

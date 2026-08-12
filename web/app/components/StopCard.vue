@@ -27,12 +27,15 @@ const emit = defineEmits<{
   shorter: []
 }>()
 
+const { t } = useI18n()
+const { seats } = useFormats()
+
 const window = computed(() => openingWindow(props.garden, props.weekday))
 
 const hoursLabel = computed(() =>
   window.value
-    ? `offen ${formatClock(window.value.opensAt)}–${formatClock(window.value.closesAt)}`
-    : 'heute geschlossen',
+    ? t('stop.open', { from: formatClock(window.value.opensAt), to: formatClock(window.value.closesAt) })
+    : t('stop.closedToday'),
 )
 
 const brewery = computed(() => breweryName(brewerySlug(props.garden)))
@@ -44,14 +47,14 @@ const brewery = computed(() => breweryName(brewerySlug(props.garden)))
       <div class="card-top">
         <div>
           <h3>
-            <NuxtLink :to="`/biergarten/${garden.slug}`">{{ garden.name }}</NuxtLink>
-            <span v-if="visited" class="seen">warst du</span>
+            <NuxtLink :to="gardenPath(garden.slug)">{{ garden.name }}</NuxtLink>
+            <span v-if="visited" class="seen">{{ t('common.seen') }}</span>
           </h3>
-          <div v-if="isOnWater(garden)" class="water">Am Wasser</div>
+          <div v-if="isOnWater(garden)" class="water">{{ t('common.onWater') }}</div>
         </div>
         <div class="time" :class="{ gone: !row }">
           {{ row ? `${formatClock(row.arrive)}–${formatClock(row.depart)}` : '—' }}
-          <em>{{ row ? formatDuration(row.duration) : 'ausgelassen' }}</em>
+          <em>{{ row ? formatDuration(row.duration) : t('stop.skipped') }}</em>
         </div>
       </div>
 
@@ -59,27 +62,27 @@ const brewery = computed(() => breweryName(brewerySlug(props.garden)))
 
       <div class="facts">
         <span v-if="brewery" class="fact">{{ brewery }}</span>
-        <span class="fact">{{ formatSeats(garden.seats) }}</span>
-        <span class="fact">{{ garden.selfService ? 'Selbstbedienung' : 'nur Bedienung' }}</span>
+        <span class="fact">{{ seats(garden.seats) }}</span>
+        <span class="fact">{{ garden.selfService ? t('common.selfService') : t('common.servedOnly') }}</span>
         <span class="fact">{{ hoursLabel }}</span>
       </div>
 
       <div v-if="garden.caveat" class="warnbox">{{ garden.caveat }}</div>
 
       <div class="actions">
-        <NuxtLink class="btn" :to="`/biergarten/${garden.slug}`">Details</NuxtLink>
+        <NuxtLink class="btn" :to="gardenPath(garden.slug)">{{ t('common.details') }}</NuxtLink>
         <button v-if="removable" class="btn warn" @click="emit('remove')">
-          Aus der Tour
+          {{ t('stop.remove') }}
         </button>
         <button v-else class="btn" :class="{ warn: !row }" @click="emit('skip')">
-          {{ row ? 'Auslassen' : 'Wieder rein' }}
+          {{ row ? t('stop.skip') : t('stop.unskip') }}
         </button>
-        <button class="btn" :class="{ on: visited }" @click="emit('seen')">War ich schon</button>
-        <button v-if="row && !row.isLast" class="btn" @click="emit('finish')">Hier Schluss</button>
+        <button class="btn" :class="{ on: visited }" @click="emit('seen')">{{ t('common.markSeen') }}</button>
+        <button v-if="row && !row.isLast" class="btn" @click="emit('finish')">{{ t('stop.finish') }}</button>
         <span v-if="row" class="dur">
-          <button @click="emit('shorter')">–</button>
+          <button :aria-label="t('stop.shorterAria')" @click="emit('shorter')">–</button>
           <span>{{ formatDuration(row.duration) }}</span>
-          <button @click="emit('longer')">+</button>
+          <button :aria-label="t('stop.longerAria')" @click="emit('longer')">+</button>
         </span>
       </div>
     </div>

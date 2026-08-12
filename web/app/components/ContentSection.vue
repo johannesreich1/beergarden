@@ -11,10 +11,7 @@ defineProps<{ title: string, id?: string }>()
 
 <template>
   <section :id="id">
-    <div class="section-title">
-      <h2>{{ title }}</h2>
-      <div class="rule" />
-    </div>
+    <SectionTitle :title="title" />
     <slot />
   </section>
 </template>

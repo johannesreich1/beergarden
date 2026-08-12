@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schedule } from '#core'
-import { formatClock } from '#core'
+import { formatClock, formatDuration } from '#core'
 
 /**
  * The evening as one bar.
@@ -59,7 +59,9 @@ const ticks = computed(() => {
 
 <template>
   <div class="beam">
-    <div class="beam-bar">
+    <!-- The bar repeats what the stop cards below state as text, so assistive
+         tech skips it; the over-budget note stays, it exists nowhere else. -->
+    <div class="beam-bar" aria-hidden="true">
       <span
         v-for="(piece, index) in pieces"
         :key="index"
@@ -71,7 +73,7 @@ const ticks = computed(() => {
 
       <!-- The sun is a fact about the day, the budget a decision by the user —
            so they look different and never merge into one line. -->
-      <span class="beam-sun" :style="{ left: at(sunsetMinutes) }">
+      <span class="beam-sun" :style="{ left: at(sunsetMinutes) }" :title="$t('common.sunsetAt', { time: formatClock(sunsetMinutes) })">
         <i /><em>{{ formatClock(sunsetMinutes) }}</em>
       </span>
       <span
@@ -81,13 +83,15 @@ const ticks = computed(() => {
       ><i /></span>
     </div>
 
-    <div class="beam-scale">
+    <div class="beam-scale" aria-hidden="true">
       <span v-for="tick in ticks" :key="tick" :style="{ left: at(tick) }">{{ formatClock(tick) }}</span>
     </div>
 
     <p v-if="overBudget > 0" class="beam-note">
-      {{ formatDuration(overBudget) }} über deinem Zeitfenster — zurück um
-      <b>{{ formatClock(schedule.end) }}</b>.
+      <i18n-t keypath="beam.over">
+        <template #over>{{ formatDuration(overBudget) }}</template>
+        <template #end><b>{{ formatClock(schedule.end) }}</b></template>
+      </i18n-t>
     </p>
   </div>
 </template>

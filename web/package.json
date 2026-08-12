@@ -10,12 +10,16 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^10.6.0",
     "maplibre-gl": "^6.3.0",
     "nuxt": "^4.5.2",
     "pmtiles": "^4.5.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
-    "vitest": "^4.1.10"
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^26.2.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10",
+    "vue-tsc": "^3.3.9"
   }
 }

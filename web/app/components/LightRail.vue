@@ -23,7 +23,9 @@ const sunsetLabel = computed(() => formatClock(props.sunset))
 </script>
 
 <template>
-  <div>
+  <!-- Arrivals and sunset both stand as text elsewhere on the page; the
+       gradient is the visual telling of it, so assistive tech skips it. -->
+  <div aria-hidden="true">
     <div class="rail-track">
       <div class="rail-sunset" :style="{ left: `${percent(sunset)}%` }">
         <em>{{ sunsetLabel }}</em>

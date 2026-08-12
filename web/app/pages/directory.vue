@@ -9,11 +9,11 @@ definePageMeta({ path: '/verzeichnis' })
 
 const { data: gardens } = await useGardens()
 
+const { t } = useI18n()
+
 usePageSeo(() => ({
-  title: 'Alle Biergärten',
-  description:
-    `Alle ${gardens.value.length} Biergärten in München und Umgebung im Überblick — mit `
-    + 'Öffnungszeiten, Ausschank, Selbstbedienung und Fahrzeit ab deinem Startpunkt.',
+  title: t('directoryPage.seoTitle'),
+  description: t('directoryPage.seoDescription', { count: gardens.value.length }),
 }))
 
 const absoluteUrl = useAbsoluteUrl()
@@ -26,8 +26,8 @@ useJsonLd(() => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Startseite', item: absoluteUrl('/') },
-    { '@type': 'ListItem', position: 2, name: 'Alle Biergärten', item: absoluteUrl('/verzeichnis') },
+    { '@type': 'ListItem', position: 1, name: t('directoryPage.breadcrumbHome'), item: absoluteUrl('/') },
+    { '@type': 'ListItem', position: 2, name: t('directoryPage.breadcrumbSelf'), item: absoluteUrl('/verzeichnis') },
   ],
 }))
 
@@ -87,45 +87,16 @@ const list = computed(() => {
  * the foot of the page, where a long list ends and someone is actually
  * looking for the caveats, and they carry their own schema.org markup.
  */
-const FRAGEN: FaqItem[] = [
-  {
-    question: 'Stimmen die angezeigten Fahrzeiten?',
-    answer:
-      'Die Minuten kommen aus Luftlinie plus Umwegfaktor, nicht aus dem MVV-Fahrplan. '
-      + 'Jede Etappe zeigt alle drei Zeiten — Antippen öffnet die echte Route in Google Maps.',
-  },
-  {
-    question: 'Warum ist das Radl so oft schneller als die Bahn?',
-    answer:
-      'Flaucher, Hinterbrühl, Aumeister und Insel Mühle haben keine Haltestelle vor der Tür. '
-      + 'Mit dem Radl fällt der Fußweg von der Station weg, deshalb sind die Radzeiten dort '
-      + 'auffällig kürzer. Wer Radl und U-Bahn mischen will: die Fahrradmitnahme ist werktags '
-      + 'von 6 bis 9 und von 16 bis 18 Uhr gesperrt.',
-  },
-  {
-    question: 'Darf ich meine eigene Brotzeit mitbringen?',
-    answer:
-      'Im Selbstbedienungsbereich ja, das Essen betreffend — Getränke nicht. '
-      + 'Der Filter zeigt, wo das geht.',
-  },
-  {
-    question: 'Welches MVV-Ticket brauche ich?',
-    answer:
-      'Im Stadtgebiet reicht eine Tageskarte für die Zone M. Für Pullach, Baierbrunn und '
-      + 'Unterföhring eine Zone mehr.',
-  },
-  {
-    question: 'Wie lange kann ich abends draußen sitzen?',
-    answer:
-      'Der Planer kennt den Sonnenuntergang des jeweiligen Tages und legt Wasser- und '
-      + 'Aussichtsplätze ans Ende der Tour. Brauchbares Tageslicht gibt es danach noch '
-      + 'etwa eine halbe Stunde.',
-  },
-]
+const FRAGEN = computed((): FaqItem[] =>
+  [1, 2, 3, 4, 5].map((n) => ({
+    question: t(`directoryPage.faq.q${n}`),
+    answer: t(`directoryPage.faq.a${n}`),
+  })),
+)
 </script>
 
 <template>
-  <h1 class="page-title stamped">Alle Biergärten in München</h1>
+  <h1 class="page-title stamped">{{ t('directoryPage.title') }}</h1>
 
   <section class="stage">
     <div class="controls">
@@ -133,23 +104,24 @@ const FRAGEN: FaqItem[] = [
       v-model="query"
       class="inp"
       type="search"
-      placeholder="Suchen: Name, Stadtteil, Brauerei …"
+      :aria-label="t('directoryPage.searchAria')"
+      :placeholder="t('directoryPage.searchPlaceholder')"
       style="width: 100%; margin-top: 22px"
       autocomplete="off"
     >
 
-    <FilterControls :gardens="gardens" water-label="Am Wasser" />
+    <FilterControls :gardens="gardens" :water-label="t('filterControls.waterLabel')" />
 
     </div>
 
     <div class="results">
     <div class="count">
-      {{ list.length }} von {{ gardens.length }}
-      <template v-if="hydrated"> · Fahrzeit ab {{ state.startPoint.name }}</template>
+      {{ t('directoryPage.countLine', { shown: list.length, total: gardens.length }) }}
+      <template v-if="hydrated"> {{ t('directoryPage.travelFrom', { start: state.startPoint.name }) }}</template>
     </div>
 
     <div class="glist">
-      <div v-if="!list.length" class="empty">Nichts gefunden. Filter lockern.</div>
+      <div v-if="!list.length" class="empty">{{ t('directoryPage.empty') }}</div>
       <!--
         The weekday waits for the browser, like the start point does.
 
@@ -180,7 +152,7 @@ const FRAGEN: FaqItem[] = [
   <!-- At the foot, where the list ends and the caveats are what someone is
        still looking for. Full width: this is reading, not filtering. -->
   <section class="faq">
-    <div class="section-title"><h2>Häufige Fragen</h2><div class="rule" /></div>
+    <SectionTitle :title="t('directoryPage.faqTitle')" />
     <FaqList :items="FRAGEN" />
   </section>
 </template>

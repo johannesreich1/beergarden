@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import type { Route, StartPoint } from '#core'
+import type { Route } from '#core'
 import {
-  at,
   buildSchedule,
   candidates,
-  distanceKm,
   formatClock,
   formatDuration,
   generateRoutes,
   planFromRoute,
   checkPlan,
   countGardens,
-  BACK_LEG,
 } from '#core'
 
 // English file name, German URL — as with the directory.
@@ -30,19 +27,25 @@ definePageMeta({ path: '/planer' })
  * gets here is the frame and nothing else, and an empty page under a good
  * title is worse than no result. The landing page is what should be found.
  */
+const { t } = useI18n()
+
 usePageSeo({
-  title: 'Tour bauen',
-  description:
-    'Biergarten-Tour für München planen: Startpunkt, Zeitfenster und Verkehrsmittel '
-    + 'wählen — der Planer schlägt Touren vor und rechnet Öffnungszeiten mit.',
+  title: t('planner.seoTitle'),
+  description: t('planner.seoDescription'),
   indexable: false,
 })
 
 const { data: gardens } = await useGardens()
-const { data: startPoints } = await useStartPoints()
 
 const planner = usePlanner()
-const { state, started, options, visitedSet, skippedSet, sunset, planEdited, droppedTour } = planner
+const { state, started, options, visitedSet, skippedSet, sunset } = planner
+const {
+  droppedTour,
+  chain: droppedChain,
+  reason: droppedReason,
+  worksAgain: droppedWorksAgain,
+  retake: retakeDropped,
+} = useDroppedTour(gardens)
 
 onMounted(planner.hydrate)
 
@@ -78,11 +81,7 @@ const previewSchedule = computed(() => {
   })
 })
 
-const previewGardens = computed(() =>
-  (previewRoute.value?.slugs ?? [])
-    .map((slug) => gardens.value.find((garden) => garden.slug === slug))
-    .filter((garden) => garden !== undefined),
-)
+const previewGardens = computed(() => gardensFor(previewRoute.value?.slugs ?? [], gardens.value))
 
 const planId = computed(() =>
   state.value.plan ? [...state.value.plan.slugs].sort().join('|') : '',
@@ -114,59 +113,6 @@ watch(
   { deep: true },
 )
 
-const gardenName = (slug: string) =>
-  gardens.value.find((garden) => garden.slug === slug)?.name ?? slug
-
-const droppedChain = computed(() =>
-  (droppedTour.value?.plan.slugs ?? []).map((slug) => shortName(gardenName(slug))).join(' → '),
-)
-
-/**
- * Take it back.
- *
- * Anyone turning the start time back wants their tour back. If it does not
- * work, it drops out again immediately — with whatever reason applies then.
- * So no separate check is needed here.
- */
-function retakeDropped(): void {
-  if (droppedTour.value) planner.choosePlan(droppedTour.value.plan)
-}
-
-/**
- * The reason is recomputed on every change rather than frozen when the tour is
- * dropped. Otherwise a number from back then sits next to a setting from now —
- * and the sentence contradicts itself.
- */
-const droppedProblem = computed(() =>
-  droppedTour.value
-    ? checkPlan(droppedTour.value.plan, gardens.value, options.value, state.value.durations)
-    : null,
-)
-
-/** Whether the dropped tour would work again under the current settings. */
-const droppedWorksAgain = computed(() => !!droppedTour.value && droppedProblem.value === null)
-
-/** Why the tour no longer works — in plain words, not as an error code. */
-const droppedReason = computed(() => {
-  const problem = droppedProblem.value
-  if (!problem) return ''
-
-  const name = gardenName(problem.slug)
-
-  switch (problem.kind) {
-    case 'closed':
-      return `${name} hat ${WEEKDAY_NAMES[state.value.weekday]} geschlossen.`
-    case 'too-early':
-      return `${name}: Du wärst um ${formatClock(problem.arrival)} da, aufgesperrt wird erst um ${formatClock(problem.opensAt!)}.`
-    case 'too-late':
-      return `${name}: Sperrstunde ${formatClock(problem.closesAt!)}, du kämst erst um ${formatClock(problem.arrival)} an. Für den Aufenthalt bliebe nichts übrig.`
-    case 'over-budget':
-      return `Die Tour dauert jetzt ${formatDuration(problem.totalMinutes!)} und passt nicht mehr in dein Zeitfenster von ${formatDuration(state.value.budgetMinutes)}.`
-    case 'missing':
-      return `${name} steht nicht mehr im Bestand.`
-  }
-})
-
 /* ---------- The chosen tour ---------- */
 
 const schedule = computed(() => {
@@ -182,61 +128,6 @@ const schedule = computed(() => {
     lastStop: state.value.lastStop,
   })
 })
-
-const plannedGardens = computed(() =>
-  (state.value.plan?.slugs ?? [])
-    .map((slug) => gardens.value.find((garden) => garden.slug === slug))
-    .filter((garden) => garden !== undefined),
-)
-
-const rowFor = (slug: string) =>
-  schedule.value?.rows.find((row) => row.garden.slug === slug) ?? null
-
-const overBudget = computed(
-  () => !!schedule.value && schedule.value.end - state.value.startMinutes > state.value.budgetMinutes,
-)
-
-const walkMinutes = computed(() => {
-  if (!schedule.value) return 0
-
-  const legs = schedule.value.rows.reduce(
-    (sum, row) => sum + (row.legMode === 'walk' ? row.legMinutes : 0),
-    0,
-  )
-
-  return legs + (schedule.value.back.mode === 'walk' ? schedule.value.back.min : 0)
-})
-
-/* ---------- Controls ---------- */
-
-const currentDuration = (slug: string) => {
-  const planned = state.value.plan
-  const index = planned?.slugs.indexOf(slug) ?? -1
-
-  return state.value.durations[slug] ?? (index >= 0 ? planned!.stays[index] : 90)
-}
-
-function changeDuration(slug: string, delta: number): void {
-  const next = currentDuration(slug) + delta
-  state.value.durations[slug] = Math.max(30, Math.min(240, next))
-  planner.persist()
-}
-
-function toggleSkip(slug: string): void {
-  planner.toggle(state.value.skipped, slug)
-  if (state.value.lastStop === slug) state.value.lastStop = null
-  planner.persist()
-}
-
-const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicker(startPoints)
-
-
-function setMode(mode: typeof state.value.mode): void {
-  state.value.mode = mode
-  // Five minutes of cycling is not a filter but an empty result list.
-  if (mode === 'bike' && state.value.maxLegMinutes < 20) state.value.maxLegMinutes = 25
-  planner.persist()
-}
 </script>
 
 <template>
@@ -260,6 +151,10 @@ function setMode(mode: typeof state.value.mode): void {
     this renders, not where it sits.
   -->
   <ClientOnly>
+  <!-- Every page carries its own h1; this one's job is done by the tool, so
+       the heading serves the outline without repeating on screen. -->
+  <h1 class="sr-only">{{ t('planner.title') }}</h1>
+
   <FilterRail :gardens="gardens" />
 
   <section
@@ -272,12 +167,9 @@ function setMode(mode: typeof state.value.mode): void {
   >
     <div v-if="!started" class="setup-go">
       <button class="btn on big" @click="planner.start">
-        Tour bauen
+        {{ t('planner.start') }}
       </button>
-      <p class="note">
-        {{ countGardens(poolSize) }} passen dazu. Ändern kannst du alles danach
-        weiter — die Vorschläge rechnen dann live mit.
-      </p>
+      <p class="note">{{ t('planner.startNote', { count: countGardens(poolSize) }) }}</p>
     </div>
 
     <div v-if="started" class="results">
@@ -286,15 +178,15 @@ function setMode(mode: typeof state.value.mode): void {
       changes, not in the settings — it decides what you are looking at, and a
       control that changes the view belongs to the view.
     -->
-    <div class="modes" role="group" aria-label="Wie die Tour entsteht">
+    <div class="modes" role="group" :aria-label="t('planner.modeGroupAria')">
       <button
         :aria-pressed="state.planMode === 'suggest'"
         @click="planner.setPlanMode('suggest')"
-      >Vorschlagen lassen</button>
+      >{{ t('planner.suggestMode') }}</button>
       <button
         :aria-pressed="state.planMode === 'self'"
         @click="planner.setPlanMode('self')"
-      >Selbst planen</button>
+      >{{ t('planner.selfMode') }}</button>
     </div>
 
     <template v-if="state.planMode === 'self'">
@@ -312,15 +204,17 @@ function setMode(mode: typeof state.value.mode): void {
       <!-- One line, not a block: it is a setting, and it only changes what a
            tap on the map is allowed to do. -->
       <p class="timemode">
-        {{ formatDuration(state.budgetMinutes) }} Zeit —
+        {{ t('planner.timeModeLine', { budget: formatDuration(state.budgetMinutes) }) }}
         <button
+          :aria-label="t('planner.timeFixedAria')"
           :aria-pressed="state.timeMode === 'fixed'"
           @click="planner.setTimeMode('fixed')"
-        >fest</button>
+        >{{ t('planner.timeFixed') }}</button>
         <button
+          :aria-label="t('planner.timeFlexibleAria')"
           :aria-pressed="state.timeMode === 'flexible'"
           @click="planner.setTimeMode('flexible')"
-        >flexibel</button>
+        >{{ t('planner.timeFlexible') }}</button>
       </p>
     </template>
 
@@ -329,37 +223,29 @@ function setMode(mode: typeof state.value.mode): void {
       The cap counts what stands under it: how many suggestions there are. It
       sits directly before the word "Vorschläge", so that is how it reads — and
       a number that reads as something other than what it counts is worse than
-      no number. It used to show the number of stops, which is a setting and
-      already has its own control on the left.
+      no number.
     -->
-    <div class="section-title">
-      <!-- Hidden from assistive tech: the list below it is the count, and a
-           screen reader announcing "4" before "Vorschläge" says it twice. -->
-      <span class="cap" aria-hidden="true"><i /><b>{{ suggestions.routes.length }}</b></span>
-      <h2>Vorschläge</h2>
-      <div class="rule" />
-    </div>
-    <p class="note">
-      Aus {{ countGardens(poolSize) }}, {{ WEEKDAY_NAMES[state.weekday] }} geöffnet,
-      Öffnungszeiten berücksichtigt.
+    <SectionTitle :title="t('planner.suggestionsTitle')" :count="suggestions.routes.length" />
+    <p class="note" aria-live="polite">
+      {{ t('planner.suggestionsNote', {
+        count: countGardens(poolSize),
+        weekday: t(`weekdays.adverb.${state.weekday}`),
+      }) }}
     </p>
 
     <div style="margin-top: 14px">
       <div v-if="droppedTour" class="dropped" role="status">
         <template v-if="droppedWorksAgain">
-          <strong>Tour geht wieder</strong>
-          <p>
-            Mit diesen Einstellungen passt sie erneut. Unten bei den Alternativen
-            kannst du sie zurückholen.
-          </p>
+          <strong>{{ t('dropped.worksAgainTitle') }}</strong>
+          <p>{{ t('dropped.worksAgainBody') }}</p>
         </template>
         <template v-else>
-          <strong>Tour verworfen</strong>
-          <p>{{ droppedReason }} Sie steht unten bei den Alternativen.</p>
+          <strong>{{ t('dropped.droppedTitle') }}</strong>
+          <p>{{ t('dropped.droppedBody', { reason: droppedReason }) }}</p>
         </template>
       </div>
 
-      <div v-if="!suggestions.routes.length" class="empty">{{ suggestions.reason }}</div>
+      <div v-if="!suggestions.routes.length" class="empty" role="status">{{ suggestions.reason }}</div>
       <PlanSuggestion
         v-for="(route, index) in suggestions.routes"
         :key="routeId(route)"
@@ -377,13 +263,13 @@ function setMode(mode: typeof state.value.mode): void {
 
       <div v-if="droppedTour" class="plan stale" :class="{ 'works-again': droppedWorksAgain }">
         <div class="ptop">
-          <span class="rank">{{ droppedWorksAgain ? 'Geht wieder' : 'Geht nicht mehr' }}</span>
+          <span class="rank">{{ droppedWorksAgain ? t('dropped.worksAgainRank') : t('dropped.goneRank') }}</span>
         </div>
         <div class="chain">{{ droppedChain }}</div>
         <p v-if="!droppedWorksAgain" class="reason">{{ droppedReason }}</p>
         <div class="pact">
           <button class="btn" :class="{ on: droppedWorksAgain }" @click="retakeDropped">
-            Wieder aufnehmen
+            {{ t('dropped.retake') }}
           </button>
         </div>
       </div>
@@ -396,7 +282,7 @@ function setMode(mode: typeof state.value.mode): void {
       v-if="started && !schedule && state.planMode !== 'self' && previewSchedule"
       class="tour-column vorschau"
     >
-      <div class="section-title"><h2>Vorschau</h2><div class="rule" /></div>
+      <SectionTitle :title="t('planner.previewTitle')" />
       <TourMap
         :start="state.startPoint"
         :planned="previewGardens"
@@ -404,131 +290,11 @@ function setMode(mode: typeof state.value.mode): void {
       />
       <p class="vorschau-meta">
         {{ previewGardens.map((garden) => shortName(garden.name)).join(' → ') }} ·
-        zurück um <b>{{ formatClock(previewSchedule.end) }}</b>
+        {{ t('planner.previewBack') }} <b>{{ formatClock(previewSchedule.end) }}</b>
       </p>
     </div>
 
-    <div v-if="started && schedule" id="tour" class="tour-column">
-      <div class="section-title"><h2>Deine Tour</h2><div class="rule" /></div>
-
-      <!-- Only while picking by hand. With a proposed tour the generator has
-           already fitted it into the window; here the evening grows under your
-           thumb, and the beam is what shows how much of it is left. -->
-      <TimeBeam
-        v-if="state.planMode === 'self'"
-        :schedule="schedule"
-        :start-minutes="state.startMinutes"
-        :budget-minutes="state.budgetMinutes"
-        :sunset-minutes="sunset"
-        :time-mode="state.timeMode"
-      />
-
-      <LightRail
-        :arrivals="schedule.rows.map((row) => row.arrive)"
-        :sunset="sunset"
-      />
-
-      <!-- Not in self mode: the route is already drawn on the map you picked it
-           on, and two maps of one evening never quite agree with each other. -->
-      <TourMap
-        v-if="state.planMode !== 'self'"
-        :start="state.startPoint"
-        :planned="plannedGardens"
-        :rows="schedule.rows"
-        @select="(slug) => document.getElementById(`card-${slug}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })"
-      />
-
-      <div class="tl">
-        <div class="node">
-          <div class="leg">
-            <span class="mode">Start</span>
-            <b style="color: var(--foam)">{{ formatClock(state.startMinutes) }}</b> ·
-            {{ state.startPoint.name }}
-          </div>
-        </div>
-
-        <template v-for="garden in plannedGardens" :key="garden.slug">
-          <div v-if="rowFor(garden.slug)" class="node">
-            <div class="leg" :class="rowFor(garden.slug)!.legMode">
-              <span class="mode">
-                {{ MODE_LABELS[rowFor(garden.slug)!.legMode] }} · ≈{{ rowFor(garden.slug)!.legMinutes }} min
-              </span>
-              ab {{ 'name' in rowFor(garden.slug)!.from ? (rowFor(garden.slug)!.from as StartPoint).name : '' }}
-              <template v-if="rowFor(garden.slug)!.legMode === 'transit'">· Umstiege nicht gerechnet</template>
-              <ModeLinks
-                :from="rowFor(garden.slug)!.from"
-                :to="garden"
-                :selected="rowFor(garden.slug)!.legMode"
-                :mode="state.mode"
-                :max-leg-minutes="state.maxLegMinutes"
-                :choosable="state.planMode === 'self'"
-                @choose="(m) => planner.setLegMode(garden.slug, m, gardens)"
-              />
-            </div>
-          </div>
-
-          <StopCard
-            :garden="garden"
-            :row="rowFor(garden.slug)"
-            :weekday="state.weekday"
-            :visited="visitedSet.has(garden.slug)"
-            :removable="state.planMode === 'self'"
-            @remove="planner.removeStop(garden.slug, gardens)"
-            @skip="toggleSkip(garden.slug)"
-            @seen="planner.toggleVisited(garden.slug)"
-            @finish="state.lastStop = garden.slug; planner.persist()"
-            @longer="changeDuration(garden.slug, 15)"
-            @shorter="changeDuration(garden.slug, -15)"
-          />
-        </template>
-
-        <div class="node term">
-          <div class="leg" :class="schedule.back.mode">
-            <span class="mode">
-              {{ MODE_LABELS[schedule.back.mode] }} · ≈{{ schedule.back.min }} min
-            </span>
-            Zurück nach {{ state.startPoint.name }}
-            <ModeLinks
-              :from="schedule.rows[schedule.rows.length - 1].garden"
-              :to="state.startPoint"
-              :selected="schedule.back.mode"
-              :mode="state.mode"
-              :max-leg-minutes="state.maxLegMinutes"
-              :choosable="state.planMode === 'self'"
-              @choose="(m) => planner.setLegMode(BACK_LEG, m, gardens)"
-            />
-          </div>
-        </div>
-
-        <div class="node term">
-          <div class="leg">
-            <span class="mode">Ziel</span>
-            <b style="color: var(--foam)">{{ formatClock(schedule.end) }}</b> ·
-            {{ state.startPoint.name }}
-          </div>
-        </div>
-      </div>
-
-      <div class="total">
-        <div class="row">
-          <div class="eyebrow">Von Tür zu Tür</div>
-          <strong>{{ formatDuration(schedule.end - state.startMinutes) }}</strong>
-        </div>
-        <div class="hint" :class="{ over: overBudget }">
-          <template v-if="overBudget">
-            Über deinem Zeitfenster von {{ formatDuration(state.budgetMinutes) }}.
-          </template>
-          {{ schedule.rows.length }} Station{{ schedule.rows.length > 1 ? 'en' : '' }},
-          {{ walkMinutes }} Minuten zu Fuß, zurück um {{ formatClock(schedule.end) }}.
-          <template v-if="schedule.rows[schedule.rows.length - 1].depart > sunset">
-            Letzte Station geht in den Sonnenuntergang.
-          </template>
-        </div>
-        <div v-if="planEdited" style="margin-top: 11px">
-          <button class="btn" @click="planner.resetPlanEdits">Änderungen zurücksetzen</button>
-        </div>
-      </div>
-    </div>
+    <TourTimeline v-if="started && schedule" :gardens="gardens" :schedule="schedule" />
   </section>
   </ClientOnly>
 </template>

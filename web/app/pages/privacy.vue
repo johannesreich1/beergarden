@@ -6,7 +6,8 @@
  * because the site does very little: no cookies, no analytics, no external
  * fonts, no CDN, and map tiles from our own server. Where something depends on
  * the hosting rather than on the code — server logs, retention — it is marked
- * as a gap instead of being filled with a plausible sentence.
+ * as a gap instead of being filled with a plausible sentence. The gaps stay in
+ * the template: they are placeholders to replace, not text to translate.
  *
  * Whatever changes here must change in the code as well. A privacy notice that
  * describes a site which no longer exists is worse than none, because people
@@ -14,93 +15,74 @@
  */
 definePageMeta({ path: '/datenschutz' })
 
+const { t } = useI18n()
+
 usePageSeo({
-  title: 'Datenschutz',
-  description:
-    'Was Biergarten Freunde speichert: nichts auf dem Server, zwei Einträge im Browser. '
-    + 'Keine Cookies, kein Analytics, keine fremden Schriften.',
+  title: t('legal.privacy.seoTitle'),
+  description: t('legal.privacy.seoDescription'),
 })
 </script>
 
 <template>
   <article class="prosa">
-    <h1 class="page-title stamped">Datenschutz</h1>
+    <h1 class="page-title stamped">{{ t('legal.privacy.title') }}</h1>
 
     <p class="lead">
-      Kurz: Diese Seite setzt <b>kein einziges Cookie</b>, misst nichts und lädt nichts von
-      fremden Servern. Was du einstellst, bleibt in deinem Browser.
+      <i18n-t keypath="legal.privacy.lead">
+        <template #noCookie><b>{{ t('legal.privacy.leadNoCookie') }}</b></template>
+      </i18n-t>
     </p>
 
     <div class="warnbox">
-      <b>Noch auszufüllen.</b> Verantwortlicher, Anschrift und die Angaben zu Server-Logfiles
-      hängen vom Hoster ab und müssen vor dem Livegang ergänzt werden.
+      <b>{{ t('legal.privacy.todoLead') }}</b> {{ t('legal.privacy.todo') }}
     </div>
 
-    <h2>Verantwortlicher</h2>
+    <h2>{{ t('legal.privacy.controllerTitle') }}</h2>
     <p><b>[Name, Anschrift, E-Mail — siehe Impressum]</b></p>
 
-    <h2>Was im Browser gespeichert wird</h2>
+    <h2>{{ t('legal.privacy.storageTitle') }}</h2>
     <p>
-      Zwei Einträge im <code>localStorage</code>. Sie liegen auf deinem Gerät, werden nie an
-      einen Server geschickt und lassen sich in den Browsereinstellungen jederzeit löschen:
+      <i18n-t keypath="legal.privacy.storageIntro">
+        <template #code><code>localStorage</code></template>
+      </i18n-t>
     </p>
     <ul>
-      <li>
-        <b>bg-planer-v5</b> — Startpunkt, Startzeit, Zeitfenster, Zahl der Stationen,
-        Fortbewegungsart, Wochentag, Filter, abgestempelte Biergärten und die gewählte Tour.
-      </li>
-      <li><b>bg-theme</b> — ob du helle, dunkle oder die Systemansicht gewählt hast.</li>
+      <li><b>bg-planer-v5</b> {{ t('legal.privacy.storagePlanner') }}</li>
+      <li><b>bg-theme</b> {{ t('legal.privacy.storageTheme') }}</li>
     </ul>
+    <p>{{ t('legal.privacy.storageOutro') }}</p>
+
+    <h2>{{ t('legal.privacy.locationTitle') }}</h2>
     <p>
-      Cookies werden nicht gesetzt. Eine Einwilligung nach § 25 TDDDG ist dafür nicht nötig,
-      weil diese Speicherung genau die Funktion erbringt, die du aufgerufen hast: Du bittest
-      um eine Tour, und die Seite merkt sich deine Tour.
+      <i18n-t keypath="legal.privacy.location">
+        <template #button><b>{{ t('legal.privacy.locationButton') }}</b></template>
+      </i18n-t>
     </p>
 
-    <h2>Standort</h2>
+    <h2>{{ t('legal.privacy.mapsTitle') }}</h2>
     <p>
-      Nur, wenn du auf <b>Standort</b> drückst. Dein Browser fragt dann selbst um Erlaubnis,
-      die Koordinaten werden im Browser zur Berechnung der Fahrzeiten benutzt und weder
-      gespeichert noch übertragen.
+      <i18n-t keypath="legal.privacy.maps">
+        <template #osm>
+          <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
+            OpenStreetMap
+          </a>
+        </template>
+      </i18n-t>
     </p>
 
-    <h2>Karten</h2>
-    <p>
-      Die Karten laufen mit MapLibre und werden aus einem Kartenausschnitt gezeichnet, der
-      von unserem eigenen Server kommt. Es besteht keine Verbindung zu einem fremden
-      Kartendienst — insbesondere nicht zu Google. Datengrundlage ist
-      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">
-        OpenStreetMap
-      </a>
-      (ODbL).
-    </p>
+    <h2>{{ t('legal.privacy.googleTitle') }}</h2>
+    <p>{{ t('legal.privacy.google') }}</p>
 
-    <h2>Links zu Google Maps</h2>
-    <p>
-      Auf den Detailseiten und an den Etappen gibt es Links zu Google Maps. Sie werden erst
-      aufgerufen, wenn du sie anklickst. Ab dann gelten die Bedingungen und die
-      Datenschutzerklärung von Google; wir übertragen von uns aus nichts dorthin.
-    </p>
+    <h2>{{ t('legal.privacy.noTrackingTitle') }}</h2>
+    <p>{{ t('legal.privacy.noTracking') }}</p>
 
-    <h2>Keine Messung, keine fremden Ressourcen</h2>
-    <p>
-      Kein Analytics, kein Tracking, keine Werbenetzwerke, keine eingebetteten Videos. Die
-      Schriften sind die deines Geräts, es wird keine Schrift nachgeladen. Auch sonst wird
-      nichts von einem Content-Delivery-Network geholt.
-    </p>
-
-    <h2>Server-Logfiles</h2>
+    <h2>{{ t('legal.privacy.logsTitle') }}</h2>
     <p>
       <b>[Vom Hoster abhängig: welche Daten protokolliert werden, wie lange sie liegen und auf
       welcher Rechtsgrundlage. Vor dem Livegang eintragen.]</b>
     </p>
 
-    <h2>Deine Rechte</h2>
-    <p>
-      Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit
-      und Widerspruch — zu erreichen über die Adresse im Impressum. Außerdem steht dir eine
-      Beschwerde bei einer Aufsichtsbehörde zu; für Bayern ist das das Bayerische Landesamt
-      für Datenschutzaufsicht.
-    </p>
+    <h2>{{ t('legal.privacy.rightsTitle') }}</h2>
+    <p>{{ t('legal.privacy.rights') }}</p>
   </article>
 </template>

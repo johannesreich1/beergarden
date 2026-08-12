@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Garden, PlanningMode } from '#core'
-import { LEG_UNCAPPED, brewerySlug, formatClock, formatDuration } from '#core'
+import type { Garden } from '#core'
+import { LEG_UNCAPPED, formatClock, formatDuration } from '#core'
 
 /**
  * The Schankleiste — the filters as a small menu on a brass rail.
@@ -23,6 +23,9 @@ import { LEG_UNCAPPED, brewerySlug, formatClock, formatDuration } from '#core'
  */
 const props = defineProps<{ gardens: Garden[] }>()
 
+const { t } = useI18n()
+const { tagLabel } = useFormats()
+
 const planner = usePlanner()
 const { state, resettable } = planner
 const { data: startPoints } = await useStartPoints()
@@ -30,14 +33,12 @@ const { startQuery, startNote, applyStartQuery, useGeolocation } = useStartPicke
 
 /* ---------------------------------------------------------- what is set */
 
-const MEHR: Array<{ key: 'selfServiceOnly' | 'ownFoodOnly' | 'cityOnly' | 'unvisitedOnly', label: string }> = [
-  { key: 'selfServiceOnly', label: 'Selbstbedienung' },
-  { key: 'ownFoodOnly', label: 'Eigene Brotzeit' },
-  { key: 'cityOnly', label: 'Nur Stadtgebiet' },
-  { key: 'unvisitedOnly', label: 'Wo ich war: raus' },
-]
-
-const activeToggles = computed(() => MEHR.filter((entry) => state.value.filters[entry.key]))
+/**
+ * Every boolean wish, from the shared list. `waterRequired` used to be
+ * settable only in the directory — a filter the planner obeyed but never
+ * showed, which is the exact bug the stamp row exists to end.
+ */
+const activeToggles = computed(() => EXTRA_FILTERS.filter((key) => state.value.filters[key]))
 
 const wishCount = computed(() =>
   state.value.filters.tags.length + activeToggles.value.length + state.value.filters.breweries.length)
@@ -45,12 +46,12 @@ const wishCount = computed(() =>
 /** The stamps in the small row: every wish that is set, each removable. */
 const stamps = computed(() => [
   ...state.value.filters.tags.map((tag) => ({
-    label: TAG_LABELS[tag] ?? tag,
+    label: tagLabel(tag),
     remove: () => planner.toggle(state.value.filters.tags, tag),
   })),
-  ...activeToggles.value.map((entry) => ({
-    label: entry.label,
-    remove: () => { state.value.filters[entry.key] = false; planner.persist() },
+  ...activeToggles.value.map((key) => ({
+    label: t(`extras.${key}`),
+    remove: () => { state.value.filters[key] = false; planner.persist() },
   })),
   // Breweries are wishes too — a chosen one that never shows up small is a
   // filter working invisibly, which is the exact bug this row exists to end.
@@ -59,11 +60,6 @@ const stamps = computed(() => [
     remove: () => planner.toggle(state.value.filters.breweries, slug),
   })),
 ])
-
-function setMode(mode: PlanningMode): void {
-  state.value.mode = mode
-  planner.persist()
-}
 
 function setBudget(minutes: number): void {
   state.value.budgetMinutes = minutes
@@ -76,12 +72,7 @@ function setLegCap(value: number): void {
   planner.persist()
 }
 
-// Only breweries that occur in the data — a filter with zero hits is a dead end.
-const breweries = computed(() => {
-  const present = new Set(props.gardens.map((garden) => brewerySlug(garden)))
-
-  return Object.keys(BREWERY_STYLES).filter((slug) => present.has(slug))
-})
+const breweries = computed(() => presentBreweries(props.gardens))
 
 /* --------------------------------------------------- popover plumbing */
 
@@ -126,16 +117,18 @@ function onToggle(id: string, event: Event): void {
   const open = (event as ToggleEvent).newState === 'open'
   expanded[id] = open
 
-  if (open) nextTick(() => place(id))
+  if (open) {
+    nextTick(() => {
+      place(id)
+      // Into the panel, not left on the trigger: the panel sits at the end of
+      // the DOM, and a keyboard would otherwise walk every chip to reach it.
+      panels[id]?.querySelector<HTMLElement>('button, input, [href]')?.focus()
+    })
+  }
   // Focus back on the chip, not lost at the top of the document.
   else chips[id]?.focus({ preventScroll: true })
 }
 
-/** Single-choice panels close on pick; multi-choice ones have their own button. */
-function pickAndClose(id: string, action: () => void): void {
-  action()
-  panels[id]?.hidePopover()
-}
 </script>
 
 <template>
@@ -150,7 +143,7 @@ function pickAndClose(id: string, action: () => void): void {
           popovertarget="p-ort"
           :aria-expanded="expanded['p-ort'] ? 'true' : 'false'"
         >
-          <span class="was">Wo los</span>
+          <span class="was">{{ t('rail.whereQuestion') }}</span>
           <span class="wert">{{ state.startPoint.name }}</span>
         </button>
 
@@ -160,7 +153,7 @@ function pickAndClose(id: string, action: () => void): void {
           popovertarget="p-zeit"
           :aria-expanded="expanded['p-zeit'] ? 'true' : 'false'"
         >
-          <span class="was">Wann &amp; wie lange</span>
+          <span class="was">{{ t('rail.whenQuestion') }}</span>
           <span class="wert">{{ formatClock(state.startMinutes) }} · {{ formatDuration(state.budgetMinutes) }}</span>
         </button>
 
@@ -171,8 +164,8 @@ function pickAndClose(id: string, action: () => void): void {
           :aria-expanded="expanded['p-weg'] ? 'true' : 'false'"
           :class="{ an: state.mode !== 'mix' }"
         >
-          <span class="was">Unterwegs</span>
-          <span class="wert">{{ MODE_OPTIONS[state.mode] }}</span>
+          <span class="was">{{ t('rail.howQuestion') }}</span>
+          <span class="wert">{{ t(`planningModes.${state.mode}`) }}</span>
         </button>
 
         <button
@@ -182,8 +175,8 @@ function pickAndClose(id: string, action: () => void): void {
           :aria-expanded="expanded['p-was'] ? 'true' : 'false'"
           :class="{ an: wishCount > 0 }"
         >
-          <span class="was">Wünsche</span>
-          <span class="wert">{{ wishCount > 0 ? `${wishCount} gewählt` : 'egal' }}</span>
+          <span class="was">{{ t('rail.wishesQuestion') }}</span>
+          <span class="wert">{{ wishCount > 0 ? t('rail.wishesCount', { n: wishCount }) : t('rail.wishesNone') }}</span>
         </button>
       </template>
 
@@ -191,7 +184,7 @@ function pickAndClose(id: string, action: () => void): void {
         <!-- Only when there is something to undo: a reset with nothing to
              reset suggests there IS something set, and sends people hunting. -->
         <button v-if="resettable" class="btn warn rail-reset" @click="planner.resetAll()">
-          Alles zurücksetzen
+          {{ t('rail.reset') }}
         </button>
       </span>
     </div>
@@ -199,16 +192,16 @@ function pickAndClose(id: string, action: () => void): void {
     <!-- The chosen wishes, small. Solid ink on purpose: at this size the break
          eats legibility, and the tilt alone already says stamp. -->
     <div v-if="stamps.length" class="klein">
-      <b
+      <button
         v-for="stamp in stamps"
         :key="stamp.label"
-        role="button"
-        tabindex="0"
-        :title="`${stamp.label} entfernen`"
+        type="button"
+        class="wunsch"
+        :aria-label="t('rail.removeStamp', { label: stamp.label })"
+        :title="t('rail.removeStamp', { label: stamp.label })"
         @click="stamp.remove()"
-        @keydown.enter.prevent="stamp.remove()"
-      >{{ stamp.label }} ×</b>
-      <button class="aufheben" @click="planner.clearFilters()">alle aufheben</button>
+      >{{ stamp.label }} ×</button>
+      <button class="aufheben" @click="planner.clearFilters()">{{ t('rail.clearAll') }}</button>
     </div>
 
     <!-- ------------------------------------------------------ the panels -->
@@ -219,30 +212,27 @@ function pickAndClose(id: string, action: () => void): void {
       class="rpanel"
       @toggle="onToggle('p-ort', $event)"
     >
-      <h3>Wo gehst du los?</h3>
-      <p>Haltestelle oder Viertel — oder nimm deinen Standort.</p>
+      <h2>{{ t('rail.where.title') }}</h2>
+      <p>{{ t('rail.where.hint') }}</p>
       <div class="startrow">
         <input
           v-model="startQuery"
           class="inp"
           list="rail-places"
-          placeholder="Haltestelle oder Viertel"
+          :aria-label="t('rail.where.inputLabel')"
+          :placeholder="t('rail.where.inputLabel')"
           autocomplete="off"
           @change="applyStartQuery"
         >
-        <button class="btn" @click="useGeolocation">Standort</button>
+        <button class="btn" @click="useGeolocation">{{ t('rail.where.locate') }}</button>
       </div>
       <datalist id="rail-places">
         <option v-for="point in startPoints" :key="point.name" :value="point.name" />
       </datalist>
-      <p v-if="startNote === 'kenne-ich-nicht'" class="note">
-        Kenne ich nicht — nimm eine Haltestelle aus der Liste.
-      </p>
-      <p v-else-if="startNote === 'suche'" class="note">Suche Position …</p>
-      <p v-else-if="startNote === 'abgelehnt'" class="note">
-        Standort nicht freigegeben — Haltestelle eintippen.
-      </p>
-      <button class="fertig" @click="panels['p-ort']?.hidePopover()">Passt</button>
+      <p v-if="startNote === 'kenne-ich-nicht'" class="note">{{ t('rail.where.unknown') }}</p>
+      <p v-else-if="startNote === 'suche'" class="note">{{ t('rail.where.locating') }}</p>
+      <p v-else-if="startNote === 'abgelehnt'" class="note">{{ t('rail.where.denied') }}</p>
+      <button class="fertig" @click="panels['p-ort']?.hidePopover()">{{ t('rail.done') }}</button>
     </div>
 
     <div
@@ -252,11 +242,11 @@ function pickAndClose(id: string, action: () => void): void {
       class="rpanel"
       @toggle="onToggle('p-zeit', $event)"
     >
-      <h3>Wann, und wie lange?</h3>
+      <h2>{{ t('rail.when.title') }}</h2>
       <div class="stepper">
-        <button class="step" @click="planner.shiftStart(-15)">−</button>
-        <div class="lbl"><span class="eyebrow">Losgehen</span><strong>{{ formatClock(state.startMinutes) }}</strong></div>
-        <button class="step" @click="planner.shiftStart(15)">+</button>
+        <button class="step" :aria-label="t('rail.when.earlier')" @click="planner.shiftStart(-15)">−</button>
+        <div class="lbl"><span class="eyebrow">{{ t('rail.when.leave') }}</span><strong>{{ formatClock(state.startMinutes) }}</strong></div>
+        <button class="step" :aria-label="t('rail.when.later')" @click="planner.shiftStart(15)">+</button>
       </div>
       <div class="grid">
         <button
@@ -267,17 +257,18 @@ function pickAndClose(id: string, action: () => void): void {
           @click="setBudget(budget.value)"
         >{{ budget.label }}</button>
       </div>
-      <p class="sub-frage">Welcher Tag?</p>
+      <p class="sub-frage">{{ t('rail.when.dayQuestion') }}</p>
       <div class="grid">
         <button
-          v-for="day in WEEKDAYS"
-          :key="day.value"
+          v-for="day in WEEKDAY_VALUES"
+          :key="day"
           class="chip gold"
-          :aria-pressed="state.weekday === day.value"
-          @click="state.weekday = day.value; planner.persist()"
-        >{{ day.label }}</button>
+          :aria-pressed="state.weekday === day"
+          :aria-label="t(`weekdays.name.${day}`)"
+          @click="state.weekday = day; planner.persist()"
+        >{{ t(`weekdays.short.${day}`) }}</button>
       </div>
-      <p class="sub-frage">Wie viele Stationen?</p>
+      <p class="sub-frage">{{ t('rail.when.stopsQuestion') }}</p>
       <div class="grid">
         <button
           v-for="count in [2, 3, 4]"
@@ -287,7 +278,7 @@ function pickAndClose(id: string, action: () => void): void {
           @click="state.stops = count; planner.persist()"
         >{{ count }}</button>
       </div>
-      <button class="fertig" @click="panels['p-zeit']?.hidePopover()">Passt</button>
+      <button class="fertig" @click="panels['p-zeit']?.hidePopover()">{{ t('rail.done') }}</button>
     </div>
 
     <div
@@ -297,20 +288,20 @@ function pickAndClose(id: string, action: () => void): void {
       class="rpanel"
       @toggle="onToggle('p-weg', $event)"
     >
-      <h3>Wie bist du unterwegs?</h3>
-      <p>Fahrzeiten sind Schätzungen — die echte Verbindung steht an jeder Etappe.</p>
+      <h2>{{ t('rail.how.title') }}</h2>
+      <p>{{ t('rail.how.hint') }}</p>
       <div class="grid">
         <button
-          v-for="(label, mode) in MODE_OPTIONS"
+          v-for="mode in PLANNING_MODES"
           :key="mode"
           class="chip gold"
           :aria-pressed="state.mode === mode"
-          @click="setMode(mode)"
-        >{{ label }}</button>
+          @click="planner.setMode(mode)"
+        >{{ t(`planningModes.${mode}`) }}</button>
       </div>
       <p class="sub-frage">
-        Längste Etappe:
-        <b>{{ state.maxLegMinutes >= LEG_UNCAPPED ? 'egal' : `${state.maxLegMinutes} min` }}</b>
+        {{ t('rail.how.legCap') }}
+        <b>{{ state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.how.legCapNone') : t('common.minutes', { min: state.maxLegMinutes }) }}</b>
       </p>
       <!-- The rightmost stop means "egal" — a limit is a refinement somebody
            reaches for, not a wall they start against. -->
@@ -320,10 +311,11 @@ function pickAndClose(id: string, action: () => void): void {
         min="5"
         max="50"
         step="5"
-        aria-label="Längste Etappe"
+        :aria-label="t('rail.how.legCapLabel')"
+        :aria-valuetext="state.maxLegMinutes >= LEG_UNCAPPED ? t('rail.how.legCapNone') : t('rail.how.legCapMinutes', { min: state.maxLegMinutes })"
         @input="setLegCap(Number(($event.target as HTMLInputElement).value))"
       >
-      <button class="fertig" @click="panels['p-weg']?.hidePopover()">Passt</button>
+      <button class="fertig" @click="panels['p-weg']?.hidePopover()">{{ t('rail.done') }}</button>
     </div>
 
     <div
@@ -333,27 +325,27 @@ function pickAndClose(id: string, action: () => void): void {
       class="rpanel"
       @toggle="onToggle('p-was', $event)"
     >
-      <h3>Was soll dabei sein?</h3>
-      <p>Nichts gewählt heißt: alles ist recht.</p>
+      <h2>{{ t('rail.wishes.title') }}</h2>
+      <p>{{ t('rail.wishes.hint') }}</p>
       <div class="grid">
         <button
-          v-for="(label, tag) in TAG_LABELS"
+          v-for="tag in TAG_KEYS"
           :key="tag"
           class="chip"
           :aria-pressed="state.filters.tags.includes(tag)"
           @click="planner.toggle(state.filters.tags, tag)"
-        >{{ label }}</button>
+        >{{ tagLabel(tag) }}</button>
       </div>
       <div class="grid" style="margin-top: 10px">
         <button
-          v-for="entry in MEHR"
-          :key="entry.key"
+          v-for="key in EXTRA_FILTERS"
+          :key="key"
           class="chip gold"
-          :aria-pressed="state.filters[entry.key]"
-          @click="state.filters[entry.key] = !state.filters[entry.key]; planner.persist()"
-        >{{ entry.label }}</button>
+          :aria-pressed="state.filters[key]"
+          @click="state.filters[key] = !state.filters[key]; planner.persist()"
+        >{{ t(`extras.${key}`) }}</button>
       </div>
-      <p class="sub-frage">Brauerei?</p>
+      <p class="sub-frage">{{ t('rail.wishes.breweryQuestion') }}</p>
       <div class="grid">
         <button
           v-for="slug in breweries"
@@ -363,7 +355,7 @@ function pickAndClose(id: string, action: () => void): void {
           @click="planner.toggle(state.filters.breweries, slug)"
         >{{ breweryStyle(slug).label }}</button>
       </div>
-      <button class="fertig" @click="panels['p-was']?.hidePopover()">Passt</button>
+      <button class="fertig" @click="panels['p-was']?.hidePopover()">{{ t('rail.done') }}</button>
     </div>
   </div>
 </template>

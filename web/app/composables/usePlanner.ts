@@ -273,6 +273,17 @@ export function usePlanner() {
   }
 
   /**
+   * The travel mode, with its one guard in the one place every surface
+   * shares: five minutes of cycling is not a filter but an empty result
+   * list, so a tight leg cap loosens when the mode switches to bike.
+   */
+  function setMode(mode: PlanningMode): void {
+    state.value.mode = mode
+    if (mode === 'bike' && state.value.maxLegMinutes < 20) state.value.maxLegMinutes = 25
+    persist()
+  }
+
+  /**
    * Rebuild the plan from a list of stops.
    *
    * Not patched in place: a plan carries its legs and the way home, and those
@@ -331,6 +342,7 @@ export function usePlanner() {
     return value.plan !== null
       || f.tags.length > 0 || f.breweries.length > 0
       || f.selfServiceOnly || f.ownFoodOnly || f.cityOnly || f.unvisitedOnly
+      || f.waterRequired
       || value.mode !== fresh.mode
       || value.budgetMinutes !== fresh.budgetMinutes
       || value.startMinutes !== fresh.startMinutes
@@ -398,6 +410,7 @@ export function usePlanner() {
     start,
     setPlanMode,
     setTimeMode,
+    setMode,
     setLegMode,
     resetAll,
     resettable,

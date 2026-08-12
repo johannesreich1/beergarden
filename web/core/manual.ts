@@ -81,12 +81,12 @@ function departure(
 
   if (!picked.length) return { from: options.start, departAt: options.startMinutes }
 
-  const last = picked[picked.length - 1]
+  const last = picked[picked.length - 1]!
 
   const plan: Plan = {
     slugs: picked.map((garden) => garden.slug),
     legs: picked.map((garden, index) =>
-      planLeg(index ? picked[index - 1] : options.start, garden, options.mode, options.maxLegMinutes),
+      planLeg(index ? picked[index - 1]! : options.start, garden, options.mode, options.maxLegMinutes),
     ),
     back: planLeg(last, options.start, options.mode, options.maxLegMinutes),
     // The fallback for a stop the user has not set a stay for. Its own minimum,
@@ -106,7 +106,7 @@ function departure(
     lastStop: null,
   })!
 
-  const lastRow = schedule.rows[schedule.rows.length - 1]
+  const lastRow = schedule.rows[schedule.rows.length - 1]!
 
   return { from: lastRow.garden, departAt: lastRow.depart }
 }

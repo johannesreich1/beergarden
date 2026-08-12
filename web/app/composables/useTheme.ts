@@ -30,11 +30,9 @@ export function useTheme() {
     }
   }
 
-  /** The switch flips between the two; there is nothing in between. */
-  const ORDER: ThemeChoice[] = ['light', 'dark']
-
-  /** The next setting — what one press of the switch will do. */
-  const next = computed(() => ORDER[(ORDER.indexOf(theme.value) + 1) % ORDER.length])
+  /** The next setting — what one press of the switch will do. With only two
+   *  states, "next" simply means "the other one". */
+  const next = computed<ThemeChoice>(() => (theme.value === 'light' ? 'dark' : 'light'))
 
   function cycle(): void {
     choose(next.value)

@@ -19,11 +19,11 @@ const usable = computed(() => !!props.garden.imageUrl && !!props.garden.imageCre
     <img
       v-if="usable"
       :src="garden.imageUrl!"
-      :alt="`${garden.name}, Biergarten in München`"
+      :alt="$t('photo.alt', { name: garden.name })"
       loading="lazy"
     >
     <span v-else class="placeholder stamped">
-      Bild folgt<br>lizenziert<br>mit Credit
+      {{ $t('photo.placeholderLine1') }}<br>{{ $t('photo.placeholderLine2') }}<br>{{ $t('photo.placeholderLine3') }}
     </span>
 
     <a

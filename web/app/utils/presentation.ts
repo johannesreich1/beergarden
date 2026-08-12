@@ -1,5 +1,5 @@
-import type { Mode, PlanningMode } from '#core'
-import { UNKNOWN_BREWERY } from '#core'
+import type { Filters, Garden, Mode, PlanningMode } from '#core'
+import { TAGS, UNKNOWN_BREWERY, brewerySlug } from '#core'
 
 /**
  * Everything that is purely presentation. Deliberately not in the core:
@@ -38,7 +38,7 @@ export const BREWERY_STYLES: Record<string, BreweryStyle> = {
 }
 
 export const breweryStyle = (slug: string): BreweryStyle =>
-  BREWERY_STYLES[slug] ?? BREWERY_STYLES[UNKNOWN_BREWERY]
+  BREWERY_STYLES[slug] ?? BREWERY_STYLES[UNKNOWN_BREWERY]!
 
 /**
  * The brewery's name for running text — null when none is verified.
@@ -59,44 +59,65 @@ export const breweryName = (slug: string): string | null =>
 export const metaLine = (...parts: Array<string | null | undefined>): string =>
   parts.filter(Boolean).join(' · ')
 
-export const TAG_LABELS: Record<string, string> = {
-  wasser: 'Am Wasser',
-  wald: 'Wald & Grün',
-  stadt: 'Stadtfeeling',
-  aussicht: 'Aussicht',
-  keller: 'Bierkeller',
-  spielplatz: 'Spielplatz',
-  musik: 'Live-Musik',
-}
+/**
+ * A garden's page. The URL shape is a single statement — six templates
+ * spelling it out by hand is how one of them ends up different.
+ */
+export const gardenPath = (slug: string): string => `/biergarten/${slug}`
 
-export const MODE_OPTIONS: Record<PlanningMode, string> = {
-  mix: 'Gemischt',
-  walk: 'Zu Fuß',
-  bike: 'Rad',
-  transit: 'ÖPNV',
-}
+/**
+ * The boolean wish filters, in the order every surface shows them.
+ * Their names live in the locale file under `extras.<key>`.
+ */
+export type ExtraFilter = Extract<
+  keyof Filters,
+  'waterRequired' | 'selfServiceOnly' | 'ownFoodOnly' | 'cityOnly' | 'unvisitedOnly'
+>
 
-export const MODE_LABELS: Record<Mode, string> = {
-  walk: 'zu Fuß',
-  bike: 'Rad',
-  transit: 'ÖPNV',
-}
-
-/** ISO-8601, as in the database: 1 = Monday. */
-export const WEEKDAYS = [
-  { value: 1, label: 'Mo', name: 'Montag' },
-  { value: 2, label: 'Di', name: 'Dienstag' },
-  { value: 3, label: 'Mi', name: 'Mittwoch' },
-  { value: 4, label: 'Do', name: 'Donnerstag' },
-  { value: 5, label: 'Fr', name: 'Freitag' },
-  { value: 6, label: 'Sa', name: 'Samstag' },
-  { value: 7, label: 'So', name: 'Sonntag' },
+export const EXTRA_FILTERS: ExtraFilter[] = [
+  'waterRequired', 'selfServiceOnly', 'ownFoodOnly', 'cityOnly', 'unvisitedOnly',
 ]
 
-export const WEEKDAY_NAMES: Record<number, string> = {
-  1: 'montags', 2: 'dienstags', 3: 'mittwochs', 4: 'donnerstags',
-  5: 'freitags', 6: 'samstags', 7: 'sonntags',
+/**
+ * How often each brewery occurs in the data.
+ *
+ * Every filter surface derives its tiles from this: a brewery with zero
+ * gardens is not a filter but a dead end, so only the present ones show.
+ */
+export function breweryCounts(gardens: Garden[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+
+  for (const garden of gardens) {
+    const slug = brewerySlug(garden)
+    counts[slug] = (counts[slug] ?? 0) + 1
+  }
+
+  return counts
 }
+
+export function presentBreweries(gardens: Garden[]): string[] {
+  const counts = breweryCounts(gardens)
+
+  return Object.keys(BREWERY_STYLES).filter((slug) => (counts[slug] ?? 0) > 0)
+}
+
+/** The gardens behind a list of slugs, unknown ones dropped, order kept. */
+export const gardensFor = (slugs: string[], gardens: Garden[]): Garden[] =>
+  slugs
+    .map((slug) => gardens.find((garden) => garden.slug === slug))
+    .filter((garden) => garden !== undefined)
+
+/** The character tags in display order — the vocabulary is the core's. */
+export const TAG_KEYS: string[] = Object.values(TAGS)
+
+/** The planning modes, in menu order. Their names sit under `planningModes.*`. */
+export const PLANNING_MODES: PlanningMode[] = ['mix', 'walk', 'bike', 'transit']
+
+/** The travel modes, in display order. Their names sit under `modes.*`. */
+export const MODES: Mode[] = ['walk', 'bike', 'transit']
+
+/** ISO-8601, as in the database: 1 = Monday. Names sit under `weekdays.*`. */
+export const WEEKDAY_VALUES = [1, 2, 3, 4, 5, 6, 7]
 
 /** Shortens names for the map and the chain display, where the full name will not fit. */
 export function shortName(name: string): string {
@@ -110,38 +131,9 @@ export function shortName(name: string): string {
     .replace(' im Westpark', '')
 }
 
-/**
- * "90 min" or "75–120 min".
- *
- * Since stays can be bounded per garden, they are no longer one number for the
- * whole tour. Showing only the first value would claim a uniformity that does
- * not exist.
- */
-export function formatStays(stays: number[]): string {
-  const min = Math.min(...stays)
-  const max = Math.max(...stays)
-
-  return min === max ? `${min} min` : `${min}–${max} min`
-}
-
 /** 980 → "9,80 €". Arithmetic happens in cents, formatting happens here. */
 export const formatEuro = (cents: number): string =>
   (cents / 100).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })
-
-/** Labels for the kinds. Anything unknown shows its key — better than nothing. */
-export const BEER_KIND_LABELS: Record<string, string> = {
-  hell: 'Helles',
-  weizen: 'Weißbier',
-  alkoholfrei: 'Alkoholfrei',
-  radler: 'Radler',
-  dunkel: 'Dunkles',
-}
-
-export const formatBeerSize = (ml: number): string =>
-  ml === 1000 ? 'Maß' : ml === 500 ? 'Halbe' : `${ml} ml`
-
-export const formatSeats = (seats: number | null): string =>
-  seats === null ? 'Größe unbekannt' : `${seats.toLocaleString('de-DE')} Plätze`
 
 /**
  * The real connection on Google. As long as travel times are estimates, every

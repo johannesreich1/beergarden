@@ -29,7 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ choose: [mode: Mode] }>()
 
-const MODES: Mode[] = ['walk', 'bike', 'transit']
+const { t } = useI18n()
 
 const times = computed(() => travelTimes(props.from, props.to))
 
@@ -46,10 +46,10 @@ const overLimit = (mode: Mode) =>
         class="lm"
         :class="{ sel: option === selected, over: overLimit(option) }"
         :aria-pressed="option === selected"
-        :title="option === selected ? 'Wieder automatisch wählen' : `Diese Etappe ${MODE_LABELS[option]}`"
+        :title="option === selected ? t('modeLinks.auto') : t('modeLinks.choose', { mode: t(`modes.${option}`) })"
         @click="emit('choose', option)"
       >
-        {{ MODE_LABELS[option] }} <b>{{ times[option] }}</b> min
+        {{ $t(`modes.${option}`) }} <b>{{ times[option] }}</b> min
       </button>
     </template>
 
@@ -63,7 +63,7 @@ const overLimit = (mode: Mode) =>
         target="_blank"
         rel="noopener"
       >
-        {{ MODE_LABELS[option] }} <b>{{ times[option] }}</b> min
+        {{ $t(`modes.${option}`) }} <b>{{ times[option] }}</b> min
       </a>
     </template>
 
@@ -75,13 +75,13 @@ const overLimit = (mode: Mode) =>
       :href="directionsUrl(from, to, selected)"
       target="_blank"
       rel="noopener"
-      title="Echte Verbindung bei Google Maps nachsehen"
+      :title="t('modeLinks.maps')"
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" />
         <circle cx="12" cy="9" r="2.6" />
       </svg>
-      <span class="sr-only">Echte Verbindung bei Google Maps nachsehen</span>
+      <span class="sr-only">{{ t('modeLinks.maps') }}</span>
     </a>
   </div>
 </template>

@@ -1,4 +1,4 @@
-import { brewerySlug, isOnWater } from './garden'
+import { TAGS, brewerySlug, isOnWater } from './garden'
 import type { Garden } from './types'
 
 /**
@@ -39,7 +39,8 @@ export interface ScoreInput {
 
 export function scoreRoute(input: ScoreInput): number {
   const { gardens, travelMinutes, sitMinutesEach, departureFromLast, sunsetMinutes, visited } = input
-  const last = gardens[gardens.length - 1]
+  // A route without stops never reaches scoring — the generator builds them.
+  const last = gardens[gardens.length - 1]!
 
   let score = 0
 
@@ -56,7 +57,7 @@ export function scoreRoute(input: ScoreInput): number {
 
   const endsInGoldenHour =
     departureFromLast > sunsetMinutes - SUNSET_WINDOW_MIN &&
-    (isOnWater(last) || last.tags.includes('aussicht'))
+    (isOnWater(last) || last.tags.includes(TAGS.view))
 
   if (endsInGoldenHour) score += WEIGHTS.sunsetFinale
   if (last.caveat) score += WEIGHTS.caveatOnLast

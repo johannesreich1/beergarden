@@ -8,16 +8,18 @@ const props = defineProps<{
   today: number | null
 }>()
 
+const { t } = useI18n()
+
 const rows = computed(() =>
-  WEEKDAYS.map((day) => {
-    const hours = hoursFor(props.garden, day.value)
+  WEEKDAY_VALUES.map((day) => {
+    const hours = hoursFor(props.garden, day)
     const open = hours && !hours.isClosed && hours.opensAt !== null && hours.closesAt !== null
 
     return {
-      value: day.value,
-      name: day.name,
+      value: day,
+      name: t(`weekdays.name.${day}`),
       closed: !open,
-      label: open ? `${formatClock(hours.opensAt!)}–${formatClock(hours.closesAt!)}` : 'geschlossen',
+      label: open ? `${formatClock(hours.opensAt!)}–${formatClock(hours.closesAt!)}` : t('hours.closed'),
     }
   }),
 )
@@ -27,14 +29,14 @@ const rows = computed(() =>
  * notice disappears by itself once the crawler fills `verified_at` — nobody has
  * to remember to remove it.
  */
-const anyVerified = computed(() => WEEKDAYS.some((day) => isVerified(props.garden, day.value)))
+const anyVerified = computed(() => WEEKDAY_VALUES.some((day) => isVerified(props.garden, day)))
 </script>
 
 <template>
   <div>
     <table class="hours">
       <thead>
-        <tr><th>Tag</th><th>Geöffnet</th></tr>
+        <tr><th>{{ t('hours.day') }}</th><th>{{ t('hours.open') }}</th></tr>
       </thead>
       <tbody>
         <tr v-for="row in rows" :key="row.value" :class="{ today: row.value === today }">
@@ -44,10 +46,6 @@ const anyVerified = computed(() => WEEKDAYS.some((day) => isVerified(props.garde
       </tbody>
     </table>
 
-    <p v-if="!anyVerified" class="unverified">
-      Diese Zeiten stammen aus der ersten Recherche und sind gegen keine Quelle
-      verifiziert. Biergarten-Öffnungszeiten sind ohnehin Wetterangaben — bei
-      zweifelhaftem Wetter entscheidet der Wirt morgens um neun.
-    </p>
+    <p v-if="!anyVerified" class="unverified">{{ t('hours.unverified') }}</p>
   </div>
 </template>

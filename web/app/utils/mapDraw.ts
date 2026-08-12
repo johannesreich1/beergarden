@@ -1,4 +1,6 @@
+import type * as GeoJSON from 'geojson'
 import type { GeoJSONSource, LayerSpecification, Map as MapLibreMap } from 'maplibre-gl'
+import { legPaint } from './mapStyle'
 
 /**
  * Adding to a map that may already have it.
@@ -23,6 +25,58 @@ export function ensureLayer(map: MapLibreMap, layer: LayerSpecification): void {
 export const point = (place: { lat: number, lon: number }): [number, number] =>
   [place.lon, place.lat]
 
+/**
+ * The legs of a tour as GeoJSON: one line per hop, tagged with its mode.
+ *
+ * Both maps draw the same kind of route and used to build it separately —
+ * the chain from the start through every stop is one statement, made here.
+ */
+export function legFeatures(
+  start: { lat: number, lon: number },
+  stops: Array<{ place: { lat: number, lon: number }, mode: string }>,
+): GeoJSON.FeatureCollection {
+  let previous = start
+
+  return {
+    type: 'FeatureCollection',
+    features: stops.map((stop) => {
+      const feature: GeoJSON.Feature = {
+        type: 'Feature',
+        properties: { mode: stop.mode },
+        geometry: { type: 'LineString', coordinates: [point(previous), point(stop.place)] },
+      }
+      previous = stop.place
+
+      return feature
+    }),
+  }
+}
+
+/**
+ * The leg layers, one per mode, in the palette's dashes.
+ *
+ * Idempotent like the helpers above, so a theme change or a plan edit can
+ * simply call it again.
+ */
+export function drawLegLayers(map: MapLibreMap, features: GeoJSON.FeatureCollection): void {
+  ensureSource(map, 'legs', features)
+
+  for (const [mode, paint] of Object.entries(legPaint())) {
+    ensureLayer(map, {
+      id: `leg-${mode}`,
+      type: 'line',
+      source: 'legs',
+      filter: ['==', ['get', 'mode'], mode],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': paint.color,
+        'line-width': 3,
+        'line-dasharray': paint.dash,
+      },
+    })
+  }
+}
+
 /** Half the lozenge, from `.pin i` in the stylesheet. */
 const LOZENGE_HALF = 6.5
 
@@ -36,9 +90,18 @@ const LOZENGE_HALF = 6.5
  * With a name the pin is a pair, so it is anchored on its left edge and pulled
  * back by half a lozenge — otherwise the marker centres the whole pair on the
  * coordinate and the lozenge lands next to the place it is pointing at.
+ *
+ * A pin that does something on click is a `<button>`, not a div with a
+ * listener: on the builder the map IS the list, and a div-only map is a list
+ * the keyboard cannot reach. `action` is the accessible name — what a press
+ * does, since the visible label may be hidden until hover.
  */
-export function mapPin(kind: 'on' | 'off' | 'start', label?: string) {
-  const element = document.createElement('div')
+export function mapPin(kind: 'on' | 'off' | 'start', label?: string, action?: string) {
+  const element = document.createElement(action ? 'button' : 'div')
+  if (action) {
+    (element as HTMLButtonElement).type = 'button'
+    element.setAttribute('aria-label', action)
+  }
   element.className = `pin ${kind}`
   element.appendChild(document.createElement('i'))
 
